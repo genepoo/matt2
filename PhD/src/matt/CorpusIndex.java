@@ -151,7 +151,6 @@ public class CorpusIndex {
             try
             {
                 tune = tuneBook.getTune(tuneRefs[i]);
-
                 MattGuiNB.log("Indexing tune: " + tune.getReferenceNumber() + " " + tune.getTitles()[0]);                   
                 String notation = tuneBook.getTuneNotation(tuneRefs[i]);
 
@@ -191,7 +190,7 @@ public class CorpusIndex {
                 else
                 {                
                     // Create an entry for the whole tune
-                    createCorpusEntry(fw, key, f.getName(), tune.getTitles()[0], i);                    
+                    createCorpusEntry(fw, key, f.getName(), tune.getTitles()[0], tune.getReferenceNumber());                    
                 }
             }
             catch (Exception e)

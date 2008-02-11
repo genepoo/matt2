@@ -93,29 +93,31 @@ public class ABCFinder extends Thread{
         while (stillRunning)
         {
             synchronized(lock)
-            {      
+            {
+                try
+                {
+                    lock.wait(500);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+
                 stillRunning = false;
-                for (int i = 0 ; i < numThreads ; i ++)
+                for (int i = 0 ; i < finderThreads.length ; i ++)
                 {
                     if (finderThreads[i].isRunning())
                     {
                         stillRunning = true;
                     }
                 }
-                try
-                {
-                    lock.wait();
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
             }
         }
-        
-        printTop(pq.size());
+        printTop(10);        
+        ABCMatch best = pq.peek();
+        MattGuiNB.instance().setBestSoFar(best);
+        MattGuiNB.log("Finished searching");
         running = false;
-        MattGuiNB.instance().log("Finished searching");
         return null;
     }
     
@@ -127,8 +129,7 @@ public class ABCFinder extends Thread{
     }
 
     public void setRunning(boolean running)
-    {
-        
+    {        
         this.running = running;
         
         if (finderThreads != null)
@@ -156,6 +157,10 @@ public class ABCFinder extends Thread{
     
     private void printTop(int howMany)
     {
+        if (pq.size() < howMany)
+        {
+            MattGuiNB.instance().log("ERROR!!" + howMany + " matches");
+        }
         MattGuiNB.instance().log("Printing top " + howMany + " matches");
         ABCMatch[] pushBack = new ABCMatch[howMany];  
         for (int i = 0 ; i < howMany ; i ++)

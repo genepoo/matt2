@@ -5,8 +5,6 @@
 
 package matt;
 import java.util.*;
-import com.eaio.stringsearch.MismatchSearch;
-import com.eaio.stringsearch.ShiftOrMismatches;
 /**
  *
  * @author Bryan Duggan
@@ -29,20 +27,26 @@ public class FinderThread extends Thread{
     
     public void run()
     {
-        final CorpusIndex index = CorpusIndex.instance();
+        running = true;
+        synchronized(lock)
+        {
+            lock.notify();
+        }
+        CorpusIndex index = CorpusIndex.instance();
         edThreshold = Float.parseFloat("" + MattProperties.getP("editDistanceThreshold"));
         
         CorpusEntry current;
-        setRunning(true);
+        
         while (running)
         {
             current = index.getNext();
             MattGuiNB.instance().getProgressBar().setValue(index.getCurrentIndex());
             if (current == null)
-            {
+            {       
                 running = false;
                 synchronized(lock)
                 {
+                    
                     lock.notify();
                 }
             }
@@ -68,6 +72,7 @@ public class FinderThread extends Thread{
         boolean logSearches = Boolean.parseBoolean("" + MattProperties.getP("logSearches"));
         boolean useSlidingWindows = Boolean.parseBoolean("" + MattProperties.getP("useSlidingWindows"));
         boolean expandShortTunes = Boolean.parseBoolean("" + MattProperties.getP("expandShortTunes"));
+        boolean useProperED = Boolean.parseBoolean("" + MattProperties.getP("useProperED"));
         if (logSearches)
         {
             MattGuiNB.log("Searching tune: " + entry.getX() + " " + entry.getTitle());
@@ -88,7 +93,7 @@ public class FinderThread extends Thread{
             boolean needsExpansion = false;        
             if (expandShortTunes)
             {
-                 while (toFind.length() > nlSearchIn.length())
+                while (toFind.length() > nlSearchIn.length())
                 {
                     needsExpansion = true;
                     nlSearchIn.append(searchIn);
@@ -101,7 +106,15 @@ public class FinderThread extends Thread{
             
             if (! useSlidingWindows)
             {
-                float ed = EditDistance.getLevenshteinDistance(toFind, "" + nlSearchIn);
+                float ed;
+                if (useProperED)
+                {
+                    ed = EditDistance.getLevenshteinDistance(toFind, "" + nlSearchIn);
+                }
+                else
+                {
+                    ed = EditDistance.editDistance(toFind, "" + nlSearchIn);
+                }
                 if (ed < bestEditdistance)
                 {
                     bestEditdistance = ed;
@@ -114,7 +127,15 @@ public class FinderThread extends Thread{
                 {
                     String tuneBit = nlSearchIn.substring(i, i + toFind.length());
 
-                    float ed = EditDistance.editDistance(toFind, tuneBit);
+                    float ed;
+                    if (useProperED)
+                    {
+                        ed = EditDistance.getLevenshteinDistance(toFind, tuneBit);
+                    }
+                    else
+                    {
+                        ed = EditDistance.editDistance(toFind, tuneBit);
+                    }
 
                     if (ed < bestEditdistance)
                     {
