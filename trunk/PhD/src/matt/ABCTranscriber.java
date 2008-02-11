@@ -174,6 +174,11 @@ public class ABCTranscriber {
                 MattGuiNB.instance().log("Ignoring: " + transcribedNotes[i]);                
             }
         }
+        // Now remove z's at the end
+        while (sb.charAt(sb.length() -1) == 'z')
+        {
+            sb.setLength(sb.length()-1);
+        }
         return sb.toString();
     }
     

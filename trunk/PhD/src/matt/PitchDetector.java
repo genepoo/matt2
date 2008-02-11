@@ -68,8 +68,9 @@ public class PitchDetector
         float binWidth = (float) sampleRate / (float) frameSize;
         // int maxPossible = (int) (1000.0f / binWidth);
         
-        int margin = 3;
-        peeks = PeekCalculator.calculatePeeks(fftMag, margin, fftMag.length / 2, 0.5f);
+        int pitchPeek = Integer.parseInt("" + MattProperties.instance().get("pitchPeek"));
+        
+        peeks = PeekCalculator.calculatePeeks(fftMag, pitchPeek, fftMag.length / 2, 0.5f);
         
         float[] intervals = new float[peeks.size() -1];
         for (int i = 1 ; i < peeks.size() ; i ++)

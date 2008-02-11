@@ -225,16 +225,19 @@ public class Transcriber {
             odfSignal[odfSignal.length - 1] = (signal.length - 1);
             
             // Plot the onsets
-            Enumeration en = onsetsVector.elements();
+            
+             Enumeration en = onsetsVector.elements();
             while (en.hasMoreElements())
             {
                 int index = ((Integer)en.nextElement()).intValue();
                 odfGraph.getDefaultSeries().addVerticalLine(index);                
             }
-            for (int i = 0 ; i < odfSignal.length ; i ++)
+             
+            /*for (int i = 0 ; i < odfSignal.length ; i ++)
             {
                 signalGraph.getDefaultSeries().addVerticalLine(odfSignal[i]);
             }
+             */
             signalGraph.repaint();
             odfGraph.repaint();
             
@@ -359,7 +362,14 @@ public class Transcriber {
         }
 
         OnsetPostProcessor opp = new OnsetPostProcessor(notes);
-        return opp.postProcess();
+        TranscribedNote[] postProcessed = opp.postProcess();
+        for (int i = 0 ; i < postProcessed.length ; i ++)
+        {
+            float start = postProcessed[i].getStart();
+            float sigStart = start * sampleRate;
+            signalGraph.getDefaultSeries().addVerticalLine(sigStart);                    
+        }
+        return postProcessed;
     }
     
     public void printNotes()

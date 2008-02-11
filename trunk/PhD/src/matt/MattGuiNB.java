@@ -366,8 +366,6 @@ public class MattGuiNB extends javax.swing.JFrame {
              System.out.println("Could not play tune");
              e.printStackTrace();
          }
-
-         
     }//GEN-LAST:event_btnPlayFoundActionPerformed
 
     private void tblMatchesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblMatchesMouseClicked
