@@ -23,19 +23,32 @@ public class ABCTranscriber {
     public static final int REEL = 0;
     public static final int JIG = 1;
     public static final int HORNPIPE = 2;
+
     
+    enum pitch_model {FLUTE, WHISTLE};
+    
+    private pitch_model pitchModel;
     private static int[] notesPerBar = { 8, 6, 8 };
     private int tuneType = REEL;
            
-    public static String [] noteNames = {"D", "E", "F", "G", "A", "B", "c", "d", "e", "f", "g", "a", "b", "c'", "d'" }; 
-    public static float[] knownFrequencies = new float[15];
+    public static String [] noteNames = {"D,", "E,", "F,", "G,", "A,", "B,", "C", "D", "E", "F", "G", "A", "B","c", "d", "e", "f", "g", "a", "b", "c'", "d'", "e'", "f'", "g'", "a'", "b'", "c''", "d''"}; 
+    public static float[] knownFrequencies = new float[noteNames.length];
     
-    public static final float D4 = 293.66f;
-    
-    private float standardNoteLength = 0.0f;
-    
+    public static final float D3 = 146.83f; 
+    public static final float D4=  293.66f; // Start transcription of the whistle one octive up
+        
     private float maxEnergy;
     private float averageEnergy;
+    
+    public pitch_model getPitchModel()
+    {
+        return pitchModel;
+    }
+
+    public void setPitchModel(pitch_model pitchModel)
+    {
+        this.pitchModel = pitchModel;
+    }
     
     void testScale()
     {
@@ -60,10 +73,22 @@ public class ABCTranscriber {
     void makeScale(String inKey, String mode) 
     {
         float ratio = 1.05946309436f;
-        int[] majorKeyIntervals = {1, 2, 4, 5, 6, 8, 9, 11, 12, 13};
+        // W - W - H - W - W - W - H
+        int[] majorKeyIntervals = {1, 2, 4, 5, 6
+                                 , 8, 9, 11, 12, 13
+                                 , 15, 16, 18, 19, 20
+                                 , 22, 23, 25, 26, 27
+                                 , 29, 30, 32};
         if (mode.equals("Major"))
         {
-            knownFrequencies[0] = D4;
+            if (pitchModel == pitch_model.FLUTE)
+            {
+                knownFrequencies[0] = D3;
+            }
+            else
+            {   // Use the whistle pitch model
+                knownFrequencies[0] = D4;
+            }
             // W - W - H - W - W - W - H
             for (int i = 1 ; i < knownFrequencies.length ; i ++)
             {
@@ -77,11 +102,12 @@ public class ABCTranscriber {
                }               
             }
         }
-        // W - W - H - W - W - W - H
+        
     }
             
     /** Creates a new instance of ABCTranscriber */
     public ABCTranscriber() {
+        pitchModel = pitch_model.FLUTE;
     }
         
     public ABCTranscriber(Transcriber transcriber) {
@@ -91,6 +117,9 @@ public class ABCTranscriber {
     
     public String convertToABC()
     {
+        calculatePitchModel();
+        makeScale("D", "Major");
+        printScale();
         StringBuffer sb = new StringBuffer();
         int noteInBar = 0;
 
@@ -141,15 +170,15 @@ public class ABCTranscriber {
             }
             if (found)
             {
-                /*
-                 if ((sb.length() > 0) && (sb.charAt(sb.length() - 1) == 'z') && (transcribedNotes[i].getName().equals("z")))
+                
+                if ((sb.length() > 0) && (sb.charAt(sb.length() - 1) == 'z') && (transcribedNotes[i].getName().equals("z")))
                 {
                     continue;
                 }
-                 */ 
+                 
                 sb.append(transcribedNotes[i].getName());
                 // A breath should never be longer than a single note
-                //if (!transcribedNotes[i].getName().equals("z"))
+                if (!transcribedNotes[i].getName().equals("z"))
                 {
                     int nearestMultiple = OnsetPostProcessor.calculateNearestMultiple(transcribedNotes[i].getDuration(), standardNote);
                     if (nearestMultiple > 1)
@@ -196,6 +225,7 @@ public class ABCTranscriber {
             MattGuiNB.instance().log(note.getFrequency() + " frequency is less than 100hz");
            return true;
         }
+        
         return false;
     }
 
@@ -248,4 +278,38 @@ public class ABCTranscriber {
     {
         this.averageEnergy = averageEnergy;
     }
+    
+    public void calculatePitchModel()
+    {
+        // If the number of notes > half way through D5 is greater than the number of notes < half way through D5
+        // Then its probably a tin whistle
+        int flute = 0, whistle = 0;
+        float G5 = 783.99f;
+        for (int i = 0 ; i < transcribedNotes.length ; i ++)
+        {
+            if (isBreath(transcribedNotes[i]))
+            {
+                continue;
+            }
+            if (transcribedNotes[i].getFrequency() < G5)
+            {
+                flute ++;
+            }
+            else
+            {
+                whistle ++;
+            }
+        }
+        
+        pitchModel = (flute >= whistle) ? pitch_model.FLUTE : pitch_model.WHISTLE;
+        MattGuiNB.log("Using " + ((pitchModel == pitch_model.FLUTE) ? "flute " : "whistle ") + " pitch model");
+    }
+    
+    public static void main(String[] args)
+    {
+        ABCTranscriber t = new ABCTranscriber();
+        t.makeScale("D", "Major");
+        t.testScale();
+    }
+    
 }
