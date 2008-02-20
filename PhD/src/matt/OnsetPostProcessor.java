@@ -54,17 +54,23 @@ public class OnsetPostProcessor {
             if (calculateNearestMultiple(current.getDuration(), quaver) == 0)
             {
                 // Merge it with the following note
+                
                 /*
                  MattGuiNB.instance().log("Merging note: " + i + " " + current + " with previous: " + (i -1) + " " + previous);
                 previous.setDuration(previous.getDuration() + current.getDuration());
                 transcribedNotes.remove(i);
-                 **/
+                */
                 if (i + 1 < transcribedNotes.size())
                 {
-                    TranscribedNote next = transcribedNotes.elementAt( + 1);
+                    
+                    TranscribedNote next = transcribedNotes.elementAt(i + 1);
                     next.setDuration(next.getDuration() + current.getDuration());
+                    MattGuiNB.instance().log("Merging note: " + i + " " + current + " with next: " + (i + 1) + " " + next);
                 }
+                  
                 transcribedNotes.remove(i);
+                i --;
+                
             }
         }
         // Now check the very first note

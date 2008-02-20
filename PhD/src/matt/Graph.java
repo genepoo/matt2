@@ -24,8 +24,12 @@ public class Graph extends javax.swing.JPanel {
     
     public void paint (Graphics g) 
     {        
-        
+       
         super.paint(g);
+        if (MattProperties.instance().getP("mode").equals("server"))
+        {
+            return;
+        }
         Enumeration en = series.elements();
         
         while (en.hasMoreElements())

@@ -6,6 +6,7 @@
 package matt;
 import java.util.*;
 import java.io.*;
+import java.sql.*;
 import abc.notation.Tune;
 import abc.parser.TuneBook;
 
@@ -98,6 +99,53 @@ public class CorpusIndex {
         }
     }
     
+    public void reindexDatabase()
+    {
+        Connection conn = null;
+        try
+        {
+            MattGuiNB.log("Reindexing tunes in database...");
+            String url = "" + MattProperties.getP("dburl");
+            String user = "" + MattProperties.getP("dbuser");
+            String password  = "" + MattProperties.getP("dbpassword");
+            String driver  = "" + MattProperties.getP("dbdriver");
+            
+            Class.forName(driver);
+            conn = DriverManager.getConnection(url, user, password);
+            Statement statement = conn.createStatement();
+            statement.execute("delete from tuneindex");
+            MattGuiNB.instance().getProgressBar().setValue(0);
+            MattGuiNB.instance().getProgressBar().setMaximum(index.size());
+            for (int i = 0 ; i < index.size(); i ++)
+            {
+                MattGuiNB.instance().getProgressBar().setValue(i);
+                String fName = "" + MattProperties.instance().get("SearchCorpus") + System.getProperty("file.separator") + index.get(i).getFile();
+                File f = new File(fName);
+                TuneBook book = new TuneBook(f);
+
+                PreparedStatement ps = conn.prepareStatement("insert into tuneindex(file, x, notation) values(?, ?, ?)");
+                ps.setString(1, fName);
+                int x = index.get(i).getX();
+                ps.setInt(2, x);
+                ps.setString(3, book.getTuneNotation(x));
+                ps.executeUpdate();
+                ps.close();
+            }
+        }
+        catch (Exception e)
+        {
+            MattGuiNB.log("Could not update database");
+            e.printStackTrace();
+        }
+        finally
+        {
+            safeClose(conn, null, null);
+        }
+        MattGuiNB.log("Done...");
+    }
+    
+    
+    
     public void reindex()
     {
         new Thread()
@@ -126,6 +174,10 @@ public class CorpusIndex {
                         addTunes(files[i],  fw);
                     }
                     fw.close();
+                    if (MattProperties.getP("mode").equals("server"))
+                    {
+                        reindexDatabase();
+                    }
                 }
                 catch (Exception e)
                 {
@@ -243,5 +295,32 @@ public class CorpusIndex {
     public void setReady(boolean ready)
     {
         this.ready = ready;
+    }
+    
+    public static void safeClose(Connection c, Statement s, ResultSet r) {
+        if (r != null) {
+            try {
+                r.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (s != null) {
+            try {
+                s.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (c != null) {
+            try {
+                c.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }             
     }
 }

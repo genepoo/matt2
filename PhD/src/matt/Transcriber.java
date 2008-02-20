@@ -90,6 +90,7 @@ public class Transcriber {
             numSamples = (int) audioInputStream.getFrameLength();
             mattGui.log("Length of the stream in samples: " + numSamples);            
             mattGui.log("Loading the signal...");
+            
             audioData = new byte[(int) numSamples * 2];    
             signal = new float[numSamples];
             audioInputStream.read(audioData, 0, (int) numSamples * 2);
@@ -97,13 +98,18 @@ public class Transcriber {
 
             boolean bigEndian = format.isBigEndian();                                 
             // Copy the signal from the file to the array            
+            mattGui.instance().getProgressBar().setValue(0);
+            mattGui.instance().getProgressBar().setMaximum(numSamples);
             for (int signalIndex = 0 ; signalIndex < numSamples; signalIndex ++)
             {
-                signal[signalIndex] = ((audioData[(signalIndex * 2) + 1] << 8) + audioData[signalIndex * 2]);                            
+                signal[signalIndex] = ((audioData[(signalIndex * 2) + 1] << 8) + audioData[signalIndex * 2]);
+                mattGui.instance().getProgressBar().setValue(signalIndex);
             }
-
+            mattGui.log("Graphing...");
             signalGraph.getDefaultSeries().setData(signal);
             signalGraph.repaint();
+            mattGui.log("Done.");
+            
         }
         catch (Exception e)
         {
