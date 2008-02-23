@@ -4,8 +4,8 @@
  */
 
 package matt;
-
 import java.io.*;
+import java.sql.*;
 import java.util.PriorityQueue;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -20,9 +20,19 @@ public class BatchJob extends Thread
     
     ABCFinder finder = null;
     Transcriber transcriber = null;
+    private long jobId;
+    public static final int NEW = 0;
+    public static final int TRANSCRIBING = 1;
+    public static final int SEARCHING = 2;
+    public static final int DONE = 3;
+    public static final int ERROR  = 4;
+
+    private boolean serverMode;
 
     public BatchJob()
     {
+        serverMode = false;
+        jobId = -1;
     }
     
     public boolean chooseFolder()
@@ -49,8 +59,17 @@ public class BatchJob extends Thread
         WavFilter filter = new WavFilter();
         Results results = null;
         running = true;
+        Connection conn = null;
         try
         {
+            if (serverMode)
+            {
+                conn = DBHelper.getConnection();
+                PreparedStatement s = conn.prepareStatement("update job set status = ? where id = ?");
+                s.setLong(1, BatchJob.TRANSCRIBING);
+                s.setLong(2, jobId);
+                s.execute();
+            }
             results = new Results();
             File[] files;
             if (folder.isDirectory())
@@ -73,25 +92,34 @@ public class BatchJob extends Thread
                 }
                 finder = new ABCFinder();
                 transcriber = new Transcriber();
-
+                
                 transcriber.setInputFile(files[i].toString());
                 MattGuiNB.instance().setTranscriber(transcriber);
                 transcriber.loadAudio();
                 transcriber.transcribe();
-                finder.setSearchString(MattGuiNB.instance().getTxtABC().getText());
+                finder.setSearchString(transcriber.getAbcTranscription());
                 finder.setStartIn(MattProperties.instance().get("SearchCorpus").toString());
+                if (serverMode)
+                {
+                    conn = DBHelper.getConnection();
+                    PreparedStatement s = conn.prepareStatement("update job set status = ?, transcription = ? where id = ?");
+                    s.setLong(1, BatchJob.SEARCHING);
+                    s.setString(2, transcriber.getAbcTranscription());
+                    s.setLong(3, jobId);
+                    s.execute();
+                }
                 finder.findFromIndex();
                 if (!running)
                 {
                     break;
-                }
+                }                
                 PriorityQueue<ABCMatch> matches = finder.getPq();
                 StringBuffer result = new StringBuffer();
                 String delim = "\t";
                 result.append(files[i].getName());
                 result.append(delim);
                 for (int j = 0 ; j < 10 ; j ++)
-                {
+                {                    
                     ABCMatch match = matches.poll();
                     result.append(match.getTitle());
                     result.append(delim);
@@ -99,22 +127,43 @@ public class BatchJob extends Thread
                     result.append(delim);                   
                     result.append(match.getEditDistance());
                     result.append(delim);                   
+                    if (serverMode)
+                    {
+                        conn = DBHelper.getConnection();
+                        String sql = "INSERT INTO `tunometer`.`match` (`jobId` ,`tuneId` ,`ed`, `correct`) VALUES (?, ?, ?, ?)";
+                        PreparedStatement s = conn.prepareStatement(sql);
+                        s.setLong(1, jobId);
+                        s.setLong(2, match.getIndex());
+                        s.setFloat(3, match.getEditDistance());                        
+                        s.setBoolean(4, false);                        
+                        s.execute();
+                        DBHelper.safeClose(conn, s, null);
+                    }
                 }
                 results.log(result.toString());
+                if (serverMode)
+                {
+                    conn = DBHelper.getConnection();
+                    PreparedStatement s = conn.prepareStatement("update job set status = ? where id = ?");                    
+                    s.setLong(1, BatchJob.DONE);
+                    s.setLong(2, jobId);
+                    s.execute();
+                }
+                DBHelper.safeClose(conn, null, null);
             }
         }
         catch (Exception e)
         {
-            MattGuiNB.log("Problem with batch job");
+            Logger.log("Problem with batch job");
             e.printStackTrace();
         }
         finally
         {
             results.close();
         }
-        MattGuiNB.log("Garbage collecting...");
+        Logger.log("Garbage collecting...");
         System.gc();
-        MattGuiNB.log("Done.");
+        Logger.log("Done.");
         running = false;
     }
 
@@ -140,5 +189,25 @@ public class BatchJob extends Thread
     public void setFolder(File folder)
     {
         this.folder = folder;
+    }
+
+    public long getJobId()
+    {
+        return jobId;
+    }
+
+    public void setJobId(long jobId)
+    {
+        this.jobId = jobId;
+    }
+
+    public boolean isServerMode()
+    {
+        return serverMode;
+    }
+
+    public void setServerMode(boolean serverMode)
+    {
+        this.serverMode = serverMode;
     }
 }

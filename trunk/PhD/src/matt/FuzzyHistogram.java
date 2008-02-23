@@ -48,7 +48,7 @@ public class FuzzyHistogram {
         for (int i= 0 ; i < candidateLengths.size(); i ++)
         {
             Candidate candidate = (Candidate) candidateLengths.elementAt(i);
-            MattGuiNB.instance().log(candidate);
+            Logger.log(candidate);
             if (candidate.count > maxValue)
             {
                 maxIndex = i;

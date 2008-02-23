@@ -56,7 +56,7 @@ public class OnsetPostProcessor {
                 // Merge it with the following note
                 
                 /*
-                 MattGuiNB.instance().log("Merging note: " + i + " " + current + " with previous: " + (i -1) + " " + previous);
+                 Logger.log("Merging note: " + i + " " + current + " with previous: " + (i -1) + " " + previous);
                 previous.setDuration(previous.getDuration() + current.getDuration());
                 transcribedNotes.remove(i);
                 */
@@ -65,7 +65,7 @@ public class OnsetPostProcessor {
                     
                     TranscribedNote next = transcribedNotes.elementAt(i + 1);
                     next.setDuration(next.getDuration() + current.getDuration());
-                    MattGuiNB.instance().log("Merging note: " + i + " " + current + " with next: " + (i + 1) + " " + next);
+                    Logger.log("Merging note: " + i + " " + current + " with next: " + (i + 1) + " " + next);
                 }
                   
                 transcribedNotes.remove(i);

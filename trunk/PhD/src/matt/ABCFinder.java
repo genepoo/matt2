@@ -63,7 +63,7 @@ public class ABCFinder extends Thread{
         running = true;
         if (searchString.length() == 0)
         {
-            MattGuiNB.instance().log("Nothing to find");
+            Logger.log("Nothing to find");
             return null;
         }
         this.toFind = searchString;
@@ -71,7 +71,7 @@ public class ABCFinder extends Thread{
         toFind = MattABCTools.stripWhiteSpace(toFind);
         toFind = MattABCTools.stripBarDivisions(toFind);
         toFind = toFind.toUpperCase();
-        MattGuiNB.log("Target: " + toFind);
+        Logger.log("Target: " + toFind);
         
         MattGuiNB.instance().clearMatches();
         final CorpusIndex index = CorpusIndex.instance();
@@ -80,7 +80,7 @@ public class ABCFinder extends Thread{
         
         finderThreads = new FinderThread[numThreads];
         Object lock = new Object();
-        MattGuiNB.log("Staring " + numThreads + " finder threads");
+        Logger.log("Staring " + numThreads + " finder threads");
         MattGuiNB.instance().getProgressBar().setValue(0);
         MattGuiNB.instance().getProgressBar().setMaximum(CorpusIndex.instance().size());
         for (int i = 0 ; i < numThreads; i ++)
@@ -116,7 +116,7 @@ public class ABCFinder extends Thread{
         printTop(10);        
         ABCMatch best = pq.peek();
         MattGuiNB.instance().setBestSoFar(best);
-        MattGuiNB.log("Finished searching");
+        Logger.log("Finished searching");
         running = false;
         return null;
     }
@@ -159,14 +159,14 @@ public class ABCFinder extends Thread{
     {
         if (pq.size() < howMany)
         {
-            MattGuiNB.instance().log("ERROR!!" + howMany + " matches");
+            Logger.log("ERROR!!" + howMany + " matches");
         }
-        MattGuiNB.instance().log("Printing top " + howMany + " matches");
+        Logger.log("Printing top " + howMany + " matches");
         ABCMatch[] pushBack = new ABCMatch[howMany];  
         for (int i = 0 ; i < howMany ; i ++)
         {
             ABCMatch match = pq.poll();
-            MattGuiNB.instance().log(match);
+            Logger.log(match);
             MattGuiNB.instance().addMatch(match);   
             pushBack[i] = match;
         }
@@ -203,7 +203,7 @@ class ABCFilter implements FilenameFilter
         running = true;
         if (searchString.length() == 0)
         {
-            MattGuiNB.instance().log("Nothing to find");
+            Logger.log("Nothing to find");
             return null;
         }
         this.toFind = searchString;
@@ -211,7 +211,7 @@ class ABCFilter implements FilenameFilter
         toFind = MattABCTools.stripWhiteSpace(toFind);
         toFind = MattABCTools.stripBarDivisions(toFind);
         toFind = toFind.toUpperCase();
-        MattGuiNB.instance().log("Target: " + toFind);
+        Logger.log("Target: " + toFind);
         
         MattGuiNB.instance().clearMatches();
         ABCFilter filter = new ABCFilter();
@@ -236,7 +236,7 @@ class ABCFilter implements FilenameFilter
         }
         printTop(10);
         
-        MattGuiNB.instance().log("Finished searching");
+        Logger.log("Finished searching");
         return null;
     }
     */
@@ -244,7 +244,7 @@ class ABCFilter implements FilenameFilter
     /*
      public void searchFile(File f) throws IOException
     {
-        MattGuiNB.log("Searching tunebook: " + f.toString());
+        Logger.log("Searching tunebook: " + f.toString());
         TuneBook tuneBook = new TuneBook(f);        
         int numTunes = tuneBook.size();
         
@@ -256,7 +256,7 @@ class ABCFilter implements FilenameFilter
             searchTune(f, tune, notation);   
             if (!running)
             {
-                MattGuiNB.instance().log("Search interrupted");
+                Logger.log("Search interrupted");
                 break;
             }
         }
@@ -265,7 +265,7 @@ class ABCFilter implements FilenameFilter
     /*
     private void searchTune(File f, Tune tune, String notation)
     {
-        MattGuiNB.log("Searching tune: " + tune.getReferenceNumber() + " " + tune.getTitles()[0]);
+        Logger.log("Searching tune: " + tune.getReferenceNumber() + " " + tune.getTitles()[0]);
         try
         {
             String searchIn = notation;
@@ -278,10 +278,10 @@ class ABCFilter implements FilenameFilter
             searchIn = MattABCTools.removeTripletMarks(searchIn);
             searchIn = searchIn.toUpperCase();        
 
-            MattGuiNB.instance().log("Source: " + searchIn);
+            Logger.log("Source: " + searchIn);
             if (searchIn.length() == 0)
             {
-                MattGuiNB.instance().log("Unhandled ABC in tune: " + f + " so i'm skipping it");
+                Logger.log("Unhandled ABC in tune: " + f + " so i'm skipping it");
                 return;
             }
             
@@ -314,7 +314,7 @@ class ABCFilter implements FilenameFilter
                     
                     match.setNotation(notation);            
                     matches.add(tune);
-                    MattGuiNB.instance().log("Matched " + tuneBit + " with " + matchingToFind + " with edit diatance of " + ed);                
+                    Logger.log("Matched " + tuneBit + " with " + matchingToFind + " with edit diatance of " + ed);                
                     MattGuiNB.instance().addMatch(match);
                     break;
                 }
@@ -328,11 +328,11 @@ class ABCFilter implements FilenameFilter
             pq.add(match);
             ABCMatch best = pq.peek();
             MattGuiNB.instance().setBestSoFar(best);
-            MattGuiNB.instance().log("Best edit distance: " + bestEditdistance + " for search: " + bestBit);
+            Logger.log("Best edit distance: " + bestEditdistance + " for search: " + bestBit);
         }
         catch (Exception e)
         {
-            MattGuiNB.instance().log("Exception parsing tune: " + tune.getTitles()[0]);
+            Logger.log("Exception parsing tune: " + tune.getTitles()[0]);
             e.printStackTrace();
         }
     }

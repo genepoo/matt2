@@ -22,8 +22,9 @@ public class ABCMatch implements Comparator {
     private String notation = null;
     private String line;
     private String title;
-    private double editDistance;
+    private float editDistance;
     private int x;
+    private int index;
     
     private Tune tune;
     
@@ -43,7 +44,7 @@ public class ABCMatch implements Comparator {
     public Tune getTune() {
         if (tune == null)
         {
-            MattGuiNB.log("Lazy loading tune: " + getX());
+            Logger.log("Lazy loading tune: " + getX());
             try
             {           
                 String fName = "" + MattProperties.instance().get("SearchCorpus") + System.getProperty("file.separator") + getFileName();
@@ -54,7 +55,7 @@ public class ABCMatch implements Comparator {
             }
             catch (Exception e)
             {
-                MattGuiNB.log("Lazy loading failed");            
+                Logger.log("Lazy loading failed");            
                 e.printStackTrace();                
             }
             
@@ -85,12 +86,12 @@ public class ABCMatch implements Comparator {
         this.line = line;
     }
 
-    public double getEditDistance()
+    public float getEditDistance()
     {
         return editDistance;
     }
 
-    public void setEditDistance(double editDistance)
+    public void setEditDistance(float editDistance)
     {
         this.editDistance = editDistance;
     }
@@ -136,5 +137,15 @@ public class ABCMatch implements Comparator {
     public void setTitle(String title)
     {
         this.title = title;
+    }
+
+    public int getIndex()
+    {
+        return index;
+    }
+
+    public void setIndex(int index)
+    {
+        this.index = index;
     }
 }

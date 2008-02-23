@@ -37,7 +37,14 @@ public class CorpusIndex {
     
     private CorpusIndex()
     {
-        loadIndex();
+        if (MattProperties.getP("mode").equals("client"))
+        {
+            loadIndex();
+        }
+        else
+        {
+            loadDatabaseIndex();
+        }
     }
     
     public void reset()
@@ -67,6 +74,37 @@ public class CorpusIndex {
             
         }
     }
+    
+    public void loadDatabaseIndex()
+    {
+        index.clear();
+        Connection conn = null;
+        Logger.log("Loading index from the database");        
+        try
+        {
+            conn = DBHelper.getConnection();
+            PreparedStatement s = conn.prepareStatement("select * from tuneindex");
+            ResultSet r = s.executeQuery();
+
+            while (r.next())                
+            {
+                CorpusEntry entry = new CorpusEntry();
+                entry.setIndex(r.getInt("id"));
+                entry.setFile(r.getString("file"));
+                entry.setX(r.getInt("x"));
+                entry.setKey(r.getString("key"));
+                index.add(entry);                
+            }
+            Logger.log("Loaded " + index.size() + " tunes into the index");
+            ready = true;
+        }
+        catch (Exception e)
+        {
+            Logger.log("Could not read index");
+            e.printStackTrace();
+        }
+    }
+
     public void loadIndex()
     {
         index.clear();
@@ -85,16 +123,17 @@ public class CorpusIndex {
             while (line != null)
             {
                 CorpusEntry entry = new CorpusEntry(line);
-                index.add(entry);
+                entry.setIndex(index.size());
+                index.add(entry);                
                 line = br.readLine();
             }
             br.close();
-            MattGuiNB.log("Loaded " + index.size() + " tunes into the index");
+            Logger.log("Loaded " + index.size() + " tunes into the index");
             ready = true;
         }
         catch (Exception e)
         {
-            MattGuiNB.log("Could not read index");
+            Logger.log("Could not read index");
             e.printStackTrace();
         }
     }
@@ -104,7 +143,7 @@ public class CorpusIndex {
         Connection conn = null;
         try
         {
-            MattGuiNB.log("Reindexing tunes in database...");
+            Logger.log("Reindexing tunes in database...");
             String url = "" + MattProperties.getP("dburl");
             String user = "" + MattProperties.getP("dbuser");
             String password  = "" + MattProperties.getP("dbpassword");
@@ -122,26 +161,29 @@ public class CorpusIndex {
                 String fName = "" + MattProperties.instance().get("SearchCorpus") + System.getProperty("file.separator") + index.get(i).getFile();
                 File f = new File(fName);
                 TuneBook book = new TuneBook(f);
-
-                PreparedStatement ps = conn.prepareStatement("insert into tuneindex(file, x, notation) values(?, ?, ?)");
-                ps.setString(1, fName);
                 int x = index.get(i).getX();
-                ps.setInt(2, x);
-                ps.setString(3, book.getTuneNotation(x));
+                Tune tune = book.getTune(x);
+
+                PreparedStatement ps = conn.prepareStatement("insert into tuneindex(`file`, `name`, `x`, `notation`, `key`) values(?, ?, ?, ?, ?)");
+                ps.setString(1, fName);
+                ps.setString(2, tune.getTitles()[0]);
+                ps.setInt(3, x);
+                ps.setString(4, book.getTuneNotation(x));
+                ps.setString(5, index.get(i).getKey());
                 ps.executeUpdate();
                 ps.close();
             }
         }
         catch (Exception e)
         {
-            MattGuiNB.log("Could not update database");
+            Logger.log("Could not update database");
             e.printStackTrace();
         }
         finally
         {
             safeClose(conn, null, null);
         }
-        MattGuiNB.log("Done...");
+        Logger.log("Done...");
     }
     
     
@@ -153,7 +195,7 @@ public class CorpusIndex {
             public void run()
             {
                 ready = false;
-                MattGuiNB.instance().log("Reindexing files...");
+                Logger.log("Reindexing files...");
             
                 ABCFilter filter = new ABCFilter();
                 index.clear();
@@ -185,7 +227,7 @@ public class CorpusIndex {
                     e.printStackTrace();
                 }
                 ready = true;
-                MattGuiNB.log("Indexing complete");
+                Logger.log("Indexing complete");
             }            
         }.start();
     }
@@ -193,7 +235,7 @@ public class CorpusIndex {
     private void addTunes(File f, FileWriter fw) throws IOException
     {
         Tune tune = null;
-        MattGuiNB.log("Indexing tunebook: " + f.toString());
+        Logger.log("Indexing tunebook: " + f.toString());
         TuneBook tuneBook = new TuneBook(f);        
         int numTunes = tuneBook.size();
         
@@ -203,7 +245,7 @@ public class CorpusIndex {
             try
             {
                 tune = tuneBook.getTune(tuneRefs[i]);
-                MattGuiNB.log("Indexing tune: " + tune.getReferenceNumber() + " " + tune.getTitles()[0]);                   
+                Logger.log("Indexing tune: " + tune.getReferenceNumber() + " " + tune.getTitles()[0]);                   
                 String notation = tuneBook.getTuneNotation(tuneRefs[i]);
 
                 String key = notation;
@@ -249,11 +291,11 @@ public class CorpusIndex {
             {
                 if (tune != null)
                 {
-                        MattGuiNB.log("Problem indexing tune " + tune.getReferenceNumber() + " " + tune.getTitles()[0] + " or the one after it.");
+                        Logger.log("Problem indexing tune " + tune.getReferenceNumber() + " " + tune.getTitles()[0] + " or the one after it.");
                 }
                 else
                 {
-                    MattGuiNB.log("Problem indexing a tune");
+                    Logger.log("Problem indexing a tune");
                 }
                 e.printStackTrace();
             }
@@ -272,7 +314,7 @@ public class CorpusIndex {
 
         if (key.length() == 0)
         {
-            MattGuiNB.log("Could not index: " + title);
+            Logger.log("Could not index: " + title);
         }
         else
         {            

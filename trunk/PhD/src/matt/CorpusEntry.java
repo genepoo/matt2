@@ -16,6 +16,7 @@ public class CorpusEntry {
     private String file;
     private int x;
     private String title;
+    private int index;
 
     public CorpusEntry()
     {
@@ -88,5 +89,15 @@ public class CorpusEntry {
         sb.append(System.getProperty("line.separator"));
         
         return sb.toString();                
+    }
+
+    public int getIndex()
+    {
+        return index;
+    }
+
+    public void setIndex(int index)
+    {
+        this.index = index;
     }
 }

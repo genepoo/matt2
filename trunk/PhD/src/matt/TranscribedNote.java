@@ -19,7 +19,7 @@ public class TranscribedNote {
     private float start;
     private float duration;
     private float energy;
-    private String name;
+    private String name = "NA";
     
     /** Creates a new instance of TranscribedNote */
     public TranscribedNote(float frequency, float start, float duration) {
