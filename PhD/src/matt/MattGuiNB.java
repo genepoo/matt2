@@ -510,7 +510,7 @@ public class MattGuiNB extends javax.swing.JFrame {
                 Tune unOrnamentedTune = unOrnamentedBook.getTune(tuneRefs[i]);
                 Tune ornamentedTune = ornamentedBook.getTune(tuneRefs[i]);
                 
-                MattGuiNB.instance().log("Learning tune: " + unOrnamentedTune.getTitles()[0]);
+                Logger.log("Learning tune: " + unOrnamentedTune.getTitles()[0]);
                 
                 learner.setUnOrnamented(null);
                 learner.setUnOrnamented(unOrnamentedBook.getTuneNotation(tuneRefs[i]));

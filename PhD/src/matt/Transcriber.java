@@ -31,6 +31,7 @@ public class Transcriber {
     AudioInputStream audioInputStream;
     private float oldPowers[] = new float[numFilters];
     private float powers[] = new float[numFilters];
+    private String abcTranscription;
     
     private MattGuiNB mattGui;
     
@@ -113,7 +114,7 @@ public class Transcriber {
         }
         catch (Exception e)
         {
-            MattGuiNB.log("Could not load audio file " + inputFile);
+            Logger.log("Could not load audio file " + inputFile);
             e.printStackTrace();
         }
 	
@@ -253,8 +254,12 @@ public class Transcriber {
             abcTranscriber.makeScale("D", "Major");
             abcTranscriber.printScale();
             String notes = abcTranscriber.convertToABC();
-            MattGuiNB.instance().getTxtABC().setText("");
-            MattGuiNB.instance().getTxtABC().append(notes);
+            if (MattProperties.getP("mode").equals("client"))
+            {
+                MattGuiNB.instance().getTxtABC().setText("");
+                MattGuiNB.instance().getTxtABC().append(notes);
+            }
+            abcTranscription = notes;
             mattGui.log("Notes after onset post processing:");
             printNotes();
             mattGui.enableButtons(true);
@@ -318,11 +323,11 @@ public class Transcriber {
             int signalEnd = (int) odfSignal[i];
             int signalLength = signalEnd - signalStart;
             int smallestPowerOf2 = FastFourierTransform.smallestPowerOf2(signalLength);
-            MattGuiNB.instance().log("Note: " + (i -1));
+            Logger.log("Note: " + (i -1));
             ec.setStart(signalStart);
             ec.setEnd(signalEnd);
             float energy = ec.calculateAverageEnergy();
-            MattGuiNB.instance().log("Energy: " + ec.formatEnergy(energy));
+            Logger.log("Energy: " + ec.formatEnergy(energy));
             
             int fftFrameSize = (int) Math.pow(2, smallestPowerOf2);
             mattGui.log("Performing FFT " + (i - 1) + " on frame size " + fftFrameSize);
@@ -563,5 +568,15 @@ public class Transcriber {
     public void setSignal(float[] signal)
     {
         this.signal = signal;
-    }   
+    }
+
+    public String getAbcTranscription()
+    {
+        return abcTranscription;
+    }
+
+    public void setAbcTranscription(String abcTranscription)
+    {
+        this.abcTranscription = abcTranscription;
+    }
 }

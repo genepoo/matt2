@@ -112,8 +112,8 @@ public class Learner {
         boolean inBang = false;
         
         
-        // MattGuiNB.instance().log("Ornamented: " + getOrnamented());
-        // MattGuiNB.instance().log("Unornamented: " + getUnOrnamented());
+        // Logger.log("Ornamented: " + getOrnamented());
+        // Logger.log("Unornamented: " + getUnOrnamented());
      
         notes[ORNAMENTED] = new StringBuffer(stripWhiteSpace(stripComments(skipHeaders(ornamented))));
         // First check to see if there is a prefix
@@ -416,7 +416,7 @@ public class Learner {
             charPos[ORNAMENTED] ++;
         }
         
-        MattGuiNB.instance().log("I learned " + Artifact.nextId + " artifacts");
+        Logger.log("I learned " + Artifact.nextId + " artifacts");
         return learned.toString();        
     } 
     
@@ -656,7 +656,7 @@ public class Learner {
             if (artifact != Artifact.SAME_ARTIFACT)
             {
                 learned.add(newArtifact);
-                MattGuiNB.instance().log(newArtifact.toString());
+                Logger.log(newArtifact.toString());
             }
         }        
     }       

@@ -59,10 +59,19 @@ public class Matt {
         }
         
         Matt matt = Matt.instance();
-        matt.setUnOrnamentedTuneFile(PATH + "abc\\EamonnCotterUn.abc");
+        /*matt.setUnOrnamentedTuneFile(PATH + "abc\\EamonnCotterUn.abc");
         matt.setOrnamentedTuneFile(PATH + "abc\\EamonnCotter.abc");
         matt.setLearnedFile(PATH + "output/casebase.xml");
-        matt.showGui();
+         */
+        if (MattProperties.getP("mode").equals("server"))
+        {
+            MattServer ms = new MattServer();
+            ms.start();
+        }
+        else
+        {
+            matt.showGui();
+        }
     }
     
     public String getUnOrnamentedTuneFile() {

@@ -75,7 +75,7 @@ public class FinderThread extends Thread{
         boolean useProperED = Boolean.parseBoolean("" + MattProperties.getP("useProperED"));
         if (logSearches)
         {
-            MattGuiNB.log("Searching tune: " + entry.getX() + " " + entry.getTitle());
+            Logger.log("Searching tune: " + entry.getX() + " " + entry.getTitle());
         }
         try
         {
@@ -83,7 +83,7 @@ public class FinderThread extends Thread{
 
             if (logSearches)
             {
-                MattGuiNB.instance().log("Source: " + searchIn);
+                Logger.log("Source: " + searchIn);
             }
             // Edit distance search
             float bestEditdistance = Float.MAX_VALUE;
@@ -152,15 +152,16 @@ public class FinderThread extends Thread{
             match.setFileName(entry.getFile());
             match.setX(entry.getX());
             match.setTitle(entry.getTitle());
+            match.setIndex(entry.getIndex());
             pq.add(match);
             ABCMatch best = pq.peek();
             MattGuiNB.instance().setBestSoFar(best);
             if (logSearches)
-                MattGuiNB.instance().log("Best edit distance: " + bestEditdistance + " for search: " + bestBit);
+                Logger.log("Best edit distance: " + bestEditdistance + " for search: " + bestBit);
         }
         catch (Exception e)
         {
-            MattGuiNB.instance().log("Exception parsing tune: " + entry.getTitle());
+            Logger.log("Exception parsing tune: " + entry.getTitle());
             e.printStackTrace();
         }
     }

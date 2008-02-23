@@ -103,7 +103,7 @@ public class PitchDetector
                 averageDerivitive += der;
             }
             prev = f;
-            MattGuiNB.instance().log(f);
+            Logger.log(f);
         }
         if (peeks.size() > 1)
         {

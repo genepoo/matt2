@@ -128,14 +128,14 @@ public class ABCTranscriber {
         ec.setSignal(transcriber.getSignal());
         setMaxEnergy(ec.calculateMaxEnergy());
         setAverageEnergy(ec.calculateAverageEnergy());
-        MattGuiNB.instance().log("Max energy in signal: " + ec.formatEnergy(getMaxEnergy()));
-        MattGuiNB.instance().log("Average energy in signal: " + ec.formatEnergy(getAverageEnergy()));
+        Logger.log("Max energy in signal: " + ec.formatEnergy(getMaxEnergy()));
+        Logger.log("Average energy in signal: " + ec.formatEnergy(getAverageEnergy()));
         for (int i = 0 ; i < transcribedNotes.length ; i ++)
         {
             boolean found = false;
             if (isBreath(transcribedNotes[i]))
             {
-                MattGuiNB.instance().log("Breath detected at frame: " + i);
+                Logger.log("Breath detected at frame: " + i);
                 transcribedNotes[i].setName("z");
                 if (sb.length() != 0)
                 {                    
@@ -143,7 +143,7 @@ public class ABCTranscriber {
                 }
                 else
                 {
-                    MattGuiNB.instance().log("Ignoring breath before opening note");
+                    Logger.log("Ignoring breath before opening note");
                 }
             }
             else
@@ -186,7 +186,7 @@ public class ABCTranscriber {
                         // Quantise at dottet crochets 
                         if (nearestMultiple > 3)
                         {
-                            MattGuiNB.log("Note of length " + nearestMultiple + " detected. Quantising at 3");
+                            Logger.log("Note of length " + nearestMultiple + " detected. Quantising at 3");
                             nearestMultiple = 3;
                         }
                         sb.append("" + nearestMultiple);
@@ -200,7 +200,7 @@ public class ABCTranscriber {
             }
             else
             {
-                MattGuiNB.instance().log("Ignoring: " + transcribedNotes[i]);                
+                Logger.log("Ignoring: " + transcribedNotes[i]);                
             }
         }
         // Now remove z's at the end
@@ -217,12 +217,12 @@ public class ABCTranscriber {
         
         if (note.getEnergy() < threshold)
         {
-           MattGuiNB.instance().log(note.getEnergy()  + " energy is less than the threshold of " + threshold);
+           Logger.log(note.getEnergy()  + " energy is less than the threshold of " + threshold);
            return true;
         }
         if (note.getFrequency() < 100.0f)
         {
-            MattGuiNB.instance().log(note.getFrequency() + " frequency is less than 100hz");
+            Logger.log(note.getFrequency() + " frequency is less than 100hz");
            return true;
         }
         
@@ -241,7 +241,7 @@ public class ABCTranscriber {
     {
         for (int i = 0 ; i < noteNames.length; i ++)
         {
-            MattGuiNB.instance().log(noteNames[i] + ": " + knownFrequencies[i]);
+            Logger.log(noteNames[i] + ": " + knownFrequencies[i]);
         }
     }
     
@@ -302,7 +302,7 @@ public class ABCTranscriber {
         }
         
         pitchModel = (flute >= whistle) ? pitch_model.FLUTE : pitch_model.WHISTLE;
-        MattGuiNB.log("Using " + ((pitchModel == pitch_model.FLUTE) ? "flute " : "whistle ") + " pitch model");
+        Logger.log("Using " + ((pitchModel == pitch_model.FLUTE) ? "flute " : "whistle ") + " pitch model");
     }
     
     public static void main(String[] args)

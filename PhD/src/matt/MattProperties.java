@@ -25,9 +25,9 @@ public class MattProperties extends Properties {
     private MattProperties() {
     }
     
-    public static Object getP(String key)
+    public static String getP(String key)
     {
-        return instance().get(key);
+        return "" + instance().get(key);
     }
     
     public static MattProperties instance()
@@ -37,6 +37,11 @@ public class MattProperties extends Properties {
             instance = new MattProperties();
             propertiesLoader = new PropertiesLoader();
             propertiesLoader.start();
+            try 
+            {
+                Thread.sleep(1000);
+            }
+            catch(Exception e) {}
         }
         return instance;
     }    
@@ -49,7 +54,7 @@ public class MattProperties extends Properties {
         }
         catch (Exception e)
         {
-            MattGuiNB.log("Problem storing properties");
+            Logger.log("Problem storing properties");
             e.printStackTrace();            
         }
     }
@@ -68,13 +73,13 @@ class PropertiesLoader extends Thread
             {
                 try
                 {
-                    MattGuiNB.instance().log("Reloading properties");
+                    Logger.log("Reloading properties");
                     MattProperties.instance().load(new FileReader(f));
-                    MattGuiNB.instance().log(MattProperties.instance());
+                    Logger.log(MattProperties.instance());
                 }
                 catch (Exception e)
                 {
-                    MattGuiNB.instance().log("Could not load matt.properties file");
+                    Logger.log("Could not load matt.properties file");
                     e.printStackTrace();
                 }
                 this.lastModified = lastModified;
