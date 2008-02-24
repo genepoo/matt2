@@ -39,7 +39,7 @@ public class MattServer extends Thread {
                     BatchJob job = new BatchJob();
                     job.setJobId(results.getLong("id"));
                     job.setServerMode(true);
-                    String fileName = MattProperties.getP("tunometerPath") + System.getProperty("file.separator") + job.getJobId() + ".wav";
+                    String fileName = MattProperties.getP("tunometerPath") + System.getProperty("file.separator") + job.getJobId() + ".zip";
                     job.setFolder(new File(fileName));
                     job.start();
                 }
