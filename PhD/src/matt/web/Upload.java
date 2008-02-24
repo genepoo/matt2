@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import javax.sound.sampled.*;
+import java.util.zip.*;
 
 /**
  *
@@ -53,14 +54,18 @@ public class Upload {
             dos.writeBytes(twoHyphens + boundary + lineEnd);
             dos.writeBytes("Content-Disposition: form-data; name=\"wav\";" + " filename=\"" + exsistingFileName + "\"" + lineEnd);
             dos.writeBytes(lineEnd);
-            // create a buffer of maximum size
+            // Send upa  zip file
+            ZipOutputStream out = new ZipOutputStream(dos);
+            out.setLevel(9);
+            out.putNextEntry(new ZipEntry(exsistingFileName));            
             bytesAvailable = is.available();
-            bufferSize = Math.min(bytesAvailable, maxBufferSize);
-            buffer = new byte[bufferSize];
+            AudioSystem.write(is, fileType, out);
 
-            if (AudioSystem.write(is, fileType, dos) == -1) {
+            /*
+             (if (AudioSystem.write(is, fileType, dos) == -1) {
                 throw new IOException("Problems writing to file");                
             }
+             */ 
             /*
              // read file and write it into form...
             bytesRead = is.read(buffer, 0, bufferSize);
@@ -72,7 +77,9 @@ public class Upload {
                 bytesRead = is.read(buffer, 0, bufferSize);
             }
              */
-
+            out.flush();
+            out.finish();
+                    
             // send multipart form data necesssary after file data...
             dos.writeBytes(lineEnd);
             dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
@@ -99,6 +106,7 @@ public class Upload {
                 response.append(str);
             }
             inStream.close();
+            System.out.println("Response: " + response);
         } catch (IOException ioex)
         {
             System.out.println("From (ServerResponse): " + ioex);
