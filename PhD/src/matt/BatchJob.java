@@ -76,6 +76,12 @@ public class BatchJob extends Thread
             {
                 files = folder.listFiles(filter);
             }
+            if (folder.toString().endsWith(".zip"))
+            {
+                UnZipper.unzip("" + folder);
+                folder = new File(UnZipper.getPath());
+                files = folder.listFiles(filter);
+            }            
             else
             {
                 files = new File[1];

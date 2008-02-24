@@ -693,8 +693,8 @@ public class MattGuiNB extends javax.swing.JFrame {
     
     public static void log(Object s)
     {
-        _instance.txtLog.append(s + System.getProperty("line.separator"));
-        _instance.txtLog.setCaretPosition(_instance.txtLog.getText().length());
+        instance().getTxtLog().append(s + System.getProperty("line.separator"));
+        instance().getTxtLog().setCaretPosition(_instance.txtLog.getText().length());
     }
     
     public static MattGuiNB instance()
@@ -751,5 +751,15 @@ public class MattGuiNB extends javax.swing.JFrame {
     public void setProgressBar(javax.swing.JProgressBar progressBar)
     {
         this.progressBar = progressBar;
+    }
+
+    public javax.swing.JTextArea getTxtLog()
+    {
+        return txtLog;
+    }
+
+    public void setTxtLog(javax.swing.JTextArea txtLog)
+    {
+        this.txtLog = txtLog;
     }
 }

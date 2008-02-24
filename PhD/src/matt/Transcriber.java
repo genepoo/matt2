@@ -13,6 +13,7 @@ import javax.sound.sampled.*;
 import java.io.*;
 import java.awt.*;
 import java.util.*;
+import java.util.zip.ZipInputStream;
 /**
  *
  * @author bduggan
@@ -84,7 +85,7 @@ public class Transcriber {
         {
             File soundFile = new File(inputFile);
             mattGui.log("Processing: " + soundFile.getName());
-            
+
             audioInputStream = null;
             audioInputStream = AudioSystem.getAudioInputStream(soundFile);            
             AudioFormat	format = audioInputStream.getFormat();

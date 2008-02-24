@@ -6,7 +6,7 @@ class WavFilter extends javax.swing.filechooser.FileFilter implements FilenameFi
 {
       public boolean accept(File dir, String name) 
       {
-            return (name.contains(".wav") || name.contains(".WAV"));
+            return (name.contains(".wav") || name.contains(".WAV") || name.contains(".mp3") || name.contains(".MP3"));
       }        
 
     public boolean accept(File f)
