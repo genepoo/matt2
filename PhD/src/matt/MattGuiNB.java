@@ -15,6 +15,7 @@ import java.awt.*;
 import javax.swing.table.*;
 import java.util.*;
 import abc.notation.Tune;
+import javax.swing.plaf.ColorUIResource;
 
 
 /**
@@ -23,19 +24,36 @@ import abc.notation.Tune;
  */
 public class MattGuiNB extends javax.swing.JFrame {
     
+    private Transcriber transcriber = null;
+    private BatchJob batchJob = null;
+    private Matt matt;
+    private static MattGuiNB _instance;
+    
+    private Graph frameGraph  = new Graph();
+    private Graph fftGraph = new Graph();
+    private Graph signalGraph  = new Graph();
+    private Graph odfGraph = new Graph();
+    private Vector tuneMatches = new Vector();
+    
+    private Vector<Graph> fftGraphs = new Vector(); 
+    private TunePlayer tunePlayer = new TunePlayer();
+    ABCFinder finder = null;
+    ABCMatch best = null;
+    AudioCapture audioCapture = new AudioCapture();
+    
     /** Creates new form MattGuiNB */
     private MattGuiNB() {
         initComponents();
         
         // Add the graphs...
         frameGraph.setBounds(10,10,380,120);
-        fftTabs.setBounds(400,10,380,120);
+        fftGraph.setBounds(400,10,380,120);
         signalGraph.setBounds(10,140, 770, 120);        
         odfGraph.setBounds(10,270, 770, 120);
         // odfThresholdGraph.setBounds(10,640, 1000, 200);
                 
         getContentPane().add(frameGraph);
-        getContentPane().add(fftTabs);
+        getContentPane().add(fftGraph);
         getContentPane().add(signalGraph);
         getContentPane().add(odfGraph);
         // getContentPane().add(odfThresholdGraph);
@@ -43,6 +61,7 @@ public class MattGuiNB extends javax.swing.JFrame {
         frameGraph.setBackground(Color.CYAN);
         signalGraph.setBackground(Color.GREEN);
         odfGraph.setBackground(Color.YELLOW);
+        fftGraph.setBackground(Color.WHITE);
         center(this);
         tunePlayer.start();
         MattProperties.instance();
@@ -73,15 +92,16 @@ public class MattGuiNB extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         tblMatches = new javax.swing.JTable();
         btnQuit = new javax.swing.JButton();
-        Learn = new javax.swing.JButton();
         btnAnalysed = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         txtBest = new javax.swing.JLabel();
         btnBest = new javax.swing.JButton();
         btnReindex = new javax.swing.JButton();
         btnBatch = new javax.swing.JButton();
-        btnTranscribeAndFind = new javax.swing.JButton();
         progressBar = new javax.swing.JProgressBar();
+        btnLiveQuery = new javax.swing.JButton();
+        cbSelectFFT = new javax.swing.JComboBox();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBounds(new java.awt.Rectangle(0, 0, 1, 1));
@@ -189,13 +209,6 @@ public class MattGuiNB extends javax.swing.JFrame {
             }
         });
 
-        Learn.setText("Learn");
-        Learn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                LearnActionPerformed(evt);
-            }
-        });
-
         btnAnalysed.setText("Analysed");
         btnAnalysed.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -226,25 +239,43 @@ public class MattGuiNB extends javax.swing.JFrame {
             }
         });
 
-        btnTranscribeAndFind.setText("Trans & Find");
-        btnTranscribeAndFind.addActionListener(new java.awt.event.ActionListener() {
+        btnLiveQuery.setText("Live Query");
+        btnLiveQuery.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTranscribeAndFindActionPerformed(evt);
+                btnLiveQueryActionPerformed(evt);
             }
         });
+
+        cbSelectFFT.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbSelectFFTItemStateChanged(evt);
+            }
+        });
+        cbSelectFFT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbSelectFFTActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Graph:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
-                            .addComponent(spLog, javax.swing.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE)
-                            .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(spLog, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel1)
+                                .addGap(18, 18, 18)
+                                .addComponent(cbSelectFFT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -253,11 +284,11 @@ public class MattGuiNB extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap())
+                        .addGap(103, 103, 103))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnBatch, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
-                            .addComponent(btnTranscribeAndFind, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE))
+                            .addComponent(btnLiveQuery, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
+                            .addComponent(btnBatch, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(btnChooseFile, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
@@ -269,7 +300,7 @@ public class MattGuiNB extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btnAnalysed, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnPlayOriginal, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE))
+                            .addComponent(btnPlayOriginal, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnPlayFound)
@@ -277,20 +308,18 @@ public class MattGuiNB extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btnClearLog, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnBest, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 3, Short.MAX_VALUE)
+                            .addComponent(btnBest, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(3, 3, 3)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(4, 4, 4)
-                                .addComponent(btnReindex)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(Learn, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnReindex))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGap(19, 19, 19)
-                                .addComponent(txtBest, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(42, 42, 42)
-                        .addComponent(jLabel6)
-                        .addGap(501, 501, 501))))
+                                .addComponent(txtBest, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(42, 42, 42)
+                .addComponent(jLabel6)
+                .addGap(501, 501, 501))
         );
 
         layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnChooseFile, btnFind, btnPlayFound, btnPlayOriginal, btnPlayTranscription, btnTranscribe});
@@ -298,7 +327,11 @@ public class MattGuiNB extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(394, 394, 394)
+                .addContainerGap(644, Short.MAX_VALUE)
+                .addComponent(jLabel6)
+                .addGap(186, 186, 186))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(392, 392, 392)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel2)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -308,38 +341,35 @@ public class MattGuiNB extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, 0, 0, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(spLog, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(cbSelectFFT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel1)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btnFind)
-                                .addComponent(btnPlayOriginal)
-                                .addComponent(btnTranscribeAndFind)
-                                .addComponent(btnChooseFile, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnPlayFound)
-                                .addComponent(btnClearLog))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnFind)
+                            .addComponent(btnPlayOriginal)
+                            .addComponent(btnChooseFile, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnPlayFound)
+                            .addComponent(btnClearLog)
+                            .addComponent(btnBatch))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btnQuit)
-                                .addComponent(btnTranscribe)
-                                .addComponent(btnAnalysed)
-                                .addComponent(btnPlayTranscription, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnBest)
-                                .addComponent(Learn)
-                                .addComponent(btnReindex))
-                            .addComponent(btnBatch)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnQuit)
+                            .addComponent(btnTranscribe)
+                            .addComponent(btnAnalysed)
+                            .addComponent(btnPlayTranscription, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnBest)
+                            .addComponent(btnReindex)
+                            .addComponent(btnLiveQuery)))
                     .addComponent(txtBest))
-                .addGap(149, 149, 149))
+                .addGap(171, 171, 171))
         );
 
         pack();
@@ -493,41 +523,6 @@ public class MattGuiNB extends javax.swing.JFrame {
         CorpusIndex.instance().reindex();
     }//GEN-LAST:event_btnReindexActionPerformed
 
-    private void LearnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LearnActionPerformed
-        try {
-            File unOrnamentedFile = new File(Matt.instance().getUnOrnamentedTuneFile());
-            File ornamentedFile = new File(Matt.instance().getOrnamentedTuneFile());
-            TuneBook unOrnamentedBook = new TuneBook(unOrnamentedFile);
-            TuneBook ornamentedBook = new TuneBook(ornamentedFile);
-            
-            // Get the number of tunes to learn from
-            int numTunes = unOrnamentedBook.size();
-            
-            int[] tuneRefs = unOrnamentedBook.getReferenceNumbers();
-            String learned = null;
-            for (int i = 0 ; i < numTunes ; i ++) {
-                Learner learner = new Learner();
-                Tune unOrnamentedTune = unOrnamentedBook.getTune(tuneRefs[i]);
-                Tune ornamentedTune = ornamentedBook.getTune(tuneRefs[i]);
-                
-                Logger.log("Learning tune: " + unOrnamentedTune.getTitles()[0]);
-                
-                learner.setUnOrnamented(null);
-                learner.setUnOrnamented(unOrnamentedBook.getTuneNotation(tuneRefs[i]));
-                learner.setOrnamented(ornamentedBook.getTuneNotation(tuneRefs[i]));
-                learner.setTuneName(unOrnamentedTune.getTitles()[0]);
-                learner.setMusician(ornamentedTune.getOrigin());
-                
-                learner.setKey(unOrnamentedTune.getKey().toLitteralNotation());
-                learner.setRhythm(unOrnamentedTune.getRhythm());
-                learner.learn();
-            }
-        } catch (Exception e) {
-            System.out.println("Could not learn");
-            e.printStackTrace();
-        }
-    }//GEN-LAST:event_LearnActionPerformed
-
     private void btnBatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatchActionPerformed
         if (batchJob!= null && batchJob.isRunning())
         {
@@ -543,25 +538,46 @@ public class MattGuiNB extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnBatchActionPerformed
 
-    private void btnTranscribeAndFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTranscribeAndFindActionPerformed
-        if (batchJob!= null && batchJob.isRunning())
+    private void cbSelectFFTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbSelectFFTActionPerformed
+        
+    }//GEN-LAST:event_cbSelectFFTActionPerformed
+
+    private void cbSelectFFTItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbSelectFFTItemStateChanged
+       int i = cbSelectFFT.getSelectedIndex();
+       if (i == -1 || (fftGraphs.size() == 0))
+       {
+           return;
+       }       
+         getContentPane().remove(fftGraph);
+        fftGraph = fftGraphs.elementAt(i);
+        fftGraph.setBounds(400,10,380,120);
+        getContentPane().add(fftGraph);
+        fftGraph.repaint();
+    }//GEN-LAST:event_cbSelectFFTItemStateChanged
+
+    private void btnLiveQueryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLiveQueryActionPerformed
+        if (btnLiveQuery.getText().equals("Live Query"))
         {
-            batchJob.setRunning(false);
+            btnLiveQuery.setText("Recording...");
+            audioCapture.start();            
         }
         else
         {
-            JFileChooser fc = new JFileChooser();
-            fc.setFileFilter(new WavFilter());            
-            fc.setCurrentDirectory(new File("" + MattProperties.instance().get("BatchPath")));
-            int returnVal = fc.showOpenDialog(MattGuiNB.this);
-            if (returnVal == JFileChooser.APPROVE_OPTION)
+            audioCapture.stop();
+            btnLiveQuery.setText("Live Query");
+            try 
             {
-                batchJob = new BatchJob();
-                batchJob.setFolder(fc.getSelectedFile());
-                batchJob.start();                
-            }            
+                Thread.sleep(1000);
+            }
+            catch (Exception e)
+            {
+                
+            }
+            transcriber.setInputFile(audioCapture.getFileName());
+            transcriber.loadAudio();
         }
-    }//GEN-LAST:event_btnTranscribeAndFindActionPerformed
+        
+    }//GEN-LAST:event_btnLiveQueryActionPerformed
     
     /**
      * @param args the command line arguments
@@ -575,20 +591,21 @@ public class MattGuiNB extends javax.swing.JFrame {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton Learn;
     private javax.swing.JButton btnAnalysed;
     private javax.swing.JButton btnBatch;
     private javax.swing.JButton btnBest;
     private javax.swing.JButton btnChooseFile;
     private javax.swing.JButton btnClearLog;
     private javax.swing.JButton btnFind;
+    private javax.swing.JButton btnLiveQuery;
     private javax.swing.JButton btnPlayFound;
     private javax.swing.JButton btnPlayOriginal;
     private javax.swing.JButton btnPlayTranscription;
     private javax.swing.JButton btnQuit;
     private javax.swing.JButton btnReindex;
     private javax.swing.JButton btnTranscribe;
-    private javax.swing.JButton btnTranscribeAndFind;
+    private javax.swing.JComboBox cbSelectFFT;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -603,22 +620,34 @@ public class MattGuiNB extends javax.swing.JFrame {
     private javax.swing.JTextArea txtLog;
     // End of variables declaration//GEN-END:variables
     
-    private Transcriber transcriber = null;
-    private BatchJob batchJob = null;
-    private Matt matt;
-    private static MattGuiNB _instance;
     
-    private Graph frameGraph  = new Graph();
-    private JTabbedPane fftTabs = new JTabbedPane();
-    private Graph signalGraph  = new Graph();
-    private Graph odfGraph = new Graph();
-    private Vector tuneMatches = new Vector();
     
-    private TunePlayer tunePlayer = new TunePlayer();
-    ABCFinder finder = null;
-    ABCMatch best = null;
-    public JTabbedPane getFftTabs() {
-        return fftTabs;
+    public void addFFTGraph(Graph graph, String title)
+    {
+        DefaultComboBoxModel model = (DefaultComboBoxModel) cbSelectFFT.getModel();
+        model.addElement("" + title);
+        fftGraphs.add(graph);
+        getContentPane().remove(fftGraph);
+        graph.setBounds(400,10,380,120);
+        /*
+        int r = (int) (Math.random() * 255.0f);
+        int g = (int) (Math.random() * 255.0f);
+        int b = (int) (Math.random() * 255.0f);
+        Color c = new Color(r, g, b);
+        graph.setBackground(c);
+        */
+        graph.setBackground(Color.WHITE);
+        fftGraph = graph;
+        getContentPane().add(graph);
+        graph.repaint();       
+    }
+    
+    public void clearFFTGraphs()
+    {
+        DefaultComboBoxModel model = (DefaultComboBoxModel) cbSelectFFT.getModel();
+        model.removeAllElements();
+        fftGraphs.removeAllElements();
+        fftGraph.getDefaultSeries().clear();
     }
     
     public void enableButtons(boolean enabled)
@@ -639,7 +668,7 @@ public class MattGuiNB extends javax.swing.JFrame {
         signalGraph.clear();
         odfGraph.clear();
         clearMatches();
-        fftTabs.removeAll();
+        getFftGraph().removeAll();
         txtABC.setText("");
         txtLog.setText("");
         txtBest.setText("");
@@ -761,5 +790,25 @@ public class MattGuiNB extends javax.swing.JFrame {
     public void setTxtLog(javax.swing.JTextArea txtLog)
     {
         this.txtLog = txtLog;
+    }
+
+    public Graph getFftGraph()
+    {
+        return fftGraph;
+    }
+
+    public void setFftGraph(Graph fftGraph)
+    {
+        this.fftGraph = fftGraph;
+    }
+
+    public Vector<Graph> getFftGraphs()
+    {
+        return fftGraphs;
+    }
+
+    public void setFftGraphs(Vector<Graph> fftGraphs)
+    {
+        this.fftGraphs = fftGraphs;
     }
 }

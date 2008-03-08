@@ -79,7 +79,7 @@ public class MattABCTools {
                 {
                     start += 2;
                 }
-                if ((notes.length() > end + 2) && Character.isDigit(notes.charAt(end + 2)))
+                if ((retValue.length() > end + 2) && Character.isDigit(retValue.charAt(end + 2)))
                 {
                     StringBuffer expanded = new StringBuffer();
                     int normalPart = retValue.lastIndexOf("|", end);
@@ -256,13 +256,45 @@ public class MattABCTools {
     
     public static void main(String[] args)
     {
-        // String test = "eAAG AGEF|G2AF GED2|cBcd eged|cdef ged2|eAAG AGEF|G2AF GED2|cBcd eged|cABG A2Bd:||:eaab agef|g2af gedB|cBcd (3efg ed|cdef ged2|eaab agef|g2af gedB|cBcd eged|cABG A2Bd:|";
-        String test = "D(3B,DE ~G3A|B2dB ABGA|BAGE DB,DE|G2BG ABGE|DB,DE ~G3A|B2dB ABGA|BAGE G2BG|1 ABGE ~G3E:|2 ABGE ~G3A|||:BABd edeg|a2ge g2eg|a2ge ~g3e|dedB A2GA|BABd edeg|bage g2eg|a2ge dBGB|ABGE ~G3A:||:BG~G2 DGBd|eg~g2 egdc|BG~G2 DGBG|AGAB A2GA|BG~G2 DGBd|eg~g2 dega|bgag edBG|1 ABGE ~G3A:|2 ABGE ~G3E||";        
-        test = stripComments(test);
-        test = stripWhiteSpace(test);
-        test = removeTripletMarks(test);
+        String test = "";
         
+        /*
+         test += "Beed e2BA|GBAF GFEF|Dddc d2AG|FAGE FEDF|";        
+        test += "Eeed efge|fedf e2BA|GABG FGAF|BGAF GEE2:| ";
+        test += "|:gfef gebe|gebe gfec|d2fd Adfd|cdAG FDEF|";
+        test += "GABG FGAF|E2ef gfed|BcdB A2FA|BGAF GEE2:|";
+        test += "|:Beed e2BA|GBAF GFEF|Dddc d2AG|FAGE FEDF|";
+        test += "Eeed efge|fedf e2BA|GABG FGAF|BGAF GEE2:|";
+        test += "|:gfef gebe|gebe gfec|d2fd Adfd|cdAG FDEF|";
+        test += "GABG FGAF|E2ef gfed|BcdB A2FA|BGAF GEE2:|";
+        */
+        /*test += "~G3A Bcdg|eB~B2 egdB|GFGA BcdB|AcBA GEDE|";
+        test += "GFGA Bcdg|eB~B2 d2ef|g2af gedB|1 AcBA GEDE:|2 AcBA GED2||";        
+        test += "|:gfga gedg|eB~B2 d2ef|g2af gedB|AcBA GED2|";
+        test += "~g3a gedg|eB~B2 d2ef|gbaf gedB|1 AcBA GED2:|2 AcBA GEDE||";
+        
+        test += "~G3A Bd~d2|eB~B2 eBdB|~G3A B2dB|AcBA GEDE|";
+        test += "~G3A ~B3d|eB~B2 d2ef|gbaf gedB|1 AcBA GEDE:|2 AcBA GED2||";
+        test += "|:~g3a gfed|eB~B2 d2ef|gfga gedB|AcBA GED2|";
+        test += "gfga gfed|eB~B2 d2ef|g2af gedB|1 AcBA GED2:|2 AcBA GEDE||";
+        */
+         test += "A2FA df~f2|dfef dB~B2|A2FA dffe|dBAG FDDB|";
+        test += "A2FA df~f2|afef dB~B2|A2FA dffe|dBAG FDD2||";
+        test += "|:a2~a2 afdf|afef dB~B2|fbba bafa|bfaf feef|";
+        test += "bf~f2 af~f2|afef dB~B2|A2FA dffe|1 dBAF ADD2:|2 dBAF ADDB||";
+        test += "A2FA dfef|df (3efe dB~B2|A2FA defe|dBAG FD~D2|";
+        test += "A2FA df~f2|afgf efdB|(3ABA FA defe|dBAG FD~D2||";
+        test += "|:~a3z afdf|afef dB~B2|fbba babc'|d'c'ba feef|";
+        test += "bf~f2 af~f2|afef efdB|(3ABA FA defe|1 dBAF ADD2:|2 dBAF ADD2||";
+        
+        test = MattABCTools.stripComments(test);
+        test = MattABCTools.stripWhiteSpace(test);
+        test = MattABCTools.expandLongNotes(test);
+        test = MattABCTools.expandParts(test);
+        test = MattABCTools.stripBarDivisions(test);
+        test = MattABCTools.removeTripletMarks(test);        
+        test = test.toUpperCase();
+
         System.out.println(test);
-        System.out.println("Results: " + expandParts(test));        
     }
 }

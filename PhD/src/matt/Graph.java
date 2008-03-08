@@ -26,7 +26,7 @@ public class Graph extends javax.swing.JPanel {
     {        
        
         super.paint(g);
-        if (MattProperties.instance().getP("mode").equals("server"))
+        if (MattProperties.instance().getP("mode").equals("server") || MattProperties.instance().getP("drawGraphs").equals("false"))
         {
             return;
         }
@@ -68,6 +68,11 @@ public class Graph extends javax.swing.JPanel {
     public void addSeries(Series series)
     {
         this.series.add(series);
+    }
+    
+    public void removeAllSeries()
+    {
+        series.removeAllElements();
     }
 
 }

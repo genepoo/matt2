@@ -95,11 +95,12 @@ public class FinderThread extends Thread{
             {
                 while (toFind.length() > nlSearchIn.length())
                 {
+                    MattGuiNB.log("Expanding: " + nlSearchIn);
                     needsExpansion = true;
                     nlSearchIn.append(searchIn);
                 }
             }
-            if (needsExpansion || ! useSlidingWindows)
+            if (needsExpansion)
             {
                 nlSearchIn.setLength(toFind.length());
             }
@@ -113,7 +114,7 @@ public class FinderThread extends Thread{
                 }
                 else
                 {
-                    ed = EditDistance.editDistance(toFind, "" + nlSearchIn);
+                    ed = EditDistance.minEdSubString(toFind, "" + nlSearchIn);
                 }
                 if (ed < bestEditdistance)
                 {

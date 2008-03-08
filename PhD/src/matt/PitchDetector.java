@@ -70,7 +70,7 @@ public class PitchDetector
         
         int pitchPeek = Integer.parseInt("" + MattProperties.instance().get("pitchPeek"));
         
-        peeks = PeekCalculator.calculatePeeks(fftMag, pitchPeek, fftMag.length / 2, 0.5f);
+        peeks = PeakCalculator.calculatePeaks(fftMag, pitchPeek, fftMag.length / 2, 0.5f);
         
         float[] intervals = new float[peeks.size() -1];
         for (int i = 1 ; i < peeks.size() ; i ++)
@@ -84,9 +84,9 @@ public class PitchDetector
     
     public float maxBryanFrequency(float[] fftMag, int sampleRate, int frameSize)
     {
-        PeekCalculator pk = new PeekCalculator();        
+        PeakCalculator pk = new PeakCalculator();        
         int pitchPeek = Integer.parseInt("" + MattProperties.instance().get("pitchPeek"));
-        Vector peeks = PeekCalculator.calculatePeeks(fftMag, pitchPeek , fftMag.length, 0.2f);
+        Vector peeks = PeakCalculator.calculatePeaks(fftMag, pitchPeek , fftMag.length, 0.2f);
                 
         float binWidth = (float) sampleRate / (float) frameSize;
         
