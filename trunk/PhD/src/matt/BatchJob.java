@@ -38,7 +38,7 @@ public class BatchJob extends Thread
     public boolean chooseFolder()
     {
         JFileChooser fc = new JFileChooser();
-        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         fc.setSelectedFile(new File("" + MattProperties.instance().get("BatchPath")));
         int returnVal = fc.showOpenDialog(MattGuiNB.instance());
         if (returnVal == JFileChooser.APPROVE_OPTION)
@@ -76,7 +76,7 @@ public class BatchJob extends Thread
             {
                 files = folder.listFiles(filter);
             }
-            if (folder.toString().endsWith(".zip"))
+            else if (folder.toString().endsWith(".zip"))
             {
                 UnZipper.unzip("" + folder);
                 folder = new File(UnZipper.getPath());
@@ -127,23 +127,26 @@ public class BatchJob extends Thread
                 for (int j = 0 ; j < 10 ; j ++)
                 {                    
                     ABCMatch match = matches.poll();
-                    result.append(match.getTitle());
-                    result.append(delim);
-                    result.append(match.getX());
-                    result.append(delim);                   
-                    result.append(match.getEditDistance());
-                    result.append(delim);                   
-                    if (serverMode)
+                    if (match != null)
                     {
-                        conn = DBHelper.getConnection();
-                        String sql = "INSERT INTO `tunometer`.`match` (`jobId` ,`tuneId` ,`ed`, `correct`) VALUES (?, ?, ?, ?)";
-                        PreparedStatement s = conn.prepareStatement(sql);
-                        s.setLong(1, jobId);
-                        s.setLong(2, match.getIndex());
-                        s.setFloat(3, match.getEditDistance());                        
-                        s.setBoolean(4, false);                        
-                        s.execute();
-                        DBHelper.safeClose(conn, s, null);
+                        result.append(match.getTitle());
+                        result.append(delim);
+                        result.append(match.getX());
+                        result.append(delim);                   
+                        result.append(match.getEditDistance());
+                        result.append(delim);                   
+                        if (serverMode)
+                        {
+                            conn = DBHelper.getConnection();
+                            String sql = "INSERT INTO `tunometer`.`match` (`jobId` ,`tuneId` ,`ed`, `correct`) VALUES (?, ?, ?, ?)";
+                            PreparedStatement s = conn.prepareStatement(sql);
+                            s.setLong(1, jobId);
+                            s.setLong(2, match.getIndex());
+                            s.setFloat(3, match.getEditDistance());                        
+                            s.setBoolean(4, false);                        
+                            s.execute();
+                            DBHelper.safeClose(conn, s, null);
+                        }
                     }
                 }
                 results.log(result.toString());
@@ -175,7 +178,7 @@ public class BatchJob extends Thread
 
     public boolean isRunning()
     {
-        return running || finder.isRunning();
+        return running || ((finder != null) && finder.isRunning());
     }
 
     public void setRunning(boolean running)

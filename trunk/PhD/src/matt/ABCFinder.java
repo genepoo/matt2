@@ -19,6 +19,7 @@ import abc.parser.TuneBook;
  */
 public class ABCFinder extends Thread{
     FinderThread[] finderThreads;
+    SetFinder setFinder;
     private boolean running = false;
     private String startIn;
     private String searchString;
@@ -73,57 +74,66 @@ public class ABCFinder extends Thread{
         toFind = toFind.toUpperCase();
         Logger.log("Target: " + toFind);
         
-        MattGuiNB.instance().clearMatches();
-        final CorpusIndex index = CorpusIndex.instance();
-        index.reset();
-        int numThreads = Integer.parseInt("" + MattProperties.getP("numThreads"));
-        
-        finderThreads = new FinderThread[numThreads];
-        Object lock = new Object();
-        Logger.log("Staring " + numThreads + " finder threads");
-        MattGuiNB.instance().getProgressBar().setValue(0);
-        MattGuiNB.instance().getProgressBar().setMaximum(CorpusIndex.instance().size());
-        for (int i = 0 ; i < numThreads; i ++)
+        if (SetFinder.isSet(toFind))
         {
-            finderThreads[i] = new FinderThread(startIn, toFind, pq, lock);
-            finderThreads[i].start();
+            Logger.log("I think it's a set, therefore using the set finder algorithm");
+            setFinder = new SetFinder();
+            setFinder.setToFind(toFind);
+            setFinder.start();
+            return null;
         }
-        
-        boolean stillRunning = true;
-        while (stillRunning)
+        else
         {
-            synchronized(lock)
-            {
-                try
-                {
-                    lock.wait(500);
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
+            MattGuiNB.instance().clearMatches();
+            final CorpusIndex index = CorpusIndex.instance();
+            index.reset();
+            int numThreads = Integer.parseInt("" + MattProperties.getP("numThreads"));
 
-                stillRunning = false;
-                for (int i = 0 ; i < finderThreads.length ; i ++)
+            finderThreads = new FinderThread[numThreads];
+            Object lock = new Object();
+            Logger.log("Staring " + numThreads + " finder threads");
+            MattGuiNB.instance().getProgressBar().setValue(0);
+            MattGuiNB.instance().getProgressBar().setMaximum(CorpusIndex.instance().size());
+            for (int i = 0 ; i < numThreads; i ++)
+            {
+                finderThreads[i] = new FinderThread(startIn, toFind, pq, lock);
+                finderThreads[i].start();
+            }
+
+            boolean stillRunning = true;
+            while (stillRunning)
+            {
+                synchronized(lock)
                 {
-                    if (finderThreads[i].isRunning())
+                    try
                     {
-                        stillRunning = true;
+                        lock.wait(500);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    stillRunning = false;
+                    for (int i = 0 ; i < finderThreads.length ; i ++)
+                    {
+                        if (finderThreads[i].isRunning())
+                        {
+                            stillRunning = true;
+                        }
                     }
                 }
             }
+            printTop(10);        
+            ABCMatch best = pq.peek();
+            MattGuiNB.instance().setBestSoFar(best);
+            Logger.log("Searched " + CorpusIndex.instance().size() + " tunes");
+            running = false;
+            return null;
         }
-        printTop(10);        
-        ABCMatch best = pq.peek();
-        MattGuiNB.instance().setBestSoFar(best);
-        Logger.log("Finished searching");
-        running = false;
-        return null;
     }
     
-    
-    
-        public boolean isRunning()
+    public boolean isRunning()
     {
         return running;
     }
@@ -141,6 +151,10 @@ public class ABCFinder extends Thread{
                     finderThreads[i].setRunning(running);
                 }
             }
+        }
+        if (setFinder != null)
+        {
+            setFinder.setRunning(running);
         }
     }
 

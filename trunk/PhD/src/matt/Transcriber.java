@@ -187,14 +187,17 @@ public class Transcriber {
                 {
                     odfIndex ++;
                 }
-                frameGraph.getDefaultSeries().setData(frame);                
-                frameGraph.repaint();
+                if (Boolean.parseBoolean("" + MattProperties.getP("drawFrameGraphss")) == true)
+                {
+                    frameGraph.getDefaultSeries().setData(frame);
+                    frameGraph.repaint();
+                }                
             }
             
             // Now calculate the proposed onsets
             mattGui.log("Calculating onsets...");
             Vector onsetsVector = new Vector();            
-            onsetsVector = PeekCalculator.calculatePeeks(odf, 4, odf.length, 0);
+            onsetsVector = PeakCalculator.calculatePeaks(odf, 4, odf.length, 0);
                                     
             // Now calculate the dynamic threshold
             mattGui.log("Calculating dynamic threshold...");
@@ -308,7 +311,7 @@ public class Transcriber {
     {
         mattGui.log("Calculating frequencies of " + (odfSignal.length - 1) + " notes");
         Vector<TranscribedNote> notes = new Vector();
-        mattGui.getFftTabs().removeAll();
+        mattGui.clearFFTGraphs();
         // Now figure out the frequencies in each note
         FastFourierTransform fft = new FastFourierTransform();
         EnergyCalculator ec = new EnergyCalculator();
@@ -358,12 +361,15 @@ public class Transcriber {
             newNote.setEnergy(energy);
             notes.addElement(newNote);            
             
-            Graph fftGraph = new Graph();
-            fftGraph.setBounds(0, 0, 1000, 1000);
-            fftGraph.setBackground(mattGui.getFftTabs().getBackground());
-            fftGraph.getDefaultSeries().setData(fftOut);
-            mattGui.log("");
-            mattGui.getFftTabs().addTab("" + mattGui.getFftTabs().getTabCount(), fftGraph);
+            if (Boolean.parseBoolean("" + MattProperties.getP("drawFFTGraphs")) == true)
+            {
+                Graph fftGraph = new Graph();
+
+                fftGraph.setBounds(0, 0, 1000, 1000);
+                fftGraph.getDefaultSeries().setData(fftOut);
+                MattGuiNB.instance().addFFTGraph(fftGraph, "" + newNote.getStart());
+            }
+            mattGui.log("");             
         }
         
         mattGui.log("Notes before onset post processing:");

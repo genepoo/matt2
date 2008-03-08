@@ -227,7 +227,7 @@ public class CorpusIndex {
                     e.printStackTrace();
                 }
                 ready = true;
-                Logger.log("Indexing complete");
+                Logger.log("Indexing complete. " + index.size() + " tunes in the index");
             }            
         }.start();
     }

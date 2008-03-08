@@ -28,7 +28,8 @@ public class ABCTranscriber {
     enum pitch_model {FLUTE, WHISTLE};
     
     private pitch_model pitchModel;
-    private static int[] notesPerBar = { 8, 6, 8 };
+    public static int[] NOTES_PER_BAR = { 8, 6, 8 };
+    public static int[] NOTES_PER_PART = { 64, 48, 64 };
     private int tuneType = REEL;
            
     public static String [] noteNames = {"D,", "E,", "F,", "G,", "A,", "B,", "C", "D", "E", "F", "G", "A", "B","c", "d", "e", "f", "g", "a", "b", "c'", "d'", "e'", "f'", "g'", "a'", "b'", "c''", "d''"}; 
@@ -192,7 +193,7 @@ public class ABCTranscriber {
                         sb.append("" + nearestMultiple);
                     }
                     noteInBar += nearestMultiple;
-                    if (noteInBar % notesPerBar[tuneType] == 0)
+                    if (noteInBar % NOTES_PER_BAR[tuneType] == 0)
                     {
                         sb.append("|" + System.getProperty("line.separator"));
                     }
