@@ -68,23 +68,30 @@ public class PeakCalculator {
         return peaks;
     }
     
-    static Vector<Integer> calculateTrough(float[] data, int border, int howFar, float thresholdNormal)
+    static Vector<Integer> calculateTrough(float[] data, int border, int howFar, float thresholdNormal, Graph g)
     {        
         Vector<Integer> troughs = new Vector();
         float thresholdValue = Float.MAX_VALUE;
         // First calculate the threshold
+        float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
         if (thresholdNormal > 0)
         {
             for (int i = 0 ; i < howFar ; i ++)
             {
-                if (data[i] < thresholdValue)
+                if (data[i] < min)
                 {
-                    thresholdValue = data[i];
+                    min = data[i];
+                }
+                if (data[i] >= max)
+                {
+                    max = data[i];
                 }
             }
         }        
-        
-        thresholdValue = thresholdValue * thresholdNormal;        
+        float range = max - min;
+        thresholdValue = min + ((1.0f - thresholdNormal) * range);
+        g.getDefaultSeries().addHorizontalLine(thresholdValue);
+        System.out.println("Threshold: " + thresholdValue);  
         
         if (howFar >= border)
         {
@@ -95,9 +102,7 @@ public class PeakCalculator {
                 {
                     addPeak = true;
                     for (int j = 0 ; j < border ; j ++)
-                    {
-                        //if ((data[i] > data[i - j]) || (data[i] > data[i + j]))
-                        // if ((data[i-j] <= data[(i - j)-1]) || (data[i+j] <= data[i + j + 1]))                        
+                    {                       
                         if ((data[i] > data[i - j]))
                         {
                             addPeak = false;
