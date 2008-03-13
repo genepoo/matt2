@@ -45,16 +45,16 @@ public class FinderThread extends Thread{
             {       
                 running = false;
                 synchronized(lock)
-                {
-                    
+                {                    
                     lock.notify();
                 }
             }
             else
             {
                 searchIndexEntry(current);
-            }
-        }        
+            }            
+        }   
+        Logger.log("Thread finished");
     }
 
     public boolean isRunning()
@@ -165,5 +165,7 @@ public class FinderThread extends Thread{
             Logger.log("Exception parsing tune: " + entry.getTitle());
             e.printStackTrace();
         }
+        
     }
+    
 }

@@ -70,14 +70,10 @@ public class MattABCTools {
             }
             else
             {
-                start = retValue.lastIndexOf("|:", end);
-                if (start == -1)
+                int newStart = retValue.lastIndexOf("|:", end);
+                if (newStart != -1)
                 {
-                    start = 0;
-                }
-                else
-                {
-                    start += 2;
+                    start = newStart + 2;
                 }
                 if ((retValue.length() > end + 2) && Character.isDigit(retValue.charAt(end + 2)))
                 {
@@ -101,6 +97,7 @@ public class MattABCTools {
                     expanded.append("|");
                     expanded.append(retValue.substring(start, end));
                     retValue.replace(start, end + 2, expanded.toString());
+                    start = start + expanded.toString().length();
                 }
             }
         }

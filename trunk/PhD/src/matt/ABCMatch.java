@@ -25,6 +25,8 @@ public class ABCMatch implements Comparator {
     private float editDistance;
     private int x;
     private int index;
+    private int which = -1;
+    private int repititions = -1;
     
     private Tune tune;
     
@@ -103,20 +105,41 @@ public class ABCMatch implements Comparator {
         ABCMatch match0 = (ABCMatch) o0;
         ABCMatch match1 = (ABCMatch) o1;
         
-        if (match0.getEditDistance() < match1.getEditDistance())
+        if (match0.getRepititions() == -1)
         {
-            return -1;
+            if (match0.getEditDistance() < match1.getEditDistance())
+            {
+                return -1;
+            }
+            if (match0.getEditDistance() == match1.getEditDistance())
+            {
+                return 0;
+            }
+            return 1;
         }
-        if (match0.getEditDistance() == match1.getEditDistance())
+        else
         {
-            return 0;
+            if (match0.getWhich() < match1.getWhich())
+            {
+                return -1;
+            }
+            if (match0.getWhich() == match1.getWhich())
+            {
+                return 0;
+            }
+            return 1;
         }
-        return 1;
     }
     
     public String toString()
     {
-        return "Title: " + getTitle() + " File: " + getFileName() + " ED: " + getEditDistance() + " Line: " + getLine();
+        String ret = "Title: " + getTitle() + " File: " + getFileName() + " ED: " + getEditDistance();
+        if (which != -1)
+        {
+            ret += " Set order: " + which + " Repetitions: " + getRepititions();
+        }
+        ret += " Line: " + getLine();
+        return ret;
     }
 
     public int getX()
@@ -147,5 +170,25 @@ public class ABCMatch implements Comparator {
     public void setIndex(int index)
     {
         this.index = index;
+    }
+
+    public int getWhich()
+    {
+        return which;
+    }
+
+    public void setWhich(int which)
+    {
+        this.which = which;
+    }
+
+    public int getRepititions()
+    {
+        return repititions;
+    }
+
+    public void setRepititions(int repititions)
+    {
+        this.repititions = repititions;
     }
 }

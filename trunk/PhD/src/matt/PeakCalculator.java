@@ -68,7 +68,7 @@ public class PeakCalculator {
         return peaks;
     }
     
-    static Vector<Integer> calculateTrough(float[] data, int border, int howFar, float thresholdNormal, Graph g)
+    static Vector<Integer> calculateTrough(float[] data, int border, int howFar, float thresholdNormal, Graph g, int sj)
     {        
         Vector<Integer> troughs = new Vector();
         float thresholdValue = Float.MAX_VALUE;
@@ -82,14 +82,14 @@ public class PeakCalculator {
                 {
                     min = data[i];
                 }
-                if (data[i] >= max)
+                else if (data[i] >= max)
                 {
                     max = data[i];
                 }
             }
         }        
         float range = max - min;
-        thresholdValue = min + ((1.0f - thresholdNormal) * range);
+        thresholdValue = min + (thresholdNormal * range);
         g.getDefaultSeries().addHorizontalLine(thresholdValue);
         System.out.println("Threshold: " + thresholdValue);  
         
@@ -97,33 +97,28 @@ public class PeakCalculator {
         {
             for (int i = border ; i < howFar - border ; i ++)
             {
-                boolean addPeak = false;
-                if (data[i] <= thresholdValue)
-                {
-                    addPeak = true;
-                    for (int j = 0 ; j < border ; j ++)
-                    {                       
-                        if ((data[i] > data[i - j]))
-                        {
-                            addPeak = false;
-                            break;
-                        }                    
-                    }
-                }
-                else
-                {
-                    addPeak = false;              
+                boolean addPeak = true;
+                for (int j = 0 ; j < border ; j ++)
+                {                       
+                    if ((data[i] > data[i - j]))
+                    {
+                        addPeak = false;
+                        break;
+                    }                    
                 }
                 if (addPeak)
                 {
-                    // Dont add 2 consecutive troughs
-                    if ((troughs.size() > 0) && (i <= troughs.elementAt(troughs.size() -1).intValue() + border))                    
+                    if (data[i] <= thresholdValue)
                     {
-                        troughs.set(troughs.size() - 1, new Integer(i));
-                    }
-                    else
-                    {
-                        troughs.add(new Integer(i));
+                        // Dont add 2 consecutive troughs
+                        if ((troughs.size() > 0) && (i <= troughs.elementAt(troughs.size() -1).intValue() + sj))                    
+                        {
+                            troughs.set(troughs.size() - 1, new Integer(i));
+                        }
+                        else
+                        {
+                            troughs.add(new Integer(i));
+                        }
                     }
                 }
             }

@@ -132,9 +132,16 @@ public class BatchJob extends Thread
                         result.append(match.getTitle());
                         result.append(delim);
                         result.append(match.getX());
+                        if (match.getRepititions() != -1)
+                        {
+                            result.append(delim);    
+                            result.append(match.getWhich());
+                            result.append(delim);  
+                            result.append(match.getRepititions());
+                        }
                         result.append(delim);                   
                         result.append(match.getEditDistance());
-                        result.append(delim);                   
+                        result.append(delim);
                         if (serverMode)
                         {
                             conn = DBHelper.getConnection();

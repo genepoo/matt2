@@ -86,7 +86,7 @@ public class PitchDetector
     {
         PeakCalculator pk = new PeakCalculator();        
         int pitchPeek = Integer.parseInt("" + MattProperties.instance().get("pitchPeek"));
-        Vector peeks = PeakCalculator.calculatePeaks(fftMag, pitchPeek , fftMag.length, 0.2f);
+        Vector peeks = PeakCalculator.calculatePeaks(fftMag, pitchPeek , fftMag.length, 0.5f);
                 
         float binWidth = (float) sampleRate / (float) frameSize;
         
