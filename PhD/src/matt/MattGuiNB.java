@@ -549,10 +549,13 @@ public class MattGuiNB extends javax.swing.JFrame {
            return;
        }       
          getContentPane().remove(fftGraph);
-        fftGraph = fftGraphs.elementAt(i);
-        fftGraph.setBounds(400,10,380,120);
-        getContentPane().add(fftGraph);
-        fftGraph.repaint();
+         if (i < fftGraphs.size())
+         {
+            fftGraph = fftGraphs.elementAt(i);
+            fftGraph.setBounds(400,10,380,120);
+            getContentPane().add(fftGraph);
+            fftGraph.repaint();
+         }
     }//GEN-LAST:event_cbSelectFFTItemStateChanged
 
     private void btnLiveQueryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLiveQueryActionPerformed
@@ -627,6 +630,7 @@ public class MattGuiNB extends javax.swing.JFrame {
         DefaultComboBoxModel model = (DefaultComboBoxModel) cbSelectFFT.getModel();
         model.addElement("" + title);
         fftGraphs.add(graph);
+        cbSelectFFT.setSelectedIndex(model.getSize() -1);        
         getContentPane().remove(fftGraph);
         graph.setBounds(400,10,380,120);
         /*
@@ -667,8 +671,12 @@ public class MattGuiNB extends javax.swing.JFrame {
         frameGraph.clear();
         signalGraph.clear();
         odfGraph.clear();
+        fftGraph.clear();
         clearMatches();
         getFftGraph().removeAll();
+        DefaultComboBoxModel model = (DefaultComboBoxModel) cbSelectFFT.getModel();
+        model.removeAllElements();
+        fftGraphs.removeAllElements();
         txtABC.setText("");
         txtLog.setText("");
         txtBest.setText("");

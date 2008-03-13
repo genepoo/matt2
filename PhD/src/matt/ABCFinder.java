@@ -11,20 +11,19 @@ package matt;
 import java.io.*;
 import java.util.*;
 import abc.notation.Tune;
-import abc.parser.TuneBook;
 
 /**
  *
  * @author Bryan
  */
-public class ABCFinder extends Thread{
+public class ABCFinder extends Thread
+{
     FinderThread[] finderThreads;
     SetFinder setFinder;
     private boolean running = false;
     private String startIn;
     private String searchString;
     private String toFind;    
-    private boolean threadFinished;
     private PriorityQueue<ABCMatch> pq = new PriorityQueue<ABCMatch>(1000, new ABCMatch());
         
     /** Creates a new instance of ABCFinder */
@@ -78,9 +77,28 @@ public class ABCFinder extends Thread{
         {
             Logger.log("I think it's a set, therefore using the set finder algorithm");
             setFinder = new SetFinder();
+            Object lock = new Object();
             setFinder.setToFind(toFind);
+            setFinder.setLock(lock);
+            setFinder.setPq(pq);
             setFinder.start();
-            return null;
+            boolean stillRunning = true;
+
+            while (stillRunning)
+            {
+                synchronized(lock)
+                {
+                    try
+                    {
+                        lock.wait(500);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    stillRunning = setFinder.isRunning();                    
+                }
+            }           
         }
         else
         {
@@ -123,14 +141,15 @@ public class ABCFinder extends Thread{
                         }
                     }
                 }
-            }
+                
+            }           
             printTop(10);        
             ABCMatch best = pq.peek();
             MattGuiNB.instance().setBestSoFar(best);
             Logger.log("Searched " + CorpusIndex.instance().size() + " tunes");
-            running = false;
-            return null;
+            running = false;            
         }
+        return null;
     }
     
     public boolean isRunning()
