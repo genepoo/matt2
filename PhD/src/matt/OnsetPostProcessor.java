@@ -55,22 +55,17 @@ public class OnsetPostProcessor {
             {
                 // Merge it with the following note
                 
-                /*
-                 Logger.log("Merging note: " + i + " " + current + " with previous: " + (i -1) + " " + previous);
-                previous.setDuration(previous.getDuration() + current.getDuration());
-                transcribedNotes.remove(i);
-                */
                 if (i + 1 < transcribedNotes.size())
                 {
                     
                     TranscribedNote next = transcribedNotes.elementAt(i + 1);
+                    next.setStart(current.getStart());
                     next.setDuration(next.getDuration() + current.getDuration());
                     Logger.log("Merging note: " + i + " " + current + " with next: " + (i + 1) + " " + next);
                 }
                   
                 transcribedNotes.remove(i);
-                i --;
-                
+                i --;                
             }
         }
         // Now check the very first note

@@ -108,8 +108,11 @@ public class Transcriber {
                 mattGui.instance().getProgressBar().setValue(signalIndex);
             }
             mattGui.log("Graphing...");
-            signalGraph.getDefaultSeries().setData(signal);
-            signalGraph.repaint();
+            if (Boolean.parseBoolean("" + MattProperties.getP("drawSignalGraphs")) == true)
+            {
+                signalGraph.getDefaultSeries().setData(signal);
+                signalGraph.repaint();
+            }
             mattGui.log("Done.");
             
         }
@@ -187,7 +190,7 @@ public class Transcriber {
                 {
                     odfIndex ++;
                 }
-                if (Boolean.parseBoolean("" + MattProperties.getP("drawFrameGraphss")) == true)
+                if (Boolean.parseBoolean("" + MattProperties.getP("drawFrameGraphs")) == true)
                 {
                     frameGraph.getDefaultSeries().setData(frame);
                     frameGraph.repaint();
@@ -203,19 +206,21 @@ public class Transcriber {
             mattGui.log("Calculating dynamic threshold...");
             float[] odfThreshold = calculateDynamicThreshold(odf, dynamicThresholdTime);
             
-            odfGraph.getDefaultSeries().setData(odf);
-            odfGraph.getDefaultSeries().addHorizontalLine(this.staticThreshold);
-            odfGraph.getDefaultSeries().setPlotPoints(true);
+            if (Boolean.parseBoolean("" + MattProperties.getP("drawSignalGraphs")) == true)
+            {
+                odfGraph.getDefaultSeries().setData(odf);
+                odfGraph.getDefaultSeries().addHorizontalLine(this.staticThreshold);
+                odfGraph.getDefaultSeries().setPlotPoints(true);
             
-            // Plot the ODF threshold on the ODF graph
-            Series odfThresholdSeries = new Series(odfGraph);
-            odfThresholdSeries.setData(odfThreshold);
-            odfThresholdSeries.setMin(odfGraph.getDefaultSeries().getMin());
-            odfThresholdSeries.setMax(odfGraph.getDefaultSeries().getMax());                                   
-            odfThresholdSeries.setGraphType(Series.BAR_GRAPH);
-            odfThresholdSeries.setSeriesColour(Color.BLUE);
-            odfGraph.addSeries(odfThresholdSeries);
-            
+                // Plot the ODF threshold on the ODF graph
+                Series odfThresholdSeries = new Series(odfGraph);
+                odfThresholdSeries.setData(odfThreshold);
+                odfThresholdSeries.setMin(odfGraph.getDefaultSeries().getMin());
+                odfThresholdSeries.setMax(odfGraph.getDefaultSeries().getMax());                                   
+                odfThresholdSeries.setGraphType(Series.BAR_GRAPH);
+                odfThresholdSeries.setSeriesColour(Color.BLUE);
+                odfGraph.addSeries(odfThresholdSeries);
+            }
             // Remove any onsets lower than the threshold
             removeSpuriousOnsets(onsetsVector, odfThreshold, odf);
                         
@@ -372,12 +377,14 @@ public class Transcriber {
             mattGui.log("");             
         }
         
-        mattGui.log("Notes before onset post processing:");
+        /*
+         mattGui.log("Notes before onset post processing:");
         for (int i = 0 ; i < notes.size() ; i ++)
         {
             TranscribedNote note = notes.elementAt(i);
             mattGui.log(note);
         }
+         */ 
 
         OnsetPostProcessor opp = new OnsetPostProcessor(notes);
         TranscribedNote[] postProcessed = opp.postProcess();

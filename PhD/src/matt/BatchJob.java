@@ -114,6 +114,7 @@ public class BatchJob extends Thread
                     s.setLong(3, jobId);
                     s.execute();
                 }
+                finder.setTranscribedNotes(transcriber.getTranscribedNotes());
                 finder.findFromIndex();
                 if (!running)
                 {

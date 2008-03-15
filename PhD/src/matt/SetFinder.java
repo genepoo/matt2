@@ -12,11 +12,13 @@ import matt.dsp.*;
  * @author Bryan Duggan
  */
 public class SetFinder extends Thread{
-    
+    // Amount to compensate by in the trough detector, because of filtering
+    private static final int FILTER_COMP = 15;
     private boolean running;
     private String toFind;
     private Object lock;
     private PriorityQueue<ABCMatch> pq;
+    private TranscribedNote[] transcribedNotes;
     
     public static boolean isSet(String transcription)
     {
@@ -64,11 +66,7 @@ public class SetFinder extends Thread{
             float bestEd = Float.MAX_VALUE;
             int bestIndex = 0;
             int i = 0;
-            // Just extract enough of the tune to indentify the tune
-            if (startAt + typicalLength > toFind.length())
-            {
-                break;
-            }            
+                      
             String searchString = toFind.substring(startAt, startAt + typicalLength);            
             
             while (running)
@@ -82,7 +80,6 @@ public class SetFinder extends Thread{
                 boolean needsExpansion = false;
                 while (searchString.length() > searchIn.length())
                 {
-                    // MattGuiNB.log("Expanding: " + searchIn);
                     searchIn.append(searchIn);
                     needsExpansion  = true;                        
                 }
@@ -133,12 +130,13 @@ public class SetFinder extends Thread{
                     }
                     
                 }
-                
-                float range = max - min;
+                // Normalise
+                /*float range = max - min;
                 for (int j = 0 ; j < fed.length ; j ++)
                 {
                     fed[j] = (fed[j] - min) / range;
                 }
+                 */ 
                 FIRFilter filter = new FIRFilter();
                 filter.setFilterType(FIRFilter.LP);
                 fedf = filter.filter(fed);
@@ -152,18 +150,18 @@ public class SetFinder extends Thread{
                 edGraph.getDefaultSeries().setData(fed);
                 MattGuiNB.instance().addFFTGraph(edGraph, "UNFILT: " + firstTune.getTitle());
 
-                edGraph = new Graph();
-                edGraph.setBackground(Color.WHITE);
-                edGraph.getDefaultSeries().setData(fedf);
-                MattGuiNB.instance().addFFTGraph(edGraph, "FILT: " + firstTune.getTitle());
+                Graph edGraphf = new Graph();
+                edGraphf.setBackground(Color.WHITE);
+                edGraphf.getDefaultSeries().setData(fedf);
+                MattGuiNB.instance().addFFTGraph(edGraphf, "FILT: " + firstTune.getTitle());
                 
                 int repeats = 0;
                 int slope = 10;
                 Vector<Integer> troughs = null;
-                float threshold = 0.2f;
+                float threshold = 0.3f;
                 while ((repeats == 0) || (repeats >= 4) && running)
                 {
-                    troughs = PeakCalculator.calculateTrough(fedf, slope, fed.length, threshold, edGraph, typicalLength);
+                    troughs = PeakCalculator.calculateTrough(fedf, slope, fedf.length, threshold, edGraphf, typicalLength);
                     repeats = troughs.size();
                     Logger.log(troughs.size() + " repeats found");
                     if (troughs.size() == 0)
@@ -177,16 +175,36 @@ public class SetFinder extends Thread{
                         Logger.log("Trying again with a threshold of " + threshold);                    
                     }
                 }                     
+                Logger.log("Troughs:");
                 for (int j = 0 ; j < troughs.size() ; j ++)
                 {
-                    edGraph.getDefaultSeries().addVerticalLine(troughs.elementAt(j).floatValue());                            
+                    edGraph.getDefaultSeries().addVerticalLine(troughs.elementAt(j).floatValue() - FILTER_COMP);
+
+                    edGraphf.getDefaultSeries().addVerticalLine(troughs.elementAt(j).floatValue());
+                    Logger.log(troughs.elementAt(j).floatValue());
+                }
+                if ((pq.peek() != null) && (pq.peek().getX() == match.getX()))
+                {
+                    // Found the same tune twice, so the threshold is too low
+                    pq.peek().setRepititions(pq.peek().getRepititions() + 1);
+                    Logger.log("Threshold is too low, so I'm quitting");
+                    break;
                 }
                 match.setRepititions(repeats);
-                MattGuiNB.instance().addMatch(match);     
+                MattGuiNB.instance().addMatch(match);
                 whichTune ++;
                 pq.add(match);
-                
+                // Just extract enough of the tune to indentify the tune
                 startAt = ((Integer)troughs.elementAt(troughs.size() -1)).intValue();
+                if (startAt + typicalLength > toFind.length())
+                {
+                    troughsToTime(troughs, fedf, firstTune.getTitle(), 0);
+                    break;
+                }  
+                else
+                {
+                    troughsToTime(troughs, fedf, firstTune.getTitle(), FILTER_COMP);
+                }
             }
             else
             {
@@ -210,6 +228,40 @@ public class SetFinder extends Thread{
         }
         System.out.println();
     }
+    
+    void troughsToTime(Vector<Integer> v, float[] swEd, String title, int filterComp)
+    {        
+        if (transcribedNotes == null)
+        {
+            return;
+        }
+        // Match the abc to the transcribed notes
+        for (int i = 0 ; i < v.size() ; i ++)
+        {
+            int troughIndex = v.elementAt(i) - filterComp;
+            
+            // Find the start of the trough
+            int sti = troughIndex;
+            while (swEd[sti - 1] == swEd[sti])
+            {
+                sti --;
+            }            
+            int j;            
+            for (j = 0 ; j < transcribedNotes.length; j ++)
+            {
+                if (sti <= transcribedNotes[j].getQuaverQ())
+                {
+                    // Logger.log(toFind.charAt(troughIndex - 1) + " " + transcribedNotes[j].getName());
+                    break;
+                }
+            }
+            if (j >=transcribedNotes.length)
+            {
+                j = transcribedNotes.length - 1;
+            }
+            Logger.log(title + "\t" + (sti) + "\t" + transcribedNotes[j].getStart());
+        }
+    }
 
     public Object getLock()
     {
@@ -229,6 +281,16 @@ public class SetFinder extends Thread{
     public void setPq(PriorityQueue<ABCMatch> pq)
     {
         this.pq = pq;
+    }
+
+    public TranscribedNote[] getTranscribedNotes()
+    {
+        return transcribedNotes;
+    }
+
+    public void setTranscribedNotes(TranscribedNote[] transcribedNotes)
+    {
+        this.transcribedNotes = transcribedNotes;
     }
 }
 
