@@ -122,8 +122,7 @@ public class ABCTranscriber {
         makeScale("D", "Major");
         printScale();
         StringBuffer sb = new StringBuffer();
-        int noteInBar = 0;
-
+        
         float standardNote = calculateStandardNoteDuration();
         EnergyCalculator ec = new EnergyCalculator();
         ec.setSignal(transcriber.getSignal());
@@ -131,9 +130,11 @@ public class ABCTranscriber {
         setAverageEnergy(ec.calculateAverageEnergy());
         Logger.log("Max energy in signal: " + ec.formatEnergy(getMaxEnergy()));
         Logger.log("Average energy in signal: " + ec.formatEnergy(getAverageEnergy()));
+        int quaverQ = 0;
         for (int i = 0 ; i < transcribedNotes.length ; i ++)
         {
             boolean found = false;
+            transcribedNotes[i].setQuaverQ(quaverQ);
             if (isBreath(transcribedNotes[i]))
             {
                 Logger.log("Breath detected at frame: " + i);
@@ -179,9 +180,10 @@ public class ABCTranscriber {
                  
                 sb.append(transcribedNotes[i].getName());
                 // A breath should never be longer than a single note
+                int nearestMultiple = 0;
                 if (!transcribedNotes[i].getName().equals("z"))
                 {
-                    int nearestMultiple = OnsetPostProcessor.calculateNearestMultiple(transcribedNotes[i].getDuration(), standardNote);
+                    nearestMultiple = OnsetPostProcessor.calculateNearestMultiple(transcribedNotes[i].getDuration(), standardNote);
                     if (nearestMultiple > 1)
                     {
                         // Quantise at dottet crochets 
@@ -191,13 +193,21 @@ public class ABCTranscriber {
                             nearestMultiple = 3;
                         }
                         sb.append("" + nearestMultiple);
-                    }
-                    noteInBar += nearestMultiple;
-                    if (noteInBar % NOTES_PER_BAR[tuneType] == 0)
-                    {
-                        sb.append("|" + System.getProperty("line.separator"));
+                        
                     }
                 }
+                else
+                {
+                    nearestMultiple = 1;
+                }
+
+                quaverQ += nearestMultiple;
+                transcribedNotes[i].setMultiple(nearestMultiple);
+                if (quaverQ % NOTES_PER_BAR[tuneType] == 0)
+                {
+                    // sb.append("|" + System.getProperty("line.separator"));
+                }
+
             }
             else
             {

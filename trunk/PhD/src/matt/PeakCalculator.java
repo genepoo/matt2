@@ -95,7 +95,7 @@ public class PeakCalculator {
         
         if (howFar >= border)
         {
-            for (int i = border ; i < howFar - border ; i ++)
+            for (int i = border ; i < howFar; i ++)
             {
                 boolean addPeak = true;
                 for (int j = 0 ; j < border ; j ++)

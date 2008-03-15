@@ -25,6 +25,7 @@ public class ABCFinder extends Thread
     private String searchString;
     private String toFind;    
     private PriorityQueue<ABCMatch> pq = new PriorityQueue<ABCMatch>(1000, new ABCMatch());
+    private TranscribedNote[] transcribedNotes;
         
     /** Creates a new instance of ABCFinder */
     public ABCFinder() {
@@ -81,6 +82,7 @@ public class ABCFinder extends Thread
             setFinder.setToFind(toFind);
             setFinder.setLock(lock);
             setFinder.setPq(pq);
+            setFinder.setTranscribedNotes(transcribedNotes);
             setFinder.start();
             boolean stillRunning = true;
 
@@ -218,6 +220,16 @@ public class ABCFinder extends Thread
     public void setPq(PriorityQueue<ABCMatch> pq)
     {
         this.pq = pq;
+    }
+
+    public TranscribedNote[] getTranscribedNotes()
+    {
+        return transcribedNotes;
+    }
+
+    public void setTranscribedNotes(TranscribedNote[] transcribedNotes)
+    {
+        this.transcribedNotes = transcribedNotes;
     }
     
 

@@ -20,7 +20,8 @@ public class TranscribedNote {
     private float duration;
     private float energy;
     private String name = "NA";
-    
+    private int quaverQ;
+    private int multiple;
     /** Creates a new instance of TranscribedNote */
     public TranscribedNote(float frequency, float start, float duration) {
         setFrequency(frequency);
@@ -63,7 +64,7 @@ public class TranscribedNote {
     
     public String toString()
     {
-        return "Start: " + getStart() + " Duration: " + getDuration() + " Frequency: " + getFrequency() + " Energy: " + EnergyCalculator.formatEnergy(getEnergy()) + " Note: " + getName();
+        return "" + getStart() + "\t" + getDuration() + "\t" + getFrequency() + "\t" + EnergyCalculator.formatEnergy(getEnergy()) + "\t" + getName() + "\t" + getMultiple() + "\t" + getQuaverQ();
     }
 
     public float getEnergy()
@@ -74,5 +75,25 @@ public class TranscribedNote {
     public void setEnergy(float energy)
     {
         this.energy = energy;
+    }
+
+    public int getQuaverQ()
+    {
+        return quaverQ;
+    }
+
+    public void setQuaverQ(int quaverQ)
+    {
+        this.quaverQ = quaverQ;
+    }
+
+    public int getMultiple()
+    {
+        return multiple;
+    }
+
+    public void setMultiple(int multiple)
+    {
+        this.multiple = multiple;
     }
 }
