@@ -51,7 +51,8 @@ public class SetFinder extends Thread{
     public void run()
     {
         running = true;
-        boolean oldDrawGraphs = Boolean.parseBoolean(MattProperties.getP("drawGraphs"));
+        Vector<Float> turns = new Vector();
+        boolean oldDrawGraphs = Boolean.parseBoolean(MattProperties.getString("drawGraphs"));
         MattProperties.instance().setProperty("drawGraphs", "true");
         int typicalLength = ABCTranscriber.NOTES_PER_BAR[ABCTranscriber.JIG] * 16;
         Logger.log("Searching for a set");
@@ -156,10 +157,10 @@ public class SetFinder extends Thread{
                 MattGuiNB.instance().addFFTGraph(edGraphf, "FILT: " + firstTune.getTitle());
                 
                 int repeats = 0;
-                int slope = 10;
+                int slope = 15;
                 Vector<Integer> troughs = null;
                 float threshold = 0.3f;
-                while ((repeats == 0) || (repeats >= 4) && running)
+                while ((repeats == 0) || (repeats >= 5) && running)
                 {
                     troughs = PeakCalculator.calculateTrough(fedf, slope, fedf.length, threshold, edGraphf, typicalLength);
                     repeats = troughs.size();
@@ -169,7 +170,7 @@ public class SetFinder extends Thread{
                         threshold -= 0.05f;
                         Logger.log("Trying again with a threshold of " + threshold);                    
                     }
-                    if (troughs.size() >= 4)
+                    if (troughs.size() >= 5)
                     {
                         threshold += 0.05f;
                         Logger.log("Trying again with a threshold of " + threshold);                    
@@ -179,7 +180,6 @@ public class SetFinder extends Thread{
                 for (int j = 0 ; j < troughs.size() ; j ++)
                 {
                     edGraph.getDefaultSeries().addVerticalLine(troughs.elementAt(j).floatValue() - FILTER_COMP);
-
                     edGraphf.getDefaultSeries().addVerticalLine(troughs.elementAt(j).floatValue());
                     Logger.log(troughs.elementAt(j).floatValue());
                 }
@@ -198,12 +198,12 @@ public class SetFinder extends Thread{
                 startAt = ((Integer)troughs.elementAt(troughs.size() -1)).intValue();
                 if (startAt + typicalLength > toFind.length())
                 {
-                    troughsToTime(troughs, fedf, firstTune.getTitle(), 0);
+                    troughsToTime(turns, troughs, fedf, firstTune.getTitle(), FILTER_COMP, true);
                     break;
                 }  
                 else
                 {
-                    troughsToTime(troughs, fedf, firstTune.getTitle(), FILTER_COMP);
+                    troughsToTime(turns, troughs, fedf, firstTune.getTitle(), FILTER_COMP, false);
                 }
             }
             else
@@ -213,6 +213,7 @@ public class SetFinder extends Thread{
         }
         MattProperties.instance().setProperty("drawGraphs", "" + oldDrawGraphs);
         Logger.log("No more tunes found");
+        printTurns(turns);
         running = false;
         synchronized(lock)
         {
@@ -229,7 +230,18 @@ public class SetFinder extends Thread{
         System.out.println();
     }
     
-    void troughsToTime(Vector<Integer> v, float[] swEd, String title, int filterComp)
+    void printTurns(Vector<Float> turns)
+    {
+        StringBuffer sb = new StringBuffer();
+        Logger.log("Turns:");
+        for (int i = 0 ; i < turns.size() ; i ++)
+        {
+            sb.append(turns.elementAt(i).floatValue() + "\t");
+        }
+        Logger.log("" + sb);
+    }
+    
+    void troughsToTime(Vector<Float> turns, Vector<Integer> v, float[] swEd, String title, int filterComp, boolean lastTune)
     {        
         if (transcribedNotes == null)
         {
@@ -238,7 +250,11 @@ public class SetFinder extends Thread{
         // Match the abc to the transcribed notes
         for (int i = 0 ; i < v.size() ; i ++)
         {
-            int troughIndex = v.elementAt(i) - filterComp;
+            int troughIndex = v.elementAt(i);
+            if (!lastTune ||  (i != (v.size() - 1)))
+            {
+                troughIndex -= filterComp;
+            }
             
             // Find the start of the trough
             int sti = troughIndex;
@@ -259,6 +275,7 @@ public class SetFinder extends Thread{
             {
                 j = transcribedNotes.length - 1;
             }
+            turns.add(new Float(transcribedNotes[j].getStart()));
             Logger.log(title + "\t" + (sti) + "\t" + transcribedNotes[j].getStart());
         }
     }

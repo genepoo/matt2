@@ -274,7 +274,7 @@ public class EditDistance
             for (int j = 1; j <= tLength; j++)
             {
                 int v = d[i - 1][j - 1];
-                if (text.charAt(j - 1) != sc)
+                if ((text.charAt(j - 1) != sc) && (text.charAt(j - 1) != 'Z') && sc != 'Z')                
                 {
                     difference = 1;
                 }
@@ -285,8 +285,9 @@ public class EditDistance
                 d[i][j] = Math.min(Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1), v + difference);
             }
         }
-        /*
-         for (int i = 0 ; i < d.length ; i ++)
+        
+         /*
+          for (int i = 0 ; i < d.length ; i ++)
         {
             for (int j = 0 ; j < d[i].length; j ++)
             {
@@ -294,7 +295,7 @@ public class EditDistance
             }
             System.out.println();
         }
-         */ 
+         */
         return d[pLength];
     }
     
@@ -321,11 +322,12 @@ public class EditDistance
 
         String toFind, searchIn;
 
-        toFind = "BDEE";
-        searchIn = "DGGGDGBDEFGAB"; //AGEDGGGDGBCDEGDBBAABDGGGDGBDEFGABAGEDGGGDGBCDEGDBBAAAAAAFGGGDEFGDGEGDDAAAFGGGDEFGDBBAAAAAAFGGGDEGDGEGDGBBBGAAAGEDEFGGGE";
+        toFind = "FDEFGDGXZXX";
+        searchIn = "AGEDGGGDGBCDEGDBBAABDGGGDGBDEFGABAGEDGGGDGBCDEGDBBAAAAAAFGGGDEFGDGEGDDAAAFGGGDEFGDBBAAAAAAFGGGDEGDGEGDGBBBGAAAGEDEFGGGE"; // DGGGDGBDEFGAB"; //";
 
 
         System.out.println("beditDistance: " + edSubString(toFind, searchIn));
+        System.out.println("Min editDistance substring: " + minEdSubString(toFind, searchIn));
         System.out.println("editDistance: " + editDistance(toFind, searchIn));
         System.out.println("LD: " + LD(toFind, searchIn));
         System.out.println("getLevenshteinDistance: " + getLevenshteinDistance(toFind, searchIn));

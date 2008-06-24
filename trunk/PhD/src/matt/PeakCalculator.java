@@ -20,7 +20,7 @@ public class PeakCalculator {
     public PeakCalculator() {
     }
     
-    static Vector calculatePeaks(float[] data, int border, int howFar, float thresholdNormal)
+    static Vector calculatePeaks2(float[] data, int border, int howFar, float thresholdNormal)
     {
         float thresholdValue = 0;
         // First calculate the threshold
@@ -48,7 +48,54 @@ public class PeakCalculator {
                     for (int j = 0 ; j < border ; j ++)
                     {
                         if ((data[i] < data[i - j]) || (data[i] < data[i + j]))
-                        // if ((data[i-j] <= data[(i - j)-1]) || (data[i+j] <= data[i + j + 1]))                        
+                        {
+                            addPeak = false;
+                            break;
+                        }                    
+                    }
+                }
+                else
+                {
+                    addPeak = false;              
+                }
+                if (addPeak)
+                {
+                    peaks.add(new Integer(i));
+                }
+            }
+        }
+        return peaks;
+    }
+    
+    static Vector calculatePeaks(float[] data, int border, int howFar, float thresholdNormal)
+    {
+        float thresholdValue = 0;
+        // First calculate the threshold
+        if (thresholdNormal > 0)
+        {
+            for (int i = 0 ; i < howFar ; i ++)
+            {
+                if (data[i] > thresholdValue)
+                {
+                    thresholdValue = data[i];
+                }
+            }
+        }        
+        
+        thresholdValue = thresholdValue * thresholdNormal;        
+        Vector peaks = new Vector();
+        
+        if (howFar >= border)
+        {
+            for (int i = border ; i < howFar - border ; i ++)
+            {
+                boolean addPeak = true;
+                if (data[i] >= thresholdValue)
+                {
+                    for (int j = 0 ; j < border ; j ++)
+                    {
+                        //if ((data[i] < data[i - j]) || (data[i] < data[i + j]))
+                        if ((data[i-j] <= data[(i - j)-1]) || (data[i+j] <= data[i + j + 1]))                        
                         {
                             addPeak = false;
                             break;

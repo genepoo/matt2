@@ -15,7 +15,7 @@ public class DBHelper {
     {
         try
         {
-            Class.forName(MattProperties.getP("dbdriver"));
+            Class.forName(MattProperties.getString("dbdriver"));
         }
         catch(Exception e)
         {
@@ -29,7 +29,7 @@ public class DBHelper {
     {         
         try
         {
-            Connection conn = DriverManager.getConnection(MattProperties.getP("dburl"), MattProperties.getP("dbuser"), MattProperties.getP("dbpassword"));
+            Connection conn = DriverManager.getConnection(MattProperties.getString("dburl"), MattProperties.getString("dbuser"), MattProperties.getString("dbpassword"));
             return conn;            
         }
         catch (Exception e)

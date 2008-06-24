@@ -11,34 +11,38 @@ package matt;
 
 import java.awt.*;
 import java.util.*;
+import javax.swing.JScrollPane;
 /**
  *
  * @author bduggan
  */
-public class Graph extends javax.swing.JPanel {
+public class Graph extends javax.swing.JScrollPane {
+    
+    public void setBackground(Color c)
+    {
+        super.setBackground(c);
+        if (panel != null)
+        {
+            panel.setBackground(c);
+        }
+    }
+    
+    GraphPanel panel;
+    
+    private float scalingFactor = 0.0f;
+    
     
     Vector series = new Vector();
     /** Creates a new instance of Graph */
-    public Graph() {       
+    public Graph() { 
+        panel = new GraphPanel(this);
+        panel.setDoubleBuffered(false);
+        getViewport().add(panel, null);
+        scalingFactor = MattProperties.getFloat("scaleGraphFactor");
+        setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
     }
-    
-    public void paint (Graphics g) 
-    {        
-       
-        super.paint(g);
-        if (MattProperties.instance().getP("mode").equals("server") || MattProperties.instance().getP("drawGraphs").equals("false"))
-        {
-            return;
-        }
-        Enumeration en = series.elements();
         
-        while (en.hasMoreElements())
-        {
-            Series series = (Series) en.nextElement();
-            series.paint(g);
-        }
-    }
-    
     public void clear()
     {
         Enumeration en = series.elements();
@@ -68,11 +72,34 @@ public class Graph extends javax.swing.JPanel {
     public void addSeries(Series series)
     {
         this.series.add(series);
+        
     }
     
     public void removeAllSeries()
     {
         series.removeAllElements();
     }
+    
+    public int countSeries()
+    {
+        return series.size();
+    }
+    
+    public GraphPanel getGraphPanel()
+    {
+        return panel;
+    }
 
+    public
+
+    float getScalingFactor()
+    {
+        return scalingFactor;
+    }
+
+    public void setScalingFactor(float scalingFactor)
+    {
+        this.scalingFactor = scalingFactor;
+    }
 }
+

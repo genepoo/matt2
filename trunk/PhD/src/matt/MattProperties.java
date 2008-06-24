@@ -19,38 +19,44 @@ import java.io.*;
  */
 public class MattProperties extends Properties {    
     
-    private static MattProperties instance = null;
+    private static MattProperties _instance = null;
     private static PropertiesLoader propertiesLoader = null; 
     /** Creates a new instance of MattProperties */
     private MattProperties() {
     }
     
-    public static String getP(String key)
+    public static float getFloat(String key)
+    {
+        return Float.parseFloat(getString(key));
+    }
+    
+    public static boolean getBoolean(String key)
+    {
+        return Boolean.parseBoolean(getString(key));
+    }
+    
+    public static String getString(String key)
     {
         return "" + instance().get(key);
     }
     
     public static MattProperties instance()
     {
-        if (instance == null)
+        if (_instance == null)
         {
-            instance = new MattProperties();
+            _instance = new MattProperties();
             propertiesLoader = new PropertiesLoader();
+            propertiesLoader.load();
             propertiesLoader.start();
-            try 
-            {
-                Thread.sleep(1000);
-            }
-            catch(Exception e) {}
         }
-        return instance;
+        return _instance;
     }    
     
     public static void  save()
     {
         try
         {
-            instance.store(new FileOutputStream("matt.properties"), null);
+            _instance.store(new FileOutputStream("matt.properties"), null);
         }
         catch (Exception e)
         {
@@ -62,19 +68,34 @@ public class MattProperties extends Properties {
 
 class PropertiesLoader extends Thread
 {
+    File f = new File("matt.properties");
     long lastModified = 0;
+    
+    public void load()
+    {
+        this.lastModified = f.lastModified();
+        try
+        {
+            MattProperties.instance().load(new FileReader(f));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
     public void run()
     {
         while (true)
         {
-            File f = new File("matt.properties");
             long lastModified = f.lastModified();
             if (lastModified > this.lastModified)
             {
                 try
                 {
                     Logger.log("Reloading properties");
-                    MattProperties.instance().load(new FileReader(f));
+                    load();
+                    
                     Logger.log(MattProperties.instance());
                 }
                 catch (Exception e)
@@ -82,7 +103,6 @@ class PropertiesLoader extends Thread
                     Logger.log("Could not load matt.properties file");
                     e.printStackTrace();
                 }
-                this.lastModified = lastModified;
             }
             try
             {

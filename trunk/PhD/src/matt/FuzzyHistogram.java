@@ -30,8 +30,9 @@ public class FuzzyHistogram {
                 if ((data[i] >= lower) && (data[i] <= upper))
                 {
                     found = true;
-                    current.value = (current.value + data[i]) / 2.0f;
+                    //current.value = (current.value + data[i]) / 2.0f;
                     current.count ++;
+                    current.value = ((current.value * (float) current.count) + data[i]) / (float) ++ current.count  ;                    
                     break;
                 }
             }
@@ -45,6 +46,7 @@ public class FuzzyHistogram {
         }
         int maxIndex = 0;
         int maxValue = 0;
+        Logger.log("Histogram:");
         for (int i= 0 ; i < candidateLengths.size(); i ++)
         {
             Candidate candidate = (Candidate) candidateLengths.elementAt(i);
@@ -68,6 +70,6 @@ class Candidate
     
     public String toString()
     {
-        return "Candidate: " + value + " Count: " + count;
+        return value + "\t" + count;
     }
 }

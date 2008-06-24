@@ -114,7 +114,7 @@ public class PitchDetector
         {
             if (peeks.size() == 0)
             {
-                return 0;
+                return maxPeek(fftMag, sampleRate, frameSize);
             }
             int inx = ((Integer) peeks.elementAt(0)).intValue();
             float f = ((float) inx) * binWidth;   

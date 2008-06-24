@@ -77,12 +77,22 @@ public class MattABCTools {
                 }
                 if ((retValue.length() > end + 2) && Character.isDigit(retValue.charAt(end + 2)))
                 {
+                    int numSpecialBars = 1;
                     StringBuffer expanded = new StringBuffer();
                     int normalPart = retValue.lastIndexOf("|", end);
+                    if (! Character.isDigit(retValue.charAt(normalPart + 1)))
+                    {
+                        normalPart = retValue.lastIndexOf("|", normalPart - 1);
+                        numSpecialBars ++;
+                    }
                     expanded.append(retValue.substring(start, normalPart));
                     expanded.append("|");
                     expanded.append(retValue.substring(normalPart + 2, end));
-                    int secondTime = retValue.indexOf("|", end + 2);
+                    int secondTime = end;
+                    while ((numSpecialBars --) > 0) 
+                    {
+                        secondTime = retValue.indexOf("|", secondTime + 2);
+                    }
                     expanded.append("|");
                     expanded.append(retValue.substring(start, normalPart));
                     expanded.append("|");

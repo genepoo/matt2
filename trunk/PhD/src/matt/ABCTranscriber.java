@@ -207,7 +207,6 @@ public class ABCTranscriber {
                 {
                     // sb.append("|" + System.getProperty("line.separator"));
                 }
-
             }
             else
             {

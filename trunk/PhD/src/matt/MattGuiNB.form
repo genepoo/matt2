@@ -86,6 +86,8 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                               <Component id="btnReindex" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btnAbout" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
@@ -152,6 +154,7 @@
                           <Component id="btnBest" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="btnReindex" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="btnLiveQuery" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnAbout" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Component id="txtBest" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -388,6 +391,14 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Graph:"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnAbout">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="About"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAboutActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

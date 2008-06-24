@@ -25,7 +25,7 @@ public class ODFCalculator extends Thread {
     {
         int currentSample = 0;
        
-        int frameSize = Integer.parseInt("" + MattProperties.getP("frameSize"));
+        int frameSize = Integer.parseInt("" + MattProperties.getString("frameSize"));
         
         int hopSize = (int) ((float) frameSize * 0.25f);    
         for (int frameIndex = 0 ; frameIndex < frameSize; frameIndex ++)

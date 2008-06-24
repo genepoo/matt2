@@ -27,6 +27,7 @@ public class Matt {
     
     public static Matt instance()
     {
+        
         if (_instance == null)
         {
             _instance = new Matt();
@@ -63,7 +64,7 @@ public class Matt {
         matt.setOrnamentedTuneFile(PATH + "abc\\EamonnCotter.abc");
         matt.setLearnedFile(PATH + "output/casebase.xml");
          */
-        if (MattProperties.getP("mode").equals("server"))
+        if (MattProperties.getString("mode").equals("server"))
         {
             MattServer ms = new MattServer();
             ms.start();
