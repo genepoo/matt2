@@ -36,6 +36,10 @@ public class EnergyCalculator
         float energy = 0;
         for (int i = start  ; i <= end ; i ++)
         {
+            if (i == signal.length)
+            {
+                break;
+            }
             energy += Math.abs(signal[i]);
         }
         return energy;

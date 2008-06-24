@@ -27,6 +27,7 @@ public class TonePlayer {
     {
         try		
         {
+            System.out.println("Playing tone: " + frequency);
             byte[] audioData = new byte[(int) (SAMPLE_RATE * duration)];
             float xInc = (2 * PI) / (SAMPLE_RATE / frequency);
             float x = 0;
@@ -43,6 +44,7 @@ public class TonePlayer {
             line.start();
             line.write(audioData, 0, audioData.length);
             line.drain();
+            line.flush();
             line.close();
         }
         catch (Exception e)

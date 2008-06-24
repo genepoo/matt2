@@ -6,7 +6,8 @@
 
 package matt;
 
-import abc.midi.TunePlayer;
+import abc.midi.*;
+import javax.sound.midi.*;
 import abc.parser.TuneBook;
 import java.awt.event.*;
 import javax.swing.*;
@@ -50,19 +51,17 @@ public class MattGuiNB extends javax.swing.JFrame {
         fftGraph.setBounds(400,10,380,120);
         signalGraph.setBounds(10,140, 770, 120);        
         odfGraph.setBounds(10,270, 770, 120);
-        // odfThresholdGraph.setBounds(10,640, 1000, 200);
-                
+               
         getContentPane().add(frameGraph);
         getContentPane().add(fftGraph);
         getContentPane().add(signalGraph);
         getContentPane().add(odfGraph);
-        // getContentPane().add(odfThresholdGraph);
- 
+        
         frameGraph.setBackground(Color.CYAN);
         signalGraph.setBackground(Color.GREEN);
         odfGraph.setBackground(Color.YELLOW);
         fftGraph.setBackground(Color.WHITE);
-        center(this);
+        center(this, 800, 700);
         tunePlayer.start();
         MattProperties.instance();
     }
@@ -102,6 +101,7 @@ public class MattGuiNB extends javax.swing.JFrame {
         btnLiveQuery = new javax.swing.JButton();
         cbSelectFFT = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
+        btnAbout = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBounds(new java.awt.Rectangle(0, 0, 1, 1));
@@ -259,6 +259,13 @@ public class MattGuiNB extends javax.swing.JFrame {
 
         jLabel1.setText("Graph:");
 
+        btnAbout.setText("About");
+        btnAbout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAboutActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -313,7 +320,9 @@ public class MattGuiNB extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(4, 4, 4)
-                                .addComponent(btnReindex))
+                                .addComponent(btnReindex)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnAbout))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGap(19, 19, 19)
                                 .addComponent(txtBest, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)))))
@@ -367,7 +376,8 @@ public class MattGuiNB extends javax.swing.JFrame {
                             .addComponent(btnPlayTranscription, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnBest)
                             .addComponent(btnReindex)
-                            .addComponent(btnLiveQuery)))
+                            .addComponent(btnLiveQuery)
+                            .addComponent(btnAbout)))
                     .addComponent(txtBest))
                 .addGap(171, 171, 171))
         );
@@ -379,7 +389,8 @@ public class MattGuiNB extends javax.swing.JFrame {
          int row = tblMatches.getSelectedRow();
          ABCMatch match = (ABCMatch) tuneMatches.elementAt(row);         
          try
-         {
+         {  
+             
              // TuneBook book = new TuneBook(new File(match.getFileName()));
              if (tunePlayer.isPlaying())
              {
@@ -388,7 +399,19 @@ public class MattGuiNB extends javax.swing.JFrame {
              else
              {
                     Tune tune = match.getTune();
-                     tunePlayer.play(tune);
+                    /*
+                    BasicPositionableMidiConverter converter = new BasicPositionableMidiConverter();
+                    javax.sound.midi.Sequence sequence = converter.toMidiSequence(tune);
+
+                    Synthesizer synth = MidiSystem.getSynthesizer();
+                    synth.getChannels()[0].programChange(25);
+                    synth.open();
+                    Receiver receiver = synth.getReceiver();
+                    Sequencer seq = MidiSystem.getSequencer();
+                    seq.setSequence(sequence);
+                    seq.start();
+                     */
+                    tunePlayer.play(tune);
              }
          }
          catch (Exception e)
@@ -440,7 +463,7 @@ public class MattGuiNB extends javax.swing.JFrame {
         fc.setFileFilter(new WavFilter());
         System.out.println(transcriber.getInputFile());
         
-        fc.setCurrentDirectory(new File("" + MattProperties.instance().get("BatchPath")));
+        fc.setSelectedFile(new File("" + MattProperties.instance().get("BatchPath")));
         int returnVal = fc.showOpenDialog(MattGuiNB.this);
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
@@ -490,7 +513,21 @@ public class MattGuiNB extends javax.swing.JFrame {
     }//GEN-LAST:event_btnQuitActionPerformed
 
     private void btnAnalysedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalysedActionPerformed
-        transcriber.playTranscription();
+        if (transcriber.isIsPlaying())
+        {
+            transcriber.setIsPlaying(false);
+            
+        }
+        else
+        {
+            new Thread()
+            {
+                public void run()
+                {
+                    transcriber.playTranscription();
+                }
+            }.start();
+        }
     }//GEN-LAST:event_btnAnalysedActionPerformed
 
     private void btnBestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBestActionPerformed
@@ -581,6 +618,10 @@ public class MattGuiNB extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_btnLiveQueryActionPerformed
+
+    private void btnAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAboutActionPerformed
+        About.instance().setVisible(true);
+    }//GEN-LAST:event_btnAboutActionPerformed
     
     /**
      * @param args the command line arguments
@@ -594,6 +635,7 @@ public class MattGuiNB extends javax.swing.JFrame {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAbout;
     private javax.swing.JButton btnAnalysed;
     private javax.swing.JButton btnBatch;
     private javax.swing.JButton btnBest;
@@ -682,13 +724,11 @@ public class MattGuiNB extends javax.swing.JFrame {
         txtBest.setText("");
     }
     
-    public void center(JFrame frame) 
+    public static void center(JFrame frame, int w, int h) 
     {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         Point center = ge.getCenterPoint();
         Rectangle bounds = ge.getMaximumWindowBounds();
-        int w = 800;
-        int h = 700;
         int x = center.x - w/2, y = center.y - h/2;
         frame.setBounds(x, y, w, h);
         if (w == bounds.width && h == bounds.height)

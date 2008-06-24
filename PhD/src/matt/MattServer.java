@@ -17,7 +17,7 @@ public class MattServer extends Thread {
         
     public void run()
     {
-        long serverThreadSleepTime = Long.parseLong(MattProperties.getP("serverThreadSleepTime"));
+        long serverThreadSleepTime = Long.parseLong(MattProperties.getString("serverThreadSleepTime"));
         Logger.log("Server staring...");
         running = true;
         while (running)
@@ -39,7 +39,7 @@ public class MattServer extends Thread {
                     BatchJob job = new BatchJob();
                     job.setJobId(results.getLong("id"));
                     job.setServerMode(true);
-                    String fileName = MattProperties.getP("tunometerPath") + System.getProperty("file.separator") + job.getJobId() + ".zip";
+                    String fileName = MattProperties.getString("tunometerPath") + System.getProperty("file.separator") + job.getJobId() + ".zip";
                     job.setFolder(new File(fileName));
                     job.start();
                 }

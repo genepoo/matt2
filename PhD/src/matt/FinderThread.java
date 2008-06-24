@@ -33,7 +33,7 @@ public class FinderThread extends Thread{
             lock.notify();
         }
         CorpusIndex index = CorpusIndex.instance();
-        edThreshold = Float.parseFloat("" + MattProperties.getP("editDistanceThreshold"));
+        edThreshold = Float.parseFloat("" + MattProperties.getString("editDistanceThreshold"));
         
         CorpusEntry current;
         
@@ -69,10 +69,8 @@ public class FinderThread extends Thread{
     
     private void searchIndexEntry(CorpusEntry entry)
     {
-        boolean logSearches = Boolean.parseBoolean("" + MattProperties.getP("logSearches"));
-        boolean useSlidingWindows = Boolean.parseBoolean("" + MattProperties.getP("useSlidingWindows"));
-        boolean expandShortTunes = Boolean.parseBoolean("" + MattProperties.getP("expandShortTunes"));
-        boolean useProperED = Boolean.parseBoolean("" + MattProperties.getP("useProperED"));
+        boolean logSearches = Boolean.parseBoolean("" + MattProperties.getString("logSearches"));
+        boolean expandShortTunes = Boolean.parseBoolean("" + MattProperties.getString("expandShortTunes"));
         if (logSearches)
         {
             Logger.log("Searching tune: " + entry.getX() + " " + entry.getTitle());
@@ -105,48 +103,13 @@ public class FinderThread extends Thread{
                 nlSearchIn.setLength(toFind.length());
             }
             
-            if (! useSlidingWindows)
+            float ed;
+            ed = EditDistance.minEdSubString(toFind, "" + nlSearchIn);
+            if (ed < bestEditdistance)
             {
-                float ed;
-                if (useProperED)
-                {
-                    ed = EditDistance.getLevenshteinDistance(toFind, "" + nlSearchIn);
-                }
-                else
-                {
-                    ed = EditDistance.minEdSubString(toFind, "" + nlSearchIn);
-                }
-                if (ed < bestEditdistance)
-                {
-                    bestEditdistance = ed;
-                    bestBit = "" + nlSearchIn;
-                }
-            }
-            else
-            {
-                for (int i = 0 ; i < (nlSearchIn.length() + 1) - toFind.length() ; i ++)
-                {
-                    String tuneBit = nlSearchIn.substring(i, i + toFind.length());
-
-                    float ed;
-                    if (useProperED)
-                    {
-                        ed = EditDistance.getLevenshteinDistance(toFind, tuneBit);
-                    }
-                    else
-                    {
-                        ed = EditDistance.editDistance(toFind, tuneBit);
-                    }
-
-                    if (ed < bestEditdistance)
-                    {
-                        bestEditdistance = ed;
-                        bestBit = tuneBit;
-                    }
-                }
-            }
-            
-            
+                bestEditdistance = ed;
+                bestBit = "" + nlSearchIn;
+            }                       
             ABCMatch match = new ABCMatch();
             match.setLine(bestBit);
             match.setEditDistance(bestEditdistance);
@@ -167,5 +130,4 @@ public class FinderThread extends Thread{
         }
         
     }
-    
 }

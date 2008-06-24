@@ -46,6 +46,7 @@ public class ABCFinder extends Thread
 
     public void setSearchString(String searchString) {
         this.searchString = searchString;
+        
     }
        
     public void finda()
@@ -73,8 +74,8 @@ public class ABCFinder extends Thread
         toFind = MattABCTools.stripBarDivisions(toFind);
         toFind = toFind.toUpperCase();
         Logger.log("Target: " + toFind);
-        
-        if (SetFinder.isSet(toFind))
+        // MattGuiNB.instance().getTxtABC().setText(toFind);
+        if (MattProperties.getBoolean("setsHeuristic") && SetFinder.isSet(toFind))
         {
             Logger.log("I think it's a set, therefore using the set finder algorithm");
             setFinder = new SetFinder();
@@ -107,7 +108,7 @@ public class ABCFinder extends Thread
             MattGuiNB.instance().clearMatches();
             final CorpusIndex index = CorpusIndex.instance();
             index.reset();
-            int numThreads = Integer.parseInt("" + MattProperties.getP("numThreads"));
+            int numThreads = Integer.parseInt("" + MattProperties.getString("numThreads"));
 
             finderThreads = new FinderThread[numThreads];
             Object lock = new Object();

@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package matt;
+package matt; 
 import java.io.*;
 import java.sql.*;
 import java.util.PriorityQueue;
@@ -71,6 +71,7 @@ public class BatchJob extends Thread
                 s.execute();
             }
             results = new Results();
+            results.log("" + MattProperties.instance());
             File[] files;
             if (folder.isDirectory())
             {
@@ -142,6 +143,9 @@ public class BatchJob extends Thread
                         }
                         result.append(delim);                   
                         result.append(match.getEditDistance());
+                        result.append(delim);   
+                        float normalisedEd = ((float) match.getEditDistance() / (float) transcriber.getTranscribedNotes().length) * 100.0f;
+                        result.append(normalisedEd);
                         result.append(delim);
                         if (serverMode)
                         {

@@ -50,8 +50,9 @@ public class Transcriber {
     float staticThreshold = 0;
     
     private float[] signal;
-
-   
+    
+    private boolean isPlaying = false;
+  
     /** Creates a new instance of Transcriber */
     public Transcriber() {
         frameSize = 2048;
@@ -108,9 +109,11 @@ public class Transcriber {
                 mattGui.instance().getProgressBar().setValue(signalIndex);
             }
             mattGui.log("Graphing...");
-            if (Boolean.parseBoolean("" + MattProperties.getP("drawSignalGraphs")) == true)
+            if (Boolean.parseBoolean("" + MattProperties.getString("drawSignalGraphs")) == true)
             {
                 signalGraph.getDefaultSeries().setData(signal);
+                signalGraph.getDefaultSeries().setGraphType(Series.LINE_GRAPH);
+                
                 signalGraph.repaint();
             }
             mattGui.log("Done.");
@@ -120,13 +123,11 @@ public class Transcriber {
         {
             Logger.log("Could not load audio file " + inputFile);
             e.printStackTrace();
-        }
-	
+        }	
     }
     
     public void transcribe()
-    {
-        
+    {        
         mattGui.setTitle(getInputFile());
         mattGui.enableButtons(false);
                         
@@ -142,13 +143,10 @@ public class Transcriber {
             float[] frame = new float[frameSize];            
             float[] odf = new float[odfSize];            
             
+            odfGraph.clear();
+            signalGraph.getDefaultSeries().clearLines();
+            
             // Iterate through the signal a hop at a time
-            
-            //mattGui.getFftTabs().removeAll();
-            //fftSignal(signal);
-            // mattGui.enableButtons(true);            
-            // if (true) return;
-            
             mattGui.log("Calculating harmonicity...");
             MattGuiNB.instance().getProgressBar().setValue(0);
             MattGuiNB.instance().getProgressBar().setMaximum(numHops);
@@ -190,30 +188,34 @@ public class Transcriber {
                 {
                     odfIndex ++;
                 }
-                if (Boolean.parseBoolean("" + MattProperties.getP("drawFrameGraphs")) == true)
+                if (Boolean.parseBoolean("" + MattProperties.getString("drawFrameGraphs")) == true)
                 {
-                    frameGraph.getDefaultSeries().setData(frame);
+                    frameGraph.getDefaultSeries().setScale(false);
+                    frameGraph.getDefaultSeries().setData(frame);                    
                     frameGraph.repaint();
                 }                
             }
             
             // Now calculate the proposed onsets
             mattGui.log("Calculating onsets...");
-            Vector onsetsVector = new Vector();            
-            onsetsVector = PeakCalculator.calculatePeaks(odf, 4, odf.length, 0);
+            Vector<Integer> onsetsVector = new Vector();            
+            onsetsVector = PeakCalculator.calculatePeaks(odf, 1, odf.length, 0);
                                     
             // Now calculate the dynamic threshold
             mattGui.log("Calculating dynamic threshold...");
             float[] odfThreshold = calculateDynamicThreshold(odf, dynamicThresholdTime);
             
-            if (Boolean.parseBoolean("" + MattProperties.getP("drawSignalGraphs")) == true)
+            if (Boolean.parseBoolean("" + MattProperties.getString("drawSignalGraphs")) == true)
             {
-                odfGraph.getDefaultSeries().setData(odf);
+                odfGraph.getDefaultSeries().setScale(true);                
+                odfGraph.setScalingFactor(MattProperties.getFloat("scaleODFFactor"));                
+                odfGraph.getDefaultSeries().setData(odf);                
                 odfGraph.getDefaultSeries().addHorizontalLine(this.staticThreshold);
                 odfGraph.getDefaultSeries().setPlotPoints(true);
-            
+
                 // Plot the ODF threshold on the ODF graph
                 Series odfThresholdSeries = new Series(odfGraph);
+                odfThresholdSeries.setScale(false);                
                 odfThresholdSeries.setData(odfThreshold);
                 odfThresholdSeries.setMin(odfGraph.getDefaultSeries().getMin());
                 odfThresholdSeries.setMax(odfGraph.getDefaultSeries().getMax());                                   
@@ -242,18 +244,18 @@ public class Transcriber {
             
             // Plot the onsets
             
-             Enumeration en = onsetsVector.elements();
+            Enumeration en = onsetsVector.elements();
             while (en.hasMoreElements())
             {
                 int index = ((Integer)en.nextElement()).intValue();
                 odfGraph.getDefaultSeries().addVerticalLine(index);                
             }
              
-            /*for (int i = 0 ; i < odfSignal.length ; i ++)
+            for (int i = 0 ; i < odfSignal.length ; i ++)
             {
-                signalGraph.getDefaultSeries().addVerticalLine(odfSignal[i]);
+                signalGraph.getDefaultSeries().addVerticalLine2(odfSignal[i]);
             }
-             */
+
             signalGraph.repaint();
             odfGraph.repaint();
             
@@ -263,7 +265,7 @@ public class Transcriber {
             abcTranscriber.makeScale("D", "Major");
             abcTranscriber.printScale();
             String notes = abcTranscriber.convertToABC();
-            if (MattProperties.getP("mode").equals("client"))
+            if (MattProperties.getString("mode").equals("client"))
             {
                 MattGuiNB.instance().getTxtABC().setText("");
                 MattGuiNB.instance().getTxtABC().append(notes);
@@ -353,8 +355,8 @@ public class Transcriber {
             float frequency;
             PitchDetector pitchDetector = new PitchDetector();
             
-            //frequency = pitchDetector.maxPeek(fftOut, sampleRate, fftFrameSize); 
-            //mattGui.log("Frequency by highest value: " + frequency);
+            frequency = pitchDetector.maxPeek(fftOut, sampleRate, fftFrameSize); 
+            mattGui.log("Frequency by highest value: " + frequency);
 
             frequency = pitchDetector.maxBryanFrequency(fftOut, sampleRate, fftFrameSize);
             mattGui.log("Frequency by Bryan's algorithm value: " + frequency);
@@ -366,27 +368,19 @@ public class Transcriber {
             newNote.setEnergy(energy);
             notes.addElement(newNote);            
             
-            if (Boolean.parseBoolean("" + MattProperties.getP("drawFFTGraphs")) == true)
+            if (Boolean.parseBoolean("" + MattProperties.getString("drawFFTGraphs")) == true)
             {
                 Graph fftGraph = new Graph();
 
                 fftGraph.setBounds(0, 0, 1000, 1000);
-                fftGraph.getDefaultSeries().setData(fftOut);
+                fftGraph.getDefaultSeries().setScale(false);
+                fftGraph.getDefaultSeries().setData(fftOut);                
                 MattGuiNB.instance().addFFTGraph(fftGraph, "" + newNote.getStart());
             }
             mattGui.log("");             
         }
-        
-        /*
-         mattGui.log("Notes before onset post processing:");
-        for (int i = 0 ; i < notes.size() ; i ++)
-        {
-            TranscribedNote note = notes.elementAt(i);
-            mattGui.log(note);
-        }
-         */ 
 
-        OnsetPostProcessor opp = new OnsetPostProcessor(notes);
+        OnsetPostProcessor opp = new OnsetPostProcessor(notes, sampleRate, signal);
         TranscribedNote[] postProcessed = opp.postProcess();
         for (int i = 0 ; i < postProcessed.length ; i ++)
         {
@@ -488,10 +482,16 @@ public class Transcriber {
         
     void playTranscription(TranscribedNote[] transcribedNotes)
     {
+        isPlaying = true;
         for (int i = 0 ; i < transcribedNotes.length; i ++)
         {
+            if (!isPlaying)
+            {
+                break;
+            }
             TonePlayer.playTone(transcribedNotes[i].getFrequency(), transcribedNotes[i].getDuration(), 0.25f);
         }
+        isPlaying = false;
     }
     
     void playOriginal()
@@ -592,5 +592,17 @@ public class Transcriber {
     public void setAbcTranscription(String abcTranscription)
     {
         this.abcTranscription = abcTranscription;
+    }
+
+    public
+
+    boolean isIsPlaying()
+    {
+        return isPlaying;
+    }
+
+    public void setIsPlaying(boolean isPlaying)
+    {
+        this.isPlaying = isPlaying;
     }
 }

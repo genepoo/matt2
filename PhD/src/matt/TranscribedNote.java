@@ -18,6 +18,8 @@ public class TranscribedNote {
     private float frequency;    
     private float start;
     private float duration;
+    private float unmergedDuration;
+    private float unmergedStart;
     private float energy;
     private String name = "NA";
     private int quaverQ;
@@ -26,7 +28,9 @@ public class TranscribedNote {
     public TranscribedNote(float frequency, float start, float duration) {
         setFrequency(frequency);
         this.start = start;
+        this.unmergedStart = start;
         this.duration = duration;
+        this.unmergedDuration = duration;
     }
 
     public float getFrequency() {
@@ -95,5 +99,25 @@ public class TranscribedNote {
     public void setMultiple(int multiple)
     {
         this.multiple = multiple;
+    }
+
+    public float getUnmergedDuration()
+    {
+        return unmergedDuration;
+    }
+
+    public void setUnmergedDuration(float unmergedDuration)
+    {
+        this.unmergedDuration = unmergedDuration;
+    }
+
+    public float getUnmergedStart()
+    {
+        return unmergedStart;
+    }
+
+    public void setUnmergedStart(float unmergedStart)
+    {
+        this.unmergedStart = unmergedStart;
     }
 }

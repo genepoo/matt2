@@ -12,7 +12,7 @@ package matt;
 public class Logger {
     public static void log(Object msg)
     {
-        if (MattProperties.getP("mode").equals("client"))
+        if (MattProperties.getString("mode").equals("client"))
         {
             MattGuiNB.log(msg);
         }

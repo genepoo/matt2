@@ -37,7 +37,7 @@ public class CorpusIndex {
     
     private CorpusIndex()
     {
-        if (MattProperties.getP("mode").equals("client"))
+        if (MattProperties.getString("mode").equals("client"))
         {
             loadIndex();
         }
@@ -144,10 +144,10 @@ public class CorpusIndex {
         try
         {
             Logger.log("Reindexing tunes in database...");
-            String url = "" + MattProperties.getP("dburl");
-            String user = "" + MattProperties.getP("dbuser");
-            String password  = "" + MattProperties.getP("dbpassword");
-            String driver  = "" + MattProperties.getP("dbdriver");
+            String url = "" + MattProperties.getString("dburl");
+            String user = "" + MattProperties.getString("dbuser");
+            String password  = "" + MattProperties.getString("dbpassword");
+            String driver  = "" + MattProperties.getString("dbdriver");
             
             Class.forName(driver);
             conn = DriverManager.getConnection(url, user, password);
@@ -216,7 +216,7 @@ public class CorpusIndex {
                         addTunes(files[i],  fw);
                     }
                     fw.close();
-                    if (MattProperties.getP("mode").equals("server"))
+                    if (MattProperties.getString("mode").equals("server"))
                     {
                         reindexDatabase();
                     }
