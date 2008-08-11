@@ -19,6 +19,9 @@ public class CorpusIndex {
     static CorpusIndex _instance = null;;
     int current;
     
+    private boolean createMIDI = true;
+    private boolean createParsons = true;
+    
     private boolean ready;
         
     public static CorpusIndex instance()
@@ -196,7 +199,15 @@ public class CorpusIndex {
             {
                 ready = false;
                 Logger.log("Reindexing files...");
-            
+                
+                String folder = MattProperties.getString("MIDIIndex");
+                File midiDir = new File(folder);
+                String[] children = midiDir.list();
+                for (int ii = 0; ii < children.length; ii++) 
+                {
+                    new File(midiDir, children[ii]).delete();
+                }
+           
                 ABCFilter filter = new ABCFilter();
                 index.clear();
 
@@ -248,9 +259,9 @@ public class CorpusIndex {
                 Logger.log("Indexing tune: " + tune.getReferenceNumber() + " " + tune.getTitles()[0]);                   
                 String notation = tuneBook.getTuneNotation(tuneRefs[i]);
 
-                String key = notation;
-
-                key = MattABCTools.skipHeaders(key);
+                int tuneStart = MattABCTools.skipHeaders(notation);
+                String key = notation.substring(tuneStart);
+                String head = notation.substring(0, tuneStart);
                 int iVariation = key.indexOf("\"");
                 int start = 0;
 
@@ -267,7 +278,7 @@ public class CorpusIndex {
                     while (! endOfTune)
                     {
                         String subKey = key.substring(start, iVariation);                    
-                        createCorpusEntry(fw, subKey, f.getName(), tune.getTitles()[0], tune.getReferenceNumber());                    
+                        createCorpusEntry(fw, head, subKey, f.getName(), tune.getTitles()[0], tune.getReferenceNumber());                    
                         // Find the end of the comment
                         iVariation = key.indexOf("\"", iVariation + 1);
                         start = iVariation + 1;
@@ -277,14 +288,14 @@ public class CorpusIndex {
                         {
                             endOfTune = true;
                             subKey = key.substring(start, key.length());                    
-                            createCorpusEntry(fw, subKey, f.getName(), tune.getTitles()[0], tune.getReferenceNumber());                    
+                            createCorpusEntry(fw, head, subKey, f.getName(), tune.getTitles()[0], tune.getReferenceNumber());                    
                         }
                     }
                 }
                 else
                 {                
                     // Create an entry for the whole tune
-                    createCorpusEntry(fw, key, f.getName(), tune.getTitles()[0], tune.getReferenceNumber());                    
+                    createCorpusEntry(fw, head, key, f.getName(), tune.getTitles()[0], tune.getReferenceNumber());                    
                 }
             }
             catch (Exception e)
@@ -302,16 +313,29 @@ public class CorpusIndex {
         }
     }
     
-    private void createCorpusEntry(FileWriter fw, String key, String fileName, String title, int x) throws IOException
+    private void createCorpusEntry(FileWriter fw, String head, String key, String fileName, String title, int x) throws Exception
     {
-        key = MattABCTools.stripComments(key);
-        key = MattABCTools.stripWhiteSpace(key);
-        key = MattABCTools.expandLongNotes(key);
-        key = MattABCTools.expandParts(key);
-        key = MattABCTools.stripBarDivisions(key);
-        key = MattABCTools.removeTripletMarks(key);        
-        key = key.toUpperCase();
+        String parsons = null;
+        
+        String midiFile = MIDITools.instance().createMIDI(head, key, fileName, title, x);
+        parsons = MIDITools.instance().toParsons(midiFile);
+        
+        try
+        {
+            key = MattABCTools.stripComments(key);
 
+            key = MattABCTools.stripWhiteSpace(key);
+            key = MattABCTools.expandLongNotes(key);
+            key = MattABCTools.expandParts(key);
+            key = MattABCTools.stripBarDivisions(key);
+            key = MattABCTools.removeTripletMarks(key);        
+            key = key.toUpperCase();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            key = "";
+        }
         if (key.length() == 0)
         {
             Logger.log("Could not index: " + title);
@@ -323,6 +347,7 @@ public class CorpusIndex {
             ce.setTitle(title);
             ce.setX(x);
             ce.setKey(key);
+            ce.setParsons(parsons);
             fw.write(ce.toIndexFile());
             fw.flush();                
             index.add(ce);

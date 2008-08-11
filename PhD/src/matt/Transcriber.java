@@ -262,9 +262,18 @@ public class Transcriber {
             transcribedNotes = calculateNotesUsingFFT(odfSignal, signal, sampleRate);  
             
             ABCTranscriber abcTranscriber = new ABCTranscriber(this);
-            abcTranscriber.makeScale("D", "Major");
+            // abcTranscriber.makeScale("D", "Major");
             abcTranscriber.printScale();
-            String notes = abcTranscriber.convertToABC();
+            String notes = null;
+            if (MattProperties.getString("searchMethod").equalsIgnoreCase("bryan"))
+            {
+                 notes = abcTranscriber.convertToABC();
+            }
+            if (MattProperties.getString("searchMethod").equalsIgnoreCase("parsons"))
+            {
+                notes = abcTranscriber.convertToParsons();
+            }
+            
             if (MattProperties.getString("mode").equals("client"))
             {
                 MattGuiNB.instance().getTxtABC().setText("");
@@ -434,17 +443,20 @@ public class Transcriber {
     private void configureFilters()
     {
         float ratio = 1.05946309436f;
-        float frequency = ABCTranscriber.D4;
+        float frequency = MattProperties.getFloat(MattProperties.getString("fundamentalNote")) / (float) Math.pow(ABCTranscriber.RATIO, 12);
         // Create a filter for each of the semitones in the key of D
+        System.out.println("FILTERS:");
         for (int i = 0 ; i < tdFilters.length ; i ++)
         {            
             tdFilters[i] = new TimeDomainCombFilter();
             tdFilters[i].setSampleRate(sampleRate);
-            tdFilters[i].setFrequency((int) frequency);            
+            tdFilters[i].setFrequency((int) frequency);     
+            System.out.println(tdFilters[i].getFrequency() + "\t" + tdFilters[i].getDelay());
             frequency = frequency * ratio;            
         }
         
-        frequency = ABCTranscriber.D4;
+        /*
+         frequency = MattProperties.getFloat(MattProperties.getString("fundamentalNote"));
         for (int i = 0 ; i < 24 ; i ++)
         {            
             fdFilters[i] = new FrequencyDomainCombFilter();
@@ -452,6 +464,7 @@ public class Transcriber {
             fdFilters[i].setFundamental((int) frequency);            
             frequency = frequency * ratio;            
         }
+         */
     }
         
     private float sampleToSeconds(int sample)

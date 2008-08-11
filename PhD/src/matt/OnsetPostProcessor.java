@@ -93,7 +93,7 @@ public class OnsetPostProcessor {
                 transcribedNotes.remove(0);
             } 
         }
-        
+
         // Now go back and split long notes and redo the FFT
         if (MattProperties.getBoolean("missedOnsetCompensation"))
         {
@@ -130,19 +130,19 @@ public class OnsetPostProcessor {
                     {
                         Logger.log("Recalculating energy and FFT for note: " + (m + i));
                         TranscribedNote note = transcribedNotes.get(m + i);
-                        
+
                         int signalStart =  (int) (note.getUnmergedStart() * (float)sampleRate);
                         int signalEnd = (int) ((note.getUnmergedStart() + note.getUnmergedDuration()) * (float)sampleRate);
                         int signalLength = signalEnd - signalStart;
                         int smallestPowerOf2 = FastFourierTransform.smallestPowerOf2(signalLength);
-                        
+
                         FastFourierTransform fft = new FastFourierTransform();
                         EnergyCalculator ec = new EnergyCalculator();
                         ec.setSignal(signal);                        
                         ec.setStart(signalStart);
                         ec.setEnd(signalEnd);
                         float energy = ec.calculateAverageEnergy();
-                        
+
                         int fftFrameSize = (int) Math.pow(2, smallestPowerOf2);
                         Logger.log("Performing FFT on frame size " + fftFrameSize);
                         float fftFrame[] = new float[fftFrameSize];
@@ -176,7 +176,6 @@ public class OnsetPostProcessor {
                 }
             }
         }
-
         Logger.log("After Missed Onset Compensation");        
         for (int i = 0 ; i < transcribedNotes.size(); i ++)
         {

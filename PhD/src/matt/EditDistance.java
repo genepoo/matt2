@@ -100,6 +100,17 @@ public class EditDistance
             }
 
         }
+        
+         
+          for (int ii = 0  ; ii < d.length ; ii ++)
+        {
+            for (int jj = 0  ; jj < d[ii].length; jj ++)
+            {
+                System.out.print(d[ii][jj] + "\t");
+            }
+            System.out.println();
+        }
+         
         // Step 7
     /*
         float max;
@@ -322,8 +333,8 @@ public class EditDistance
 
         String toFind, searchIn;
 
-        toFind = "FDEFGDGXZXX";
-        searchIn = "AGEDGGGDGBCDEGDBBAABDGGGDGBDEFGABAGEDGGGDGBCDEGDBBAAAAAAFGGGDEFGDGEGDDAAAFGGGDEFGDBBAAAAAAFGGGDEGDGEGDGBBBGAAAGEDEFGGGE"; // DGGGDGBDEFGAB"; //";
+        toFind = "DFGDGBDEGGAB";
+        searchIn = "DGGGDGBDEFGAB"; // DGGGDGBDEFGAB"; //";
 
 
         System.out.println("beditDistance: " + edSubString(toFind, searchIn));
