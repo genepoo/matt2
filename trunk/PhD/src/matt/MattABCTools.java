@@ -23,7 +23,7 @@ public class MattABCTools {
     public MattABCTools() {
     }
     
-    public static String skipHeaders(String tune)
+    public static int skipHeaders(String tune)
     {
         int i = 0;
         int inChars = 0;
@@ -51,7 +51,7 @@ public class MattABCTools {
             i ++;
             inChars ++;
         }
-        return tune.substring(i);
+        return i;
     }
     
     public static String expandParts(String notes)

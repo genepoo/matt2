@@ -16,6 +16,7 @@ public class CorpusEntry {
     private String file;
     private int x;
     private String title;
+    private String parsons;
     private int index;
 
     public CorpusEntry()
@@ -35,9 +36,19 @@ public class CorpusEntry {
         setTitle(stTok.nextToken());
         setFile(stTok.nextToken());
         setX(Integer.parseInt(stTok.nextToken()));
+        setParsons(stTok.nextToken());
     }
     public String getKey()
     {
+        if (MattProperties.getString("searchMethod").equals("parsons"))
+        {
+            return parsons;
+        }
+        if (MattProperties.getString("searchMethod").equals("bryan"))
+        {
+            return key;
+        }
+
         return key;
     }
 
@@ -86,6 +97,8 @@ public class CorpusEntry {
         sb.append(file);
         sb.append("\t");
         sb.append(x);
+        sb.append("\t");
+        sb.append(parsons);        
         sb.append(System.getProperty("line.separator"));
         
         return sb.toString();                
@@ -99,5 +112,13 @@ public class CorpusEntry {
     public void setIndex(int index)
     {
         this.index = index;
+    }
+
+    public String getParsons() {
+        return parsons;
+    }
+
+    public void setParsons(String parsons) {
+        this.parsons = parsons;
     }
 }

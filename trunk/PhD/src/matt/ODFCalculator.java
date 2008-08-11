@@ -102,22 +102,7 @@ public class ODFCalculator extends Thread {
     public void setOdf(float[] odf)
     {
         this.odf = odf;
-    }
-    
-    public void configureFilters()
-    {
-        float ratio = 1.05946309436f;
-        float frequency = ABCTranscriber.D3;
-        // Create a filter for each of the semitones in the key of D
-        for (int i = 0 ; i < tdFilters.length ; i ++)
-        {            
-            tdFilters[i] = new TimeDomainCombFilter();
-            tdFilters[i].setSampleRate(sampleRate);
-            tdFilters[i].setFrequency((int) frequency);            
-            frequency = frequency * ratio;            
-        }
-        
-    }
+    }   
 
     public int getSampleRate()
     {

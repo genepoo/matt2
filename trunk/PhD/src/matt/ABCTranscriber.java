@@ -16,6 +16,7 @@ import java.util.*;
 public class ABCTranscriber {
     
     private static final float RANGE = 0.1f;    
+    public static final float RATIO = 1.05946309436f;
     
     TranscribedNote[] transcribedNotes;
     Transcriber transcriber;
@@ -23,6 +24,8 @@ public class ABCTranscriber {
     public static final int REEL = 0;
     public static final int JIG = 1;
     public static final int HORNPIPE = 2;
+    public static final int MIDI_NOTES = 87;
+    public static final int MIDI_START = 21;
 
     
     enum pitch_model {FLUTE, WHISTLE};
@@ -34,9 +37,10 @@ public class ABCTranscriber {
            
     public static String [] noteNames = {"D,", "E,", "F,", "G,", "A,", "B,", "C", "D", "E", "F", "G", "A", "B","c", "d", "e", "f", "g", "a", "b", "c'", "d'", "e'", "f'", "g'", "a'", "b'", "c''", "d''"}; 
     public static float[] knownFrequencies = new float[noteNames.length];
+    public static float[] midiNotes = new float[87];
     
-    public static final float D3 = 146.83f; 
-    public static final float D4=  293.66f; // Start transcription of the whistle one octive up
+    // public static final float D3 = 146.83f; 
+    // public static final float D4=  293.66f; // Start transcription of the whistle one octive up
         
     private float maxEnergy;
     private float averageEnergy;
@@ -73,7 +77,7 @@ public class ABCTranscriber {
 
     void makeScale(String inKey, String mode) 
     {
-        float ratio = 1.05946309436f;
+        
         // W - W - H - W - W - W - H
         int[] majorKeyIntervals = {1, 2, 4, 5, 6
                                  , 8, 9, 11, 12, 13
@@ -84,36 +88,107 @@ public class ABCTranscriber {
         {
             if (pitchModel == pitch_model.FLUTE)
             {
-                knownFrequencies[0] = D3;
+                knownFrequencies[0] = MattProperties.getFloat(MattProperties.getString("fundamentalNote")) / (float) Math.pow(RATIO, 12);
             }
             else
             {   // Use the whistle pitch model
-                knownFrequencies[0] = D4;
+                knownFrequencies[0] = MattProperties.getFloat(MattProperties.getString("fundamentalNote"));
             }
             // W - W - H - W - W - W - H
             for (int i = 1 ; i < knownFrequencies.length ; i ++)
             {
                if (isWholeToneInterval(i, majorKeyIntervals))
                {
-                       knownFrequencies[i] = knownFrequencies[i - 1] * ratio * ratio;
+                       knownFrequencies[i] = knownFrequencies[i - 1] * RATIO * RATIO;
                }
                else
                {
-                    knownFrequencies[i] = knownFrequencies[i - 1] * ratio;
+                    knownFrequencies[i] = knownFrequencies[i - 1] * RATIO;
                }               
             }
         }
         
+        System.out.println("FREQUENCIES:");
+        for (int i = 0 ; i < knownFrequencies.length ; i ++)
+        {
+            System.out.println(noteNames[i] + "\t" + knownFrequencies[i]);
+        }
+        
+    }
+    private void makeMidiNotes()
+    {
+        midiNotes[0] = 27.5f;
+        for (int i = 1 ; i < MIDI_NOTES ; i ++)
+        {
+            midiNotes[i] = midiNotes[i - 1] * RATIO;
+        }
     }
             
     /** Creates a new instance of ABCTranscriber */
     public ABCTranscriber() {
         pitchModel = pitch_model.FLUTE;
+        
     }
         
     public ABCTranscriber(Transcriber transcriber) {
         this.transcribedNotes = transcriber.getTranscribedNotes();
         this.transcriber = transcriber;
+        makeMidiNotes();
+    }
+    
+    public void convertToMidi()
+    {
+        for (int i = 0 ; i < transcribedNotes.length; i ++)
+        {
+            float distance[] = new float[MIDI_NOTES];
+
+            for (int j = 0 ; j < MIDI_NOTES ; j ++)
+            {
+                float difference = transcribedNotes[i].getFrequency() - midiNotes[j];
+
+                distance[j] = difference * difference;
+            }
+            int minIndex = 0;
+            float min = Float.MAX_VALUE; 
+            for (int j = 0 ; j < MIDI_NOTES ; j ++)
+            {
+                if (distance[j] < min)
+                {
+                    minIndex = j;
+                    min = distance[j];
+                }
+            }
+            transcribedNotes[i].setMidiNote(minIndex);
+        }
+    }
+    
+    public String convertToParsons()
+    {
+        convertToMidi();
+        StringBuffer parsons = new StringBuffer();
+        float previousNote = -1;
+        for (int i = 0 ; i < transcribedNotes.length ; i ++)
+        {
+            float currentNote = transcribedNotes[i].getMidiNote();
+            // No parsons code for the first note
+            if (previousNote != -1)
+            {
+                if (currentNote > previousNote)
+                {
+                    parsons.append("U");
+                }
+                else if (currentNote < previousNote)
+                {
+                    parsons.append("D");
+                }
+                else
+                {
+                    parsons.append("S");
+                }
+            }
+            previousNote = currentNote;
+        }
+        return parsons.toString();
     }
     
     public String convertToABC()
@@ -294,14 +369,14 @@ public class ABCTranscriber {
         // If the number of notes > half way through D5 is greater than the number of notes < half way through D5
         // Then its probably a tin whistle
         int flute = 0, whistle = 0;
-        float G5 = 783.99f;
+        float G4 = (float) (MattProperties.getFloat(MattProperties.getString("fundamentalNote")) * Math.pow(RATIO, 17.0f));
         for (int i = 0 ; i < transcribedNotes.length ; i ++)
         {
             if (isBreath(transcribedNotes[i]))
             {
                 continue;
             }
-            if (transcribedNotes[i].getFrequency() < G5)
+            if (transcribedNotes[i].getFrequency() < G4)
             {
                 flute ++;
             }

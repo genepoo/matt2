@@ -15,6 +15,7 @@ package matt;
  */
 public class TranscribedNote {    
     
+    private int midiNote;
     private float frequency;    
     private float start;
     private float duration;
@@ -119,5 +120,13 @@ public class TranscribedNote {
     public void setUnmergedStart(float unmergedStart)
     {
         this.unmergedStart = unmergedStart;
+    }
+
+    public int getMidiNote() {
+        return midiNote;
+    }
+
+    public void setMidiNote(int midiNote) {
+        this.midiNote = midiNote;
     }
 }
