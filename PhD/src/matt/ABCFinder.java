@@ -235,13 +235,6 @@ public class ABCFinder extends Thread
     
 
 }
-class ABCFilter implements FilenameFilter
-{
-      public boolean accept(File dir, String name) 
-      {
-            return (name.contains(".abc") || name.contains(".ABC"));
-      }        
-}
 
     /*
      public Tune[] find()
