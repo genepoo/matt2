@@ -10,6 +10,10 @@
 package matt;
 
 import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.swing.JScrollPane;
 /**
@@ -41,6 +45,66 @@ public class Graph extends javax.swing.JScrollPane {
         scalingFactor = MattProperties.getFloat("scaleGraphFactor");
         setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+    }
+    
+    public void save() 
+    {
+        String fileName = null;
+        try
+        {
+            
+            while (true)
+            {
+                SimpleDateFormat dateFormat = new SimpleDateFormat();
+            
+                long start;
+                dateFormat.applyPattern("dd-MM-yyyy HHmmssSS");            
+                start = System.currentTimeMillis();
+                Date now = new Date();
+                now.setTime(start);
+
+                fileName = MattProperties.instance().getProperty("resultsFolder") + System.getProperty("file.separator") + "graph "  + dateFormat.format(now) + ".txt";
+
+                if (new File(fileName).exists())
+                {
+                    try
+                    {
+                        Thread.sleep(100);
+                    }
+                    catch (InterruptedException e)
+                    {
+
+                    }
+                }
+                else
+                {
+                    break;                
+                }
+            }
+            
+            FileWriter fw = new FileWriter(fileName);
+            Enumeration en = series.elements();
+
+            while (en.hasMoreElements())
+            {
+                Series series = (Series) en.nextElement();
+                float[] data = series.getData();
+                for (int i = 0 ; i < data.length; i ++)
+                {
+                    fw.write("" + data[i]);
+                    if (i < data.length - 1)
+                    {
+                        fw.write(",");
+                    }
+                }
+                fw.write(System.getProperty("line.separator"));
+            }
+            fw.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
         
     public void clear()

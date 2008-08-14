@@ -8,6 +8,7 @@ package matt;
 import java.io.*;
 
 import javax.sound.midi.*;
+import java.util.*;
 
 /**
  *
@@ -75,12 +76,12 @@ public class MIDITools {
         
         return midiFileName;
     }
-    public String toParsons(String file) throws InvalidMidiDataException, IOException 
+    
+    public int[] toMIDISequence(String file) throws InvalidMidiDataException, IOException 
     {
-        StringBuffer parsons = new StringBuffer("");
         Sequence sequence = MidiSystem.getSequence(new File(file));
         Track[] tracks = sequence.getTracks();
-        int previousNote = -1;
+        ArrayList<Integer> midiSequence = new ArrayList();
         for(int i = 0 ; i < tracks[0].size(); i ++)
         {
             MidiMessage mm = tracks[0].get(i).getMessage();
@@ -90,28 +91,60 @@ public class MIDITools {
             {                
                 byte[] b = mm.getMessage();
                 int currentNote = b[1];
-                
-                // No parsons code for the first note
-                if (previousNote != -1)
-                {
-                    if (currentNote > previousNote)
-                    {
-                        parsons.append("U");
-                    }
-                    else if (currentNote < previousNote)
-                    {
-                        parsons.append("D");
-                    }
-                    else
-                    {
-                        parsons.append("S");
-                    }
-                }
-                previousNote = currentNote;
-                // System.out.println(b);
+                midiSequence.add(new Integer(currentNote));
             }
             
+        }        
+        int[] ret = new int[midiSequence.size()];
+        for (int i = 0 ; i < midiSequence.size() ; i ++)
+        {
+            ret[i] = midiSequence.get(i).intValue();
+
         }
+        return ret;
+    }
+    
+    public String arrayToString(int[] midiSequence)
+    {
+        StringBuffer ret = new StringBuffer();
+        for (int i = 0 ; i < midiSequence.length ; i ++)
+        {
+            ret.append("" + midiSequence[i]);
+            if (i < midiSequence.length - 1)
+            {
+                ret.append(",");
+            }                
+        }
+        return ret.toString();
+    }
+    
+    public String toParsons(int[] midiSequence) throws InvalidMidiDataException, IOException 
+    {
+        int previousNote = -1;
+        StringBuffer parsons  = new StringBuffer();
+        for(int i = 0 ; i < midiSequence.length; i ++)
+        {
+
+            int currentNote = midiSequence[i];
+            // No parsons code for the first note
+            if (previousNote != -1)
+            {
+                if (currentNote > previousNote)
+                {
+                    parsons.append("U");
+                }
+                else if (currentNote < previousNote)
+                {
+                    parsons.append("D");
+                }
+                else
+                {
+                    parsons.append("S");
+                }
+            }
+            previousNote = currentNote;
+            // System.out.println(b);
+        }            
         return parsons.toString();
     }
 }

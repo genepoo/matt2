@@ -149,11 +149,13 @@ public class SetFinder extends Thread{
                 Graph edGraph = new Graph();
                 edGraph.setBackground(Color.WHITE);
                 edGraph.getDefaultSeries().setData(fed);
+                edGraph.save();                
                 MattGuiNB.instance().addFFTGraph(edGraph, "UNFILT: " + firstTune.getTitle());
 
                 Graph edGraphf = new Graph();
                 edGraphf.setBackground(Color.WHITE);
                 edGraphf.getDefaultSeries().setData(fedf);
+                edGraphf.save();
                 MattGuiNB.instance().addFFTGraph(edGraphf, "FILT: " + firstTune.getTitle());
                 
                 int repeats = 0;

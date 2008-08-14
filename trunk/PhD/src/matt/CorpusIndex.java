@@ -316,9 +316,9 @@ public class CorpusIndex {
     private void createCorpusEntry(FileWriter fw, String head, String key, String fileName, String title, int x) throws Exception
     {
         String parsons = null;
-        
         String midiFile = MIDITools.instance().createMIDI(head, key, fileName, title, x);
-        parsons = MIDITools.instance().toParsons(midiFile);
+        int[] midiSequence = MIDITools.instance().toMIDISequence(midiFile);
+        parsons = MIDITools.instance().toParsons(midiSequence);
         
         try
         {
@@ -348,6 +348,7 @@ public class CorpusIndex {
             ce.setX(x);
             ce.setKey(key);
             ce.setParsons(parsons);
+            ce.setMidiSequence(midiSequence);
             fw.write(ce.toIndexFile());
             fw.flush();                
             index.add(ce);

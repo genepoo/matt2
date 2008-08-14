@@ -18,6 +18,7 @@ public class CorpusEntry {
     private String title;
     private String parsons;
     private int index;
+    private int[] midiSequence;
 
     public CorpusEntry()
     {
@@ -98,7 +99,9 @@ public class CorpusEntry {
         sb.append("\t");
         sb.append(x);
         sb.append("\t");
-        sb.append(parsons);        
+        sb.append(parsons);      
+        sb.append("\t");
+        sb.append(MIDITools.instance().arrayToString(midiSequence));
         sb.append(System.getProperty("line.separator"));
         
         return sb.toString();                
@@ -120,5 +123,13 @@ public class CorpusEntry {
 
     public void setParsons(String parsons) {
         this.parsons = parsons;
+    }
+
+    public int[] getMidiSequence() {
+        return midiSequence;
+    }
+
+    public void setMidiSequence(int[] midiSequecne) {
+        this.midiSequence = midiSequecne;
     }
 }
