@@ -29,10 +29,6 @@ import javax.sound.sampled.LineUnavailableException;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.BufferedInputStream;
-import javazoom.jl.decoder.Decoder;
-import javazoom.jl.decoder.Header;
-import javazoom.jl.decoder.SampleBuffer;
-import javazoom.jl.decoder.Bitstream;
 
 
 public class FFT
