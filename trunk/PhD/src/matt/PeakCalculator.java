@@ -20,7 +20,7 @@ public class PeakCalculator {
     public PeakCalculator() {
     }
     
-    static Vector calculatePeaks2(float[] data, int border, int howFar, float thresholdNormal)
+    static Vector<Integer> calculatePeaks2(float[] data, int border, int howFar, float thresholdNormal)
     {
         float thresholdValue = 0;
         // First calculate the threshold

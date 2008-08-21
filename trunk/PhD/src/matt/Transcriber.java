@@ -363,13 +363,29 @@ public class Transcriber {
             float[] fftOut = fft.fftMag(fftFrame, 0, fftFrameSize);            
             float frequency;
             PitchDetector pitchDetector = new PitchDetector();
-            
-            frequency = pitchDetector.maxPeek(fftOut, sampleRate, fftFrameSize); 
-            mattGui.log("Frequency by highest value: " + frequency);
 
-            frequency = pitchDetector.maxBryanFrequency(fftOut, sampleRate, fftFrameSize);
-            mattGui.log("Frequency by Bryan's algorithm value: " + frequency);
-            
+            //float cFrequency = pitchDetector.cepstrumFrequency(fftOut, sampleRate, fftFrameSize);
+            // mattGui.log("Frequency by Cepstrum algorithm value: " + cFrequency);
+
+            if (MattProperties.getString("pitchDetector").equals("bryan"))
+            {
+                float bFrequency = pitchDetector.maxBryanFrequency(fftOut, sampleRate, fftFrameSize);
+                mattGui.log("Frequency by Bryan's algorithm value: " + bFrequency);
+                frequency = bFrequency;
+            }
+            else if (MattProperties.getString("pitchDetector").equals("mikel"))
+            {
+                float mFrequency = pitchDetector.mikelsFrequency(fftOut, sampleRate, fftFrameSize);
+                mattGui.log("Frequency by Mikels's algorithm value: " + mFrequency);
+                frequency = mFrequency;
+            }
+            else
+            {
+                float hFrequency = pitchDetector.maxPeek(fftOut, sampleRate, fftFrameSize); 
+                mattGui.log("Frequency by highest value: " + hFrequency);
+
+                frequency = hFrequency;                
+            }
             float onset, duration;
             onset = (float) signalStart / (float) sampleRate;
             duration = (float) signalLength / (float) sampleRate;
