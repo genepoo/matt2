@@ -14,6 +14,7 @@ public class Logger {
     {
         if (MattProperties.getString("mode").equals("client"))
         {
+            System.out.println(msg);
             MattGuiNB.log(msg);
         }
         else

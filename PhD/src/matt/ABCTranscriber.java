@@ -35,7 +35,7 @@ public class ABCTranscriber {
     public static int[] NOTES_PER_PART = { 64, 48, 64 };
     private int tuneType = REEL;
            
-    public static String [] noteNames = {"D,", "E,", "F,", "G,", "A,", "B,", "C", "D", "E", "F", "G", "A", "B","c", "d", "e", "f", "g", "a", "b", "c'", "d'", "e'", "f'", "g'", "a'", "b'", "c''", "d''"}; 
+    public static String [] noteNames = {"D,", "E,", "F,", "G,", "A,", "B,", "C", "C", "D", "E", "F", "G", "A", "B","c", "c", "d", "e", "f", "g", "a", "b", "c'", "c'", "d'", "e'", "f'", "g'", "a'", "b'", "c''", "c''", "d''"}; 
     public static float[] knownFrequencies = new float[noteNames.length];
     public static float[] midiNotes = new float[87];
     
@@ -59,12 +59,14 @@ public class ABCTranscriber {
     {
         for (int i = 0 ; i < knownFrequencies.length ; i ++)
         {
+            System.out.print(noteNames[i] + "\t");
             TonePlayer.playTone(knownFrequencies[i], 0.25f, 0.1f);
         }
     }
     
     boolean isWholeToneInterval(int n, int[] intervals) 
     {
+        n = n % 8;
         for (int i = 0 ; i < intervals.length; i ++)
         {
             if (n == intervals[i])
@@ -78,12 +80,8 @@ public class ABCTranscriber {
     void makeScale(String inKey, String mode) 
     {
         
-        // W - W - H - W - W - W - H
-        int[] majorKeyIntervals = {1, 2, 4, 5, 6
-                                 , 8, 9, 11, 12, 13
-                                 , 15, 16, 18, 19, 20
-                                 , 22, 23, 25, 26, 27
-                                 , 29, 30, 32};
+        // W - W - H - W - W - H - H - H
+        int[] majorKeyIntervals = {1, 2, 4, 5};
         if (mode.equals("Major"))
         {
             if (pitchModel == pitch_model.FLUTE)
@@ -258,7 +256,8 @@ public class ABCTranscriber {
                 int nearestMultiple = 0;
                 if (!transcribedNotes[i].getName().equals("z"))
                 {
-                    nearestMultiple = OnsetPostProcessor.calculateNearestMultiple(transcribedNotes[i].getDuration(), standardNote);
+                    //nearestMultiple = OnsetPostProcessor.calculateNearestMultiple(transcribedNotes[i].getDuration(), standardNote);
+                    nearestMultiple = transcribedNotes[i].getMultiple();
                     if (nearestMultiple > 1)
                     {
                         // Quantise at dottet crochets 
@@ -324,6 +323,7 @@ public class ABCTranscriber {
     
     public void printScale()
     {
+        System.out.println("SCALE:");
         for (int i = 0 ; i < noteNames.length; i ++)
         {
             Logger.log(noteNames[i] + ": " + knownFrequencies[i]);

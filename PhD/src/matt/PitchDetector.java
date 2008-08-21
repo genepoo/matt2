@@ -122,4 +122,110 @@ public class PitchDetector
         }
     }
     
+    public float cepstrumFrequency(float[] fftMag, int sampleRate, int frameSize)
+    {
+        float frequency = 0;
+        FastFourierTransform fft = new FastFourierTransform();
+        
+        float[] logMag = new float[fftMag.length];
+        for (int i = 0 ; i < fftMag.length; i ++)
+        {
+            logMag[i] = (float) Math.log((double) fftMag[i]);
+        }
+        
+        Graph logGraph = new Graph();
+        logGraph.setBounds(0, 0, 1000, 1000);
+        logGraph.getDefaultSeries().setScale(false);
+        logGraph.getDefaultSeries().setData(logMag);                
+        MattGuiNB.instance().addFFTGraph(logGraph, "LOG GRAPH");
+
+        
+        
+        float[] cepstrum = fft.fftLogMag(fftMag);
+        Graph fftGraph = new Graph();
+        fftGraph.setBounds(0, 0, 1000, 1000);
+        fftGraph.getDefaultSeries().setScale(false);
+        fftGraph.getDefaultSeries().setData(cepstrum);                
+        MattGuiNB.instance().addFFTGraph(fftGraph, "CEPSTRUM");
+        int max = maxFrameIndex(cepstrum);
+        
+        return frequency;
+        
+    }
+    
+    public float mikelsFrequency(float[] fftMag, int sampleRate, int frameSize)
+    {
+        float frequency = 0;
+        
+        int pitchPeek = Integer.parseInt("" + MattProperties.instance().get("pitchPeek"));
+        Vector<Integer> peeks = PeakCalculator.calculatePeaks2(fftMag, pitchPeek , fftMag.length, 0);
+        // Sort them in order of ascending energy
+        java.util.Collections.sort(peeks, new EnergyComparitor(fftMag));
+        
+        final int numCandidates = 5;
+        final int numHarmonics = 10;
+        float maxEnergy = 0;
+        float maxCandidate = 0;
+        
+        /*
+         System.out.println("TOP " + numCandidates + " HARMONICS");
+        for (int i = 0 ; i < numCandidates ; i ++)
+        {
+            int candidate = peeks.elementAt(i).intValue();
+            System.out.println(candidate + "\t" + fftMag[candidate]);
+        }
+         */
+        
+        for (int i=0 ; i < numCandidates ; i ++)
+        {
+            int candidate = peeks.elementAt(i).intValue();
+            float energy = 0;
+            for (int j = 0 ; j < numHarmonics ; j ++)
+            {
+                int harmonic = candidate + (j * candidate);
+                if (harmonic < fftMag.length)
+                {
+                    energy += fftMag[harmonic];
+                }    
+            }
+            if (energy > maxEnergy)
+            {
+                maxEnergy = energy;
+                maxCandidate = candidate;
+                System.out.println("c: " + candidate + " m: " + maxCandidate);
+            }
+        }
+        float binWidth = (float) sampleRate / (float) frameSize;
+
+        frequency = maxCandidate * binWidth;   
+      
+        return frequency;
+    }
+    
+       class EnergyComparitor implements Comparator
+        {
+            public EnergyComparitor(float[] fftMag)
+            {
+                this.fftMag = fftMag;
+                        
+            }
+            public int compare(Object o1, Object o2)
+            {
+                Integer i1 = (Integer) o1;
+                Integer i2 = (Integer) o2;
+                if (fftMag[i1.intValue()] == fftMag[i2.intValue()])
+                {
+                    return 0;
+                }
+                if (fftMag[i1.intValue()] < fftMag[i2.intValue()])
+                {
+                    return 1;
+                }
+                return -1;
+                        
+            }
+            public float[] fftMag;
+        }
+     
+    
 }
