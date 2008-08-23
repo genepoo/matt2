@@ -5,7 +5,7 @@
 
 package matt;
 
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  *
@@ -38,6 +38,19 @@ public class CorpusEntry {
         setFile(stTok.nextToken());
         setX(Integer.parseInt(stTok.nextToken()));
         setParsons(stTok.nextToken());
+        String midi = stTok.nextToken();
+        stTok = new StringTokenizer(midi, ",");
+        
+        Vector<Integer> v = new Vector<Integer>();
+        while (stTok.hasMoreTokens())
+        {
+            v.add(new Integer(stTok.nextToken()));
+        }
+        midiSequence = new int[v.size()];
+        for (int i = 0 ; i < v.size(); i ++)
+        {
+            midiSequence[i] = v.get(i);
+        }
     }
     public String getKey()
     {

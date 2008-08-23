@@ -77,6 +77,22 @@ public class MIDITools {
         return midiFileName;
     }
     
+    public int[] toMIDISequence(TranscribedNote[] notes)
+    {
+        Vector<Integer> v = new Vector<Integer>();
+        
+        for (int i = 0 ; i < notes.length ; i ++)
+        {
+            v.add(notes[i].getMidiNote());
+        }
+        int[] ret = new int[notes.length];
+        for (int i = 0 ; i < notes.length ; i ++)
+        {
+           ret[i] = v.get(i) .intValue();
+        }
+        return ret;
+    }
+    
     public int[] toMIDISequence(String file) throws InvalidMidiDataException, IOException 
     {
         Sequence sequence = MidiSystem.getSequence(new File(file));

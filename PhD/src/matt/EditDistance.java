@@ -310,6 +310,81 @@ public class EditDistance
         return d[pLength];
     }
     
+    public static float minEdSemex(int[] pattern, int[] text)
+    {
+        int pLength = pattern.length;
+        int tLength = text.length;
+        int difference = 0;
+
+        int sc;
+
+        if (pLength == 0)
+        {
+            return -1;
+        }
+        if (tLength == 0)
+        {
+            return -1;
+        }
+
+        int[][] d = new int[pLength + 1][tLength + 1];
+
+        // Initialise the first row
+        for (int i = 0; i < tLength + 1; i++)
+        {
+            d[0][i] = 0;
+        }
+        // Now make the first col = 1,2,3,4,5,6
+        for (int i = 0; i < pLength + 1; i++)
+        {
+            d[i][0] = i;
+        }
+
+
+        for (int i = 1; i <= pLength; i++)
+        {
+            sc = pattern[i - 1];
+            for (int j = 1; j <= tLength; j++)
+            {
+                int v = d[i - 1][j - 1];
+                if (text[j - 1] != sc) 
+                {
+                    difference = 1;
+                }
+                else
+                {
+                    difference = 0;
+                }
+                d[i][j] = Math.min(Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1), v + difference);
+            }
+        }
+        
+         /*
+          for (int i = 0 ; i < d.length ; i ++)
+        {
+            for (int j = 0 ; j < d[i].length; j ++)
+            {
+                System.out.print(d[i][j] + "\t");
+            }
+            System.out.println();
+        }
+         */
+        int[] lastRow = d[pLength];
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < tLength + 1; i++)
+        {
+            int c = lastRow[i];
+            // System.out.println(c);
+            if (c < min)
+            {
+                min = c;
+            }
+        }
+        return min;
+
+    }
+    
+    
     public static float minEdSubString(String pattern, String text)
     {
         int[] lastRow = edSubString(pattern, text);

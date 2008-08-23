@@ -117,7 +117,7 @@ public class ABCFinder extends Thread
             MattGuiNB.instance().getProgressBar().setMaximum(CorpusIndex.instance().size());
             for (int i = 0 ; i < numThreads; i ++)
             {
-                finderThreads[i] = new FinderThread(startIn, toFind, pq, lock);
+                finderThreads[i] = new FinderThread(startIn, toFind, transcribedNotes, pq, lock);
                 finderThreads[i].start();
             }
 
