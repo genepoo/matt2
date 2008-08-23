@@ -274,6 +274,11 @@ public class Transcriber {
                 notes = abcTranscriber.convertToParsons();
             }
             
+            if (MattProperties.getString("searchMethod").equalsIgnoreCase("semex"))
+            {
+                notes = abcTranscriber.convertToMidi();
+            }
+            
             if (MattProperties.getString("mode").equals("client"))
             {
                 MattGuiNB.instance().getTxtABC().setText("");

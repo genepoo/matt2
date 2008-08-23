@@ -17,12 +17,15 @@ public class FinderThread extends Thread{
     private float edThreshold;
     Object lock;
     
-    public FinderThread(String searchIn, String toFind, PriorityQueue<ABCMatch> pq, Object lock)
+    TranscribedNote[] notes;
+    
+    public FinderThread(String searchIn, String toFind, TranscribedNote[] notes, PriorityQueue<ABCMatch> pq, Object lock)
     {
         this.searchIn = searchIn;
         this.toFind = toFind;
         this.pq = pq;
         this.lock = lock;    
+        this.notes = notes;
     }
     
     public void run()
@@ -89,7 +92,7 @@ public class FinderThread extends Thread{
             
             StringBuffer nlSearchIn = new StringBuffer(searchIn);
             boolean needsExpansion = false;        
-            if (expandShortTunes)
+            if (expandShortTunes &&  MattProperties.getString("searchMethod").equalsIgnoreCase("bryan"))
             {
                 while (toFind.length() > nlSearchIn.length())
                 {
@@ -104,7 +107,14 @@ public class FinderThread extends Thread{
             }
             
             float ed;
-            ed = EditDistance.minEdSubString(toFind, "" + nlSearchIn);
+            if (MattProperties.getString("searchMethod").equalsIgnoreCase("semex"))
+            {
+                ed = EditDistance.minEdSemex(MIDITools.instance().toMIDISequence(notes), entry.getMidiSequence());
+            }
+            else
+            {
+                ed = EditDistance.minEdSubString(toFind, "" + nlSearchIn);
+            }
             if (ed < bestEditdistance)
             {
                 bestEditdistance = ed;

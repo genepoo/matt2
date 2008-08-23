@@ -39,6 +39,8 @@ public class ABCTranscriber {
     public static float[] knownFrequencies = new float[noteNames.length];
     public static float[] midiNotes = new float[87];
     
+    public static final int MIDI_OFFSET = 21;
+    
     // public static final float D3 = 146.83f; 
     // public static final float D4=  293.66f; // Start transcription of the whistle one octive up
         
@@ -77,7 +79,7 @@ public class ABCTranscriber {
         return false;
     }
 
-    void makeScale(String inKey, String mode) 
+    void makeScale(String mode) 
     {
         
         // W - W - H - W - W - H - H - H
@@ -134,8 +136,9 @@ public class ABCTranscriber {
         makeMidiNotes();
     }
     
-    public void convertToMidi()
-    {
+    public String convertToMidi()
+    {   
+        StringBuffer ret = new StringBuffer();
         for (int i = 0 ; i < transcribedNotes.length; i ++)
         {
             float distance[] = new float[MIDI_NOTES];
@@ -156,8 +159,14 @@ public class ABCTranscriber {
                     min = distance[j];
                 }
             }
-            transcribedNotes[i].setMidiNote(minIndex);
+            ret.append("" + (minIndex + MIDI_OFFSET));
+            if (i < transcribedNotes.length - 1)
+            {
+                ret.append(",");
+            }
+            transcribedNotes[i].setMidiNote(minIndex + MIDI_OFFSET);
         }
+        return ret.toString();
     }
     
     public String convertToParsons()
@@ -192,7 +201,7 @@ public class ABCTranscriber {
     public String convertToABC()
     {
         calculatePitchModel();
-        makeScale("D", "Major");
+        makeScale("Major");
         printScale();
         StringBuffer sb = new StringBuffer();
         
@@ -393,7 +402,7 @@ public class ABCTranscriber {
     public static void main(String[] args)
     {
         ABCTranscriber t = new ABCTranscriber();
-        t.makeScale("D", "Major");
+        t.makeScale("Major");
         t.testScale();
     }
     
