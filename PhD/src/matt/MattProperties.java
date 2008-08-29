@@ -40,6 +40,12 @@ public class MattProperties extends Properties {
         return "" + instance().get(key);
     }
     
+    public static void setString(String key, String value)
+    {
+        instance().setProperty(key, value);
+        instance().save();
+    }
+    
     public static MattProperties instance()
     {
         if (_instance == null)

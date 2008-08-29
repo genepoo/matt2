@@ -75,7 +75,7 @@ public class ABCFinder extends Thread
         toFind = toFind.toUpperCase();
         Logger.log("Target: " + toFind);
         // MattGuiNB.instance().getTxtABC().setText(toFind);
-        if (MattProperties.getBoolean("setsHeuristic") && SetFinder.isSet(toFind))
+        if (MattProperties.getBoolean("tansey") && SetFinder.isSet(toFind))
         {
             Logger.log("I think it's a set, therefore using the set finder algorithm");
             setFinder = new SetFinder();
