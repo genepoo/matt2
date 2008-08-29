@@ -38,6 +38,8 @@ public class Transcriber {
     
     TranscribedNote[] transcribedNotes;
     
+    String oldFundamental;
+    
     private int dynamicThresholdTime = 100; // in milliseconds
     
     TimeDomainCombFilter[] tdFilters = new TimeDomainCombFilter[numFilters];
@@ -82,10 +84,23 @@ public class Transcriber {
     
     public void loadAudio()
     {
+        MattProperties.setString("fundamentalNote", "D");
+        oldFundamental = MattProperties.getString("fundamentalNote");        
         try
         {
             File soundFile = new File(inputFile);
             mattGui.log("Processing: " + soundFile.getName());
+            
+            int iK = soundFile.getName().indexOf("[");
+            if (iK > -1)                
+            {
+                int iKK = soundFile.getName().indexOf("]");
+                // Set the fundamental note
+                
+                String fundamentalNote = soundFile.getName().substring(iK + 1, iKK);
+                MattProperties.setString("fundamentalNote", fundamentalNote);
+                
+            }
 
             audioInputStream = null;
             audioInputStream = AudioSystem.getAudioInputStream(soundFile);            
@@ -298,6 +313,7 @@ public class Transcriber {
             mattGui.enableButtons(true);
             // System.exit(0);
         }
+         MattProperties.setString("fundamentalNote", oldFundamental);
     }    
     
     private int odfIndexToSignal(int odfIndex)
