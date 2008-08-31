@@ -175,27 +175,44 @@ public class PitchDetector
             System.out.println(candidate + "\t" + fftMag[candidate]);
         }
          */
+        float binWidth = (float) sampleRate / (float) frameSize;
         
         for (int i=0 ; i < numCandidates ; i ++)
         {
             int candidate = peeks.elementAt(i).intValue();
             float energy = 0;
             for (int j = 0 ; j < numHarmonics ; j ++)
-            {
+            {                
                 int harmonic = candidate + (j * candidate);
-                if (harmonic < fftMag.length)
+                //float hLow = harmonic - 2;
+                //float hHigh = harmonic + 2;
+                
+                //float hLow = (int) ((float) harmonic * 0.99);
+                //float hHigh = (int) ((float) harmonic * 1.01);
+                float hLow = (int) ((float) harmonic - 2);
+                float hHigh = (int) ((float) harmonic + 2);
+                
+                float maxLittleBit = -1;
+                for (int k = (int) hLow; k <= (int) hHigh ; k ++)
                 {
-                    energy += fftMag[harmonic];
-                }    
+                    if (k < fftMag.length)
+                    {
+                        if (fftMag[k] > maxLittleBit)
+                        {
+                            maxLittleBit = fftMag[k];
+                        }
+                    }
+                }
+                energy += maxLittleBit;
             }
+                
             if (energy > maxEnergy)
             {
                 maxEnergy = energy;
                 maxCandidate = candidate;
-                System.out.println("c: " + candidate + " m: " + maxCandidate);
             }
         }
-        float binWidth = (float) sampleRate / (float) frameSize;
+        
 
         frequency = maxCandidate * binWidth;   
       
