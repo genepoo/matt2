@@ -14,6 +14,9 @@ import java.util.Date;
 public class Results {
     PrintWriter out = null;
     long start;
+    
+
+    
     SimpleDateFormat dateFormat = new SimpleDateFormat();
     
     public Results() throws IOException
