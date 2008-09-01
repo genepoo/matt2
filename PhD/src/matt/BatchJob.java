@@ -28,6 +28,8 @@ public class BatchJob extends Thread
     public static final int ERROR  = 4;
 
     private boolean serverMode;
+   
+    public static Results results = null;
 
     public BatchJob()
     {
@@ -57,7 +59,7 @@ public class BatchJob extends Thread
     public void run()
     {
         WavFilter filter = new WavFilter();
-        Results results = null;
+        
         running = true;
         Connection conn = null;
         try

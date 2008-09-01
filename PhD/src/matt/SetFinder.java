@@ -61,6 +61,7 @@ public class SetFinder extends Thread{
         
         int startAt = 0;
         int whichTune = 1;
+        ABCMatch match = null;
         while (running)
         {
             index.reset();
@@ -96,10 +97,11 @@ public class SetFinder extends Thread{
                 }
                 i ++;
             }
+            
             if (running)
             {
                 CorpusEntry firstTune = index.get(bestIndex);
-                ABCMatch match = new ABCMatch();
+                match = new ABCMatch();
                 match.setEditDistance(bestEd);
                 match.setWhich(whichTune);
                 match.setIndex(bestIndex);
@@ -149,17 +151,17 @@ public class SetFinder extends Thread{
                 Graph edGraph = new Graph();
                 edGraph.setBackground(Color.WHITE);
                 edGraph.getDefaultSeries().setData(fed);
-                edGraph.save();                
+                // edGraph.save();                
                 MattGuiNB.instance().addFFTGraph(edGraph, "UNFILT: " + firstTune.getTitle());
 
                 Graph edGraphf = new Graph();
                 edGraphf.setBackground(Color.WHITE);
                 edGraphf.getDefaultSeries().setData(fedf);
-                edGraphf.save();
+                // edGraphf.save();
                 MattGuiNB.instance().addFFTGraph(edGraphf, "FILT: " + firstTune.getTitle());
                 
                 int repeats = 0;
-                int slope = 15;
+                int slope = 10;
                 Vector<Integer> troughs = null;
                 float threshold = 0.3f;
                 while ((repeats == 0) || (repeats >= 5) && running)
@@ -214,8 +216,9 @@ public class SetFinder extends Thread{
             }            
         }
         MattProperties.instance().setProperty("drawGraphs", "" + oldDrawGraphs);
-        Logger.log("No more tunes found");
+        Logger.log("No more tunes found");        
         printTurns(turns);
+        BatchJob.results.log(printTurns(turns));
         running = false;
         synchronized(lock)
         {
@@ -232,7 +235,7 @@ public class SetFinder extends Thread{
         System.out.println();
     }
     
-    void printTurns(Vector<Float> turns)
+    String printTurns(Vector<Float> turns)
     {
         StringBuffer sb = new StringBuffer();
         Logger.log("Turns:");
@@ -241,6 +244,7 @@ public class SetFinder extends Thread{
             sb.append(turns.elementAt(i).floatValue() + "\t");
         }
         Logger.log("" + sb);
+        return "" + sb;
     }
     
     void troughsToTime(Vector<Float> turns, Vector<Integer> v, float[] swEd, String title, int filterComp, boolean lastTune)
