@@ -30,7 +30,7 @@ public class TFLog {
     {
         try
         {          
-            FileWriter fw = new FileWriter(new File(fileName), true);
+            FileWriter fw = new FileWriter(new File(MattProperties.getString("resultsFolder") + System.getProperty("file.separator") + fileName), true);
             fw.write(txt);
             fw.write(System.getProperty("line.separator"));
             fw.close();

@@ -44,6 +44,11 @@ public class OnsetPostProcessor {
         float ocahWindow = MattProperties.getFloat("ocahWindow");
         start = 0; end = 0;
         
+        int filtered = 0;
+        int inserted = 0;
+        int original = transcribedNotes.size();
+        int after = 0;
+        
         if (MattProperties.getString("searchMethod").equalsIgnoreCase("bryan"))
         {
         
@@ -108,9 +113,11 @@ public class OnsetPostProcessor {
                                 next.setUnmergedDuration(next.getDuration());
                                 next.setDuration(next.getDuration() + current.getDuration());
                                 Logger.log("Merging note: " + i + " " + current + " with next: " + (i + 1) + " " + next);
+                                
                             }
 
                             transcribedNotes.remove(i);
+                            filtered ++;
                             i --;            
                             end --;
                         }
@@ -125,6 +132,7 @@ public class OnsetPostProcessor {
                         transcribedNotes.elementAt(start + 1).setDuration(transcribedNotes.elementAt(start + 1).getDuration() + transcribedNotes.elementAt(start).getDuration());
                         transcribedNotes.remove(start);
                         end --;
+                        filtered ++;
                     } 
                 }
 
@@ -158,6 +166,7 @@ public class OnsetPostProcessor {
                                 newNote.setName("NEW");
                                 newNote.setMultiple(1);
                                 transcribedNotes.add(i + m, newNote);
+                                inserted ++;
                                 end ++;
                             }                    
                             // Now recalculate the energy and FFT of the notes
@@ -226,7 +235,9 @@ public class OnsetPostProcessor {
             Logger.log(i + "\t" + transcribedNotes.get(i));
         }        
         TranscribedNote[] notes = new TranscribedNote[transcribedNotes.size()];
-        transcribedNotes.copyInto(notes);        
+        transcribedNotes.copyInto(notes);      
+        after = transcribedNotes.size();
+        TFLog.TFLog("filtered.txt", "" + original + "\t" + filtered + "\t" + inserted + "\t" + after);
         return notes;
     }
     
