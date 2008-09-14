@@ -143,6 +143,20 @@ public class Transcriber {
     
     public void transcribe()
     {        
+            File soundFile = new File(inputFile);
+            mattGui.log("Processing: " + soundFile.getName());
+            
+        int iK = soundFile.getName().indexOf("[");
+        if (iK > -1)                
+        {
+            int iKK = soundFile.getName().indexOf("]");
+            // Set the fundamental note
+
+            String fundamentalNote = soundFile.getName().substring(iK + 1, iKK);
+            MattProperties.setString("fundamentalNote", fundamentalNote);
+
+        }
+
         mattGui.setTitle(getInputFile());
         mattGui.enableButtons(false);
                         

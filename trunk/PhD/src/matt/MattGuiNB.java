@@ -443,6 +443,7 @@ public class MattGuiNB extends javax.swing.JFrame {
         else
         {
             finder = new ABCFinder();
+            finder.setTranscribedNotes(transcriber.getTranscribedNotes());
             finder.setSearchString(getTxtABC().getText());
             finder.setStartIn(MattProperties.instance().get("SearchCorpus").toString());
             finder.finda();
