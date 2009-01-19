@@ -102,6 +102,7 @@ public class SetFinder extends Thread{
             {
                 CorpusEntry firstTune = index.get(bestIndex);
                 match = new ABCMatch();
+                match.setCorpusEntry(firstTune);
                 match.setEditDistance(bestEd);
                 match.setWhich(whichTune);
                 match.setIndex(bestIndex);

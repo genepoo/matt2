@@ -58,16 +58,35 @@ public class MattProperties extends Properties {
         return _instance;
     }    
     
+      public static MattProperties instance(boolean applet)
+    {
+        if (_instance == null)
+        {
+            _instance = new MattProperties();
+            propertiesLoader = new PropertiesLoader();
+            propertiesLoader.load();
+            if (! applet)
+            {
+                propertiesLoader.start();
+            }
+        }
+        return _instance;
+    }    
+  
+    
     public static void  save()
     {
-        try
+        if (!MattProperties.getBoolean("applet"))
         {
-            _instance.store(new FileOutputStream("matt.properties"), null);
-        }
-        catch (Exception e)
-        {
-            Logger.log("Problem storing properties");
-            e.printStackTrace();            
+            try
+            {
+                _instance.store(new FileOutputStream("matt.properties"), null);
+            }
+            catch (Exception e)
+            {
+                Logger.log("Problem storing properties");
+                e.printStackTrace();            
+            }
         }
     }
 }
@@ -120,5 +139,4 @@ class PropertiesLoader extends Thread
             }
         }
     }
-}
-        
+}    

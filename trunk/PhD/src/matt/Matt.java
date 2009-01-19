@@ -103,7 +103,7 @@ public class Matt {
         mattGui.setMatt(this);
         mattGui.setVisible(true);        
         mattGui.setTranscriber(transcriber);
-        transcriber.setMattGui(mattGui);
+        transcriber.setGui(mattGui);
         
         getTranscriber().setInputFile( PATH + "audio\\test\\D.wav");
         

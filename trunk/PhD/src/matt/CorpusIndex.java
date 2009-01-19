@@ -22,6 +22,7 @@ public class CorpusIndex {
     private boolean createMIDI = true;
     private boolean createParsons = true;
     
+    
     private boolean ready;
         
     public static CorpusIndex instance()
@@ -349,6 +350,7 @@ public class CorpusIndex {
             ce.setKey(key);
             ce.setParsons(parsons);
             ce.setMidiSequence(midiSequence);
+            ce.setMidiFileName(midiFile);
             fw.write(ce.toIndexFile());
             fw.flush();                
             index.add(ce);

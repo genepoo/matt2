@@ -378,14 +378,14 @@ public class ABCTranscriber {
         // If the number of notes > half way through D5 is greater than the number of notes < half way through D5
         // Then its probably a tin whistle
         int flute = 0, whistle = 0;
-        float G4 = (float) (MattProperties.getFloat(MattProperties.getString("fundamentalNote")) * Math.pow(RATIO, 17.0f));
+        float G5 = (float) (MattProperties.getFloat(MattProperties.getString("fundamentalNote")) * Math.pow(RATIO, 17.0f));
         for (int i = 0 ; i < transcribedNotes.length ; i ++)
         {
             if (isBreath(transcribedNotes[i]))
             {
                 continue;
             }
-            if (transcribedNotes[i].getFrequency() < G4)
+            if (transcribedNotes[i].getFrequency() < G5)
             {
                 flute ++;
             }

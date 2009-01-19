@@ -12,6 +12,17 @@ package matt;
 public class Logger {
     public static void log(Object msg)
     {
+        if (MattProperties.getBoolean("applet"))
+        {
+            String smsg = "" + msg;
+            if (smsg.length() > 25)
+            {
+                smsg = smsg.substring(0, 25) + "...";
+            }
+            matt.web.MattApplet.setStatus(smsg);
+            return;
+        }
+        
         if (MattProperties.getString("mode").equals("client"))
         {
             System.out.println(msg);
