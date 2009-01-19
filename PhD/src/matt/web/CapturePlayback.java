@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Line2D;
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.border.*;
 import java.util.Vector;
 import java.io.*;
@@ -65,17 +64,6 @@ public class CapturePlayback extends JPanel implements ActionListener, ControlCo
         samplingPanel.add(samplingGraph = new SamplingGraph());
         p2.add(samplingPanel);
 
-        /*
-         JPanel savePanel = new JPanel();
-        savePanel.setLayout(new BoxLayout(savePanel, BoxLayout.Y_AXIS));
-     
-        
-
-        JPanel saveBpanel = new JPanel();
-        savePanel.add(saveBpanel);
-
-        p2.add(savePanel);
-        */
         p1.add(p2);
         add(p1);
 
