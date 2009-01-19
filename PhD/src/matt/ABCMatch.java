@@ -23,6 +23,7 @@ public class ABCMatch implements Comparator {
     private String notation = null;
     private String line;
     private String title;
+    private CorpusEntry corpusEntry;
     private float editDistance;
     private int x;
     private int index;
@@ -191,5 +192,15 @@ public class ABCMatch implements Comparator {
     public void setRepititions(int repititions)
     {
         this.repititions = repititions;
+    }
+
+    public CorpusEntry getCorpusEntry()
+    {
+        return corpusEntry;
+    }
+
+    public void setCorpusEntry(CorpusEntry corpusEntry)
+    {
+        this.corpusEntry = corpusEntry;
     }
 }

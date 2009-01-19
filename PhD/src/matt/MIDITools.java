@@ -16,12 +16,15 @@ import java.util.*;
  */
 public class MIDITools {
     private static MIDITools _instance;
+    private  boolean finished;
     
+    private Sequencer sequencer;
     public static MIDITools instance()
     {
         if (_instance == null)
         {
             _instance = new MIDITools();
+            _instance.setFinished(true);
         }
         return _instance;
     }
@@ -36,6 +39,8 @@ public class MIDITools {
         String tempFile = folder + System.getProperty("file.separator") + "temp.abc";
         FileWriter fw = new FileWriter(tempFile);
         fw.write(head);
+        fw.write("Q:1/4 = 200\n");
+        //fw.write("%%%%MIDI program 24\n");
         fw.write(key);
         fw.flush();
         fw.close();
@@ -162,5 +167,72 @@ public class MIDITools {
             // System.out.println(b);
         }            
         return parsons.toString();
+    }
+    
+    public void playMidiFile(String file) 
+    {
+        File midiFile = new File(file);
+        if(!midiFile.exists() || midiFile.isDirectory() || !midiFile.canRead()) {
+            Logger.log("Could not play midi file: " + file);
+            return;
+        }
+        // Play once
+        try {
+            
+            sequencer = MidiSystem.getSequencer();
+            sequencer.setSequence(MidiSystem.getSequence(midiFile));
+            sequencer.open();
+            sequencer.start();
+            finished = false;
+            new Thread()
+            {
+                public void run()
+                {
+                    while(! isFinished()) 
+                    {
+                        if(sequencer.isRunning()) 
+                        {
+                            try 
+                            {
+                                Thread.sleep(1000); // Check every second
+                            } 
+                            catch(InterruptedException ignore) 
+                            {
+                                break;
+                            }
+                        } 
+                        else 
+                        {
+                            break;
+                        }
+                    }            // Close the MidiDevice & free resources
+                    sequencer.stop();
+                    sequencer.close();
+                    finished = true;
+                }
+            }.start();
+        } 
+        catch(MidiUnavailableException mue) 
+        {
+            System.out.println("Midi device unavailable!");
+        } 
+        catch(InvalidMidiDataException imde) 
+        {
+            System.out.println("Invalid Midi data!");
+        } 
+        catch(IOException ioe) 
+        {
+            System.out.println("I/O Error!");
+        } 
+    }
+
+    public boolean isFinished()
+    {
+        return finished;
+    }
+
+    public void setFinished(boolean finished)
+    {
+        this.finished = finished;
     }
 }

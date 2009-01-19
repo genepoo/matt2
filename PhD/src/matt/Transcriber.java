@@ -13,7 +13,6 @@ import javax.sound.sampled.*;
 import java.io.*;
 import java.awt.*;
 import java.util.*;
-import java.util.zip.ZipInputStream;
 /**
  *
  * @author bduggan
@@ -34,11 +33,11 @@ public class Transcriber {
     private float powers[] = new float[numFilters];
     private String abcTranscription;
     
-    private MattGuiNB mattGui;
+    private GUI gui;
     
     TranscribedNote[] transcribedNotes;
     
-    String oldFundamental;
+    String defaultFundamental = "D";
     
     private int dynamicThresholdTime = 100; // in milliseconds
     
@@ -58,9 +57,7 @@ public class Transcriber {
     /** Creates a new instance of Transcriber */
     public Transcriber() {
         frameSize = 2048;
-        hopSize = (int) ((float) frameSize * 0.25f);    
-        
-        setMattGui(MattGuiNB.instance());
+        hopSize = (int) ((float) frameSize * 0.25f);                   
     }
     
     public String getInputFile() {
@@ -85,11 +82,11 @@ public class Transcriber {
     public void loadAudio()
     {
         MattProperties.setString("fundamentalNote", "D");
-        oldFundamental = MattProperties.getString("fundamentalNote");        
+                
         try
         {
             File soundFile = new File(inputFile);
-            mattGui.log("Processing: " + soundFile.getName());
+            Logger.log("Processing: " + soundFile.getName());
             
             int iK = soundFile.getName().indexOf("[");
             if (iK > -1)                
@@ -106,8 +103,8 @@ public class Transcriber {
             audioInputStream = AudioSystem.getAudioInputStream(soundFile);            
             AudioFormat	format = audioInputStream.getFormat();
             numSamples = (int) audioInputStream.getFrameLength();
-            mattGui.log("Length of the stream in samples: " + numSamples);            
-            mattGui.log("Loading the signal...");
+            Logger.log("Length of the stream in samples: " + numSamples);            
+            Logger.log("Loading the signal...");
             
             audioData = new byte[(int) numSamples * 2];    
             signal = new float[numSamples];
@@ -116,14 +113,14 @@ public class Transcriber {
 
             boolean bigEndian = format.isBigEndian();                                 
             // Copy the signal from the file to the array            
-            mattGui.instance().getProgressBar().setValue(0);
-            mattGui.instance().getProgressBar().setMaximum(numSamples);
+            gui.getProgressBar().setValue(0);
+            gui.getProgressBar().setMaximum(numSamples);
             for (int signalIndex = 0 ; signalIndex < numSamples; signalIndex ++)
             {
                 signal[signalIndex] = ((audioData[(signalIndex * 2) + 1] << 8) + audioData[signalIndex * 2]);
-                mattGui.instance().getProgressBar().setValue(signalIndex);
+                gui.getProgressBar().setValue(signalIndex);
             }
-            mattGui.log("Graphing...");
+            Logger.log("Graphing...");
             if (Boolean.parseBoolean("" + MattProperties.getString("drawSignalGraphs")) == true)
             {
                 signalGraph.getDefaultSeries().setData(signal);
@@ -131,7 +128,7 @@ public class Transcriber {
                 
                 signalGraph.repaint();
             }
-            mattGui.log("Done.");
+            Logger.log("Done.");
             
         }
         catch (Exception e)
@@ -143,28 +140,27 @@ public class Transcriber {
     
     public void transcribe()
     {        
-            File soundFile = new File(inputFile);
-            mattGui.log("Processing: " + soundFile.getName());
+        File soundFile = new File(inputFile);
+        Logger.log("Processing: " + soundFile.getName());
             
         int iK = soundFile.getName().indexOf("[");
         if (iK > -1)                
         {
             int iKK = soundFile.getName().indexOf("]");
-            // Set the fundamental note
 
             String fundamentalNote = soundFile.getName().substring(iK + 1, iKK);
             MattProperties.setString("fundamentalNote", fundamentalNote);
 
         }
 
-        mattGui.setTitle(getInputFile());
-        mattGui.enableButtons(false);
+        gui.setTitle(getInputFile());
+        gui.enableButtons(false);
                         
         try
         {
             dynamicThresholdTime = Integer.parseInt(MattProperties.instance().get("DynamicThresholdTime").toString());
             
-            mattGui.log("Configuring filters...");
+            Logger.log("Configuring filters...");
             configureFilters();               
             int numHops = (numSamples / hopSize);
             int odfSize =  numHops - 1;
@@ -172,21 +168,20 @@ public class Transcriber {
             float[] frame = new float[frameSize];            
             float[] odf = new float[odfSize];            
             
-            odfGraph.clear();
             signalGraph.getDefaultSeries().clearLines();
             
             // Iterate through the signal a hop at a time
-            mattGui.log("Calculating harmonicity...");
-            MattGuiNB.instance().getProgressBar().setValue(0);
-            MattGuiNB.instance().getProgressBar().setMaximum(numHops);
+            Logger.log("Calculating harmonicity...");
+            gui.getProgressBar().setValue(0);
+            gui.getProgressBar().setMaximum(numHops);
             
             int currentSample = 0;
             int hopIndex = 0;
             int odfIndex = 0;
             for (hopIndex = 0 ; hopIndex < numHops ; hopIndex ++)
             {
-                MattGuiNB.instance().getProgressBar().setValue(hopIndex);
-                // mattGui.log("Calculating harmonicity at sample " + (hopIndex * hopSize));
+                gui.getProgressBar().setValue(hopIndex);
+                // Logger.log("Calculating harmonicity at sample " + (hopIndex * hopSize));
                 
                 if (((hopIndex * hopSize) + frameSize) > numSamples)
                 {
@@ -226,16 +221,17 @@ public class Transcriber {
             }
             
             // Now calculate the proposed onsets
-            mattGui.log("Calculating onsets...");
+            Logger.log("Calculating onsets...");
             Vector<Integer> onsetsVector = new Vector();            
             onsetsVector = PeakCalculator.calculatePeaks(odf, 1, odf.length, 0);
                                     
             // Now calculate the dynamic threshold
-            mattGui.log("Calculating dynamic threshold...");
+            Logger.log("Calculating dynamic threshold...");
             float[] odfThreshold = calculateDynamicThreshold(odf, dynamicThresholdTime);
             
-            if (Boolean.parseBoolean("" + MattProperties.getString("drawSignalGraphs")) == true)
+            if (Boolean.parseBoolean("" + MattProperties.getString("drawODFGraphs")) == true)
             {
+                odfGraph.clear();            
                 odfGraph.getDefaultSeries().setScale(true);                
                 odfGraph.setScalingFactor(MattProperties.getFloat("scaleODFFactor"));                
                 odfGraph.getDefaultSeries().setData(odf);                
@@ -259,12 +255,12 @@ public class Transcriber {
             float[] odfSignal = new float[onsetsVector.size() + 2];            
             odfSignal[0] = 0;
             int odfSignalIndex = 1;
-            MattGuiNB.instance().getProgressBar().setValue(0);
-            MattGuiNB.instance().getProgressBar().setMaximum(onsetsVector.size());
+            gui.getProgressBar().setValue(0);
+            gui.getProgressBar().setMaximum(onsetsVector.size());
             
             for (int i = 0 ; i < onsetsVector.size(); i ++)            
             {
-                MattGuiNB.instance().getProgressBar().setValue(i);
+                gui.getProgressBar().setValue(i);
                 int index = ((Integer)onsetsVector.elementAt(i)).intValue();
                 int signalIndex = odfIndexToSignal(index);
                 odfSignal[odfSignalIndex ++] = signalIndex;
@@ -273,20 +269,24 @@ public class Transcriber {
             
             // Plot the onsets
             
-            Enumeration en = onsetsVector.elements();
-            while (en.hasMoreElements())
+            if (MattProperties.getBoolean("drawODFGraphs"))
             {
-                int index = ((Integer)en.nextElement()).intValue();
-                odfGraph.getDefaultSeries().addVerticalLine(index);                
+                Enumeration en = onsetsVector.elements();
+
+                while (en.hasMoreElements())
+                {
+                    int index = ((Integer)en.nextElement()).intValue();
+                    odfGraph.getDefaultSeries().addVerticalLine(index);                
+                }
+                odfGraph.repaint();
             }
-             
             for (int i = 0 ; i < odfSignal.length ; i ++)
             {
                 signalGraph.getDefaultSeries().addVerticalLine2(odfSignal[i]);
             }
 
             signalGraph.repaint();
-            odfGraph.repaint();
+            
             
             transcribedNotes = calculateNotesUsingFFT(odfSignal, signal, sampleRate);  
             
@@ -310,13 +310,13 @@ public class Transcriber {
             
             if (MattProperties.getString("mode").equals("client"))
             {
-                MattGuiNB.instance().getTxtABC().setText("");
-                MattGuiNB.instance().getTxtABC().append(notes);
+                gui.getTxtABC().setText("");
+                gui.getTxtABC().append(notes);
             }
             abcTranscription = notes;
-            mattGui.log("Notes after onset post processing:");
+            Logger.log("Notes after onset post processing:");
             printNotes();
-            mattGui.enableButtons(true);
+            gui.enableButtons(true);
             
             // playTranscription(transcribedNotes);        
         }
@@ -324,10 +324,11 @@ public class Transcriber {
         catch (Exception e)
         {
             e.printStackTrace();        
-            mattGui.enableButtons(true);
+            gui.enableButtons(true);
             // System.exit(0);
         }
-         MattProperties.setString("fundamentalNote", oldFundamental);
+         MattProperties.setString("fundamentalNote", defaultFundamental);
+         Logger.log("Done.");
     }    
     
     private int odfIndexToSignal(int odfIndex)
@@ -360,20 +361,20 @@ public class Transcriber {
 
     private TranscribedNote[] calculateNotesUsingFFT(float[] odfSignal, float[] signal, int sampleRate)
     {
-        mattGui.log("Calculating frequencies of " + (odfSignal.length - 1) + " notes");
+        Logger.log("Calculating frequencies of " + (odfSignal.length - 1) + " notes");
         Vector<TranscribedNote> notes = new Vector();
-        mattGui.clearFFTGraphs();
+        gui.clearFFTGraphs();
         // Now figure out the frequencies in each note
         FastFourierTransform fft = new FastFourierTransform();
         EnergyCalculator ec = new EnergyCalculator();
         ec.setSignal(signal);
         
-        MattGuiNB.instance().getProgressBar().setValue(0);
-        MattGuiNB.instance().getProgressBar().setMaximum(odfSignal.length);
+        gui.getProgressBar().setValue(0);
+        gui.getProgressBar().setMaximum(odfSignal.length);
             
         for (int i = 1; i < odfSignal.length ; i ++)
         {            
-            MattGuiNB.instance().getProgressBar().setValue(i);
+            gui.getProgressBar().setValue(i);
             int signalStart =  (int) odfSignal[i -1];
             int signalEnd = (int) odfSignal[i];
             int signalLength = signalEnd - signalStart;
@@ -385,7 +386,7 @@ public class Transcriber {
             Logger.log("Energy: " + ec.formatEnergy(energy));
             
             int fftFrameSize = (int) Math.pow(2, smallestPowerOf2);
-            mattGui.log("Performing FFT " + (i - 1) + " on frame size " + fftFrameSize);
+            Logger.log("Performing FFT " + (i - 1) + " on frame size " + fftFrameSize);
             float fftFrame[] = new float[fftFrameSize];
             WindowFunction windowFunction = new WindowFunction();
             windowFunction.setWindowType(WindowFunction.HANNING);
@@ -400,24 +401,24 @@ public class Transcriber {
             PitchDetector pitchDetector = new PitchDetector();
 
             //float cFrequency = pitchDetector.cepstrumFrequency(fftOut, sampleRate, fftFrameSize);
-            // mattGui.log("Frequency by Cepstrum algorithm value: " + cFrequency);
+            // Logger.log("Frequency by Cepstrum algorithm value: " + cFrequency);
 
             if (MattProperties.getString("pitchDetector").equals("bryan"))
             {
                 float bFrequency = pitchDetector.maxBryanFrequency(fftOut, sampleRate, fftFrameSize);
-                mattGui.log("Frequency by Bryan's algorithm value: " + bFrequency);
+                Logger.log("Frequency by Bryan's algorithm value: " + bFrequency);
                 frequency = bFrequency;
             }
             else if (MattProperties.getString("pitchDetector").equals("mikel"))
             {
                 float mFrequency = pitchDetector.mikelsFrequency(fftOut, sampleRate, fftFrameSize);
-                mattGui.log("Frequency by Mikels's algorithm value: " + mFrequency);
+                Logger.log("Frequency by Mikels's algorithm value: " + mFrequency);
                 frequency = mFrequency;
             }
             else
             {
                 float hFrequency = pitchDetector.maxPeek(fftOut, sampleRate, fftFrameSize); 
-                mattGui.log("Frequency by highest value: " + hFrequency);
+                Logger.log("Frequency by highest value: " + hFrequency);
 
                 frequency = hFrequency;                
             }
@@ -437,7 +438,7 @@ public class Transcriber {
                 fftGraph.getDefaultSeries().setData(fftOut);                
                 MattGuiNB.instance().addFFTGraph(fftGraph, "" + newNote.getStart());
             }
-            mattGui.log("");             
+            Logger.log("");             
         }
 
         OnsetPostProcessor opp = new OnsetPostProcessor(notes, sampleRate, signal);
@@ -455,7 +456,7 @@ public class Transcriber {
     {
         for (int i = 0 ; i < transcribedNotes.length ; i ++)
         {
-            mattGui.log(transcribedNotes[i]);
+            Logger.log(transcribedNotes[i]);
         }
     }
     
@@ -595,8 +596,8 @@ public class Transcriber {
         playTranscription(transcribedNotes);
     }
 
-    public MattGuiNB getMattGui() {
-        return mattGui;
+    public GUI getGui() {
+        return gui;
     }
     
     public void cleanup()
@@ -620,8 +621,8 @@ public class Transcriber {
         }
     }
 
-    public void setMattGui(MattGuiNB mattGui) {
-        this.mattGui = mattGui;
+    public void setGui(GUI mattGui) {
+        this.gui = mattGui;
         frameGraph  = mattGui.getFrameGraph();
         signalGraph  = mattGui.getSignalGraph();
         odfGraph = mattGui.getOdfGraph();
@@ -646,6 +647,7 @@ public class Transcriber {
     public void setSignal(float[] signal)
     {
         this.signal = signal;
+        numSamples = signal.length;
     }
 
     public String getAbcTranscription()

@@ -100,7 +100,7 @@ public class BatchJob extends Thread
                     transcriber.cleanup();
                 }
                 finder = new ABCFinder();
-                transcriber = new Transcriber();
+                transcriber = MattGuiNB.instance().getTranscriber();
                 
                 transcriber.setInputFile(files[i].toString());
                 MattGuiNB.instance().setTranscriber(transcriber);

@@ -5,7 +5,13 @@
 
 package matt;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Sequencer;
 
 /**
  *
@@ -19,6 +25,7 @@ public class CorpusEntry {
     private String parsons;
     private int index;
     private int[] midiSequence;
+    private String midiFileName;
 
     public CorpusEntry()
     {
@@ -38,6 +45,7 @@ public class CorpusEntry {
         setFile(stTok.nextToken());
         setX(Integer.parseInt(stTok.nextToken()));
         setParsons(stTok.nextToken());
+        setMidiFileName(stTok.nextToken());
         String midi = stTok.nextToken();
         stTok = new StringTokenizer(midi, ",");
         
@@ -51,6 +59,8 @@ public class CorpusEntry {
         {
             midiSequence[i] = v.get(i);
         }
+        
+        
     }
     public String getKey()
     {
@@ -114,6 +124,8 @@ public class CorpusEntry {
         sb.append("\t");
         sb.append(parsons);      
         sb.append("\t");
+        sb.append(midiFileName);      
+        sb.append("\t");        
         sb.append(MIDITools.instance().arrayToString(midiSequence));
         sb.append(System.getProperty("line.separator"));
         
@@ -145,4 +157,16 @@ public class CorpusEntry {
     public void setMidiSequence(int[] midiSequecne) {
         this.midiSequence = midiSequecne;
     }
+
+    public String getMidiFileName()
+    {
+        return midiFileName;
+    }
+
+    public void setMidiFileName(String midiFileName)
+    {
+        this.midiFileName = midiFileName;
+    }
+    
+      
 }

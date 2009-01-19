@@ -23,7 +23,7 @@ import javax.swing.plaf.ColorUIResource;
  *
  * @author  Bryan
  */
-public class MattGuiNB extends javax.swing.JFrame {
+public class MattGuiNB extends javax.swing.JFrame implements GUI{
     
     private Transcriber transcriber = null;
     private BatchJob batchJob = null;
@@ -45,7 +45,7 @@ public class MattGuiNB extends javax.swing.JFrame {
     /** Creates new form MattGuiNB */
     private MattGuiNB() {
         initComponents();
-        
+        setTitle("MATT2 - Machine Annotation of Traditional Tunes - by Bryan Duggan");
         // Add the graphs...
         frameGraph.setBounds(10,10,380,120);
         fftGraph.setBounds(400,10,380,120);
@@ -109,7 +109,9 @@ public class MattGuiNB extends javax.swing.JFrame {
         spLog.setAutoscrolls(true);
 
         txtLog.setColumns(20);
+        txtLog.setLineWrap(true);
         txtLog.setRows(5);
+        txtLog.setWrapStyleWord(true);
         spLog.setViewportView(txtLog);
 
         btnPlayOriginal.setText("Original");
@@ -144,6 +146,7 @@ public class MattGuiNB extends javax.swing.JFrame {
         });
 
         txtABC.setColumns(20);
+        txtABC.setLineWrap(true);
         txtABC.setRows(5);
         jScrollPane1.setViewportView(txtABC);
 
@@ -391,28 +394,27 @@ public class MattGuiNB extends javax.swing.JFrame {
          try
          {  
              
-             // TuneBook book = new TuneBook(new File(match.getFileName()));
+             if (! MIDITools.instance().isFinished())
+             {
+                 MIDITools.instance().setFinished(true);
+             }
+             else
+             {
+                    //Tune tune = best.getTune();
+                    MIDITools.instance().playMidiFile(match.getCorpusEntry().getMidiFileName());
+                     //tunePlayer.play(tune);
+             }
+             /*
+              // TuneBook book = new TuneBook(new File(match.getFileName()));
              if (tunePlayer.isPlaying())
              {
                  tunePlayer.stopPlaying();
              }
              else
              {
-                    Tune tune = match.getTune();
-                    /*
-                    BasicPositionableMidiConverter converter = new BasicPositionableMidiConverter();
-                    javax.sound.midi.Sequence sequence = converter.toMidiSequence(tune);
-
-                    Synthesizer synth = MidiSystem.getSynthesizer();
-                    synth.getChannels()[0].programChange(25);
-                    synth.open();
-                    Receiver receiver = synth.getReceiver();
-                    Sequencer seq = MidiSystem.getSequencer();
-                    seq.setSequence(sequence);
-                    seq.start();
-                     */
                     tunePlayer.play(tune);
              }
+            */
          }
          catch (Exception e)
          {
@@ -540,14 +542,15 @@ public class MattGuiNB extends javax.swing.JFrame {
          try
          {
              // TuneBook book = new TuneBook(new File(match.getFileName()));
-             if (tunePlayer.isPlaying())
+             if (! MIDITools.instance().isFinished())
              {
-                 tunePlayer.stopPlaying();
+                 MIDITools.instance().setFinished(true);
              }
              else
              {
-                    Tune tune = best.getTune();
-                     tunePlayer.play(tune);
+                    //Tune tune = best.getTune();
+                    MIDITools.instance().playMidiFile(best.getCorpusEntry().getMidiFileName());
+                     //tunePlayer.play(tune);
              }
          }
          catch (Exception e)

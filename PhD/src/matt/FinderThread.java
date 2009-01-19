@@ -127,6 +127,7 @@ public class FinderThread extends Thread{
             match.setX(entry.getX());
             match.setTitle(entry.getTitle());
             match.setIndex(entry.getIndex());
+            match.setCorpusEntry(entry);
             pq.add(match);
             ABCMatch best = pq.peek();
             MattGuiNB.instance().setBestSoFar(best);
