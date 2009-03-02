@@ -50,8 +50,9 @@ public class ABCMatch implements Comparator {
         {
             Logger.log("Lazy loading tune: " + getX());
             try
-            {           
-                String fName = "" + MattProperties.instance().get("SearchCorpus") + System.getProperty("file.separator") + getFileName();
+            {
+                String curDir = System.getProperty("user.dir");
+                String fName = curDir + System.getProperty("file.separator") + MattProperties.instance().get("SearchCorpus") + System.getProperty("file.separator") + getFileName();
                 File f = new File(fName);
                 TuneBook book = new TuneBook(f);
                 setTune(book.getTune(x));
