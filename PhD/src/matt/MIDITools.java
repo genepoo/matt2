@@ -33,9 +33,8 @@ public class MIDITools {
     {
         head = head.trim() + "\r";
         key = key.trim();
-        String folder = MattProperties.getString("MIDIIndex");
-        
-        
+
+        String folder = System.getProperty("user.dir") + System.getProperty("file.separator") + MattProperties.getString("MIDIIndex");
         String tempFile = folder + System.getProperty("file.separator") + "temp.abc";
         FileWriter fw = new FileWriter(tempFile);
         fw.write(head);
@@ -45,6 +44,7 @@ public class MIDITools {
         fw.flush();
         fw.close();
         String midiFileName = "";
+        String fullName = "";
         int variation = 0;
         boolean unique = false;
         title = title.replace(System.getProperty("file.separator").charAt(0), '~');
@@ -54,14 +54,15 @@ public class MIDITools {
         do
         {
             
-            midiFileName = folder + System.getProperty("file.separator") + x + "-" + fileName + "-" + title;
+            midiFileName = x + "-" + fileName + "-" + title;
             if (variation > 0)
             {
                 midiFileName += "-Variation " + variation;
             }
             midiFileName += ".mid";
-            
-            if (new File(midiFileName).exists())
+            fullName = folder + System.getProperty("file.separator") + midiFileName;
+
+            if (new File(fullName).exists())
             {
                 variation ++;
             }
@@ -71,12 +72,12 @@ public class MIDITools {
             }
         }
         while (! unique);
-        String cmd = MattProperties.getString("ABC2MIDI") + " " + tempFile + " -o " + "\"" + midiFileName + "\"";
+        String cmd = MattProperties.getString("ABC2MIDI") + " \"" + tempFile + "\" -o " + "\"" + fullName + "\"";
         Process abc2MIDI  = Runtime.getRuntime().exec(cmd);
         abc2MIDI.waitFor();
-        if (! new File(midiFileName).exists())
+        if (! new File(fullName).exists())
         {
-            Logger.log(midiFileName + " not created");
+            Logger.log(fullName + " not created");
         }
         
         return midiFileName;
@@ -100,7 +101,11 @@ public class MIDITools {
     
     public int[] toMIDISequence(String file) throws InvalidMidiDataException, IOException 
     {
-        Sequence sequence = MidiSystem.getSequence(new File(file));
+
+        String curDir = System.getProperty("user.dir");
+        String fileName = curDir + System.getProperty("file.separator") + MattProperties.getString("MIDIIndex") + System.getProperty("file.separator") + file;
+
+        Sequence sequence = MidiSystem.getSequence(new File(fileName));
         Track[] tracks = sequence.getTracks();
         ArrayList<Integer> midiSequence = new ArrayList();
         for(int i = 0 ; i < tracks[0].size(); i ++)
@@ -171,7 +176,10 @@ public class MIDITools {
     
     public void playMidiFile(String file) 
     {
-        File midiFile = new File(file);
+        String curDir = System.getProperty("user.dir");
+        String fileName = curDir + System.getProperty("file.separator") + MattProperties.getString("MIDIIndex") + System.getProperty("file.separator") + file;
+
+        File midiFile = new File(fileName);
         if(!midiFile.exists() || midiFile.isDirectory() || !midiFile.canRead()) {
             Logger.log("Could not play midi file: " + file);
             return;
