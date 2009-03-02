@@ -114,7 +114,8 @@ public class CorpusIndex {
         index.clear();
         try
         {
-            String fileName = "" + MattProperties.instance().get("indexFile");
+            String curDir = System.getProperty("user.dir");
+            String fileName = curDir + System.getProperty("file.separator") + MattProperties.getString("indexFile");
             File indexFile = new File(fileName);
 
             if (! indexFile.exists())
@@ -162,7 +163,9 @@ public class CorpusIndex {
             for (int i = 0 ; i < index.size(); i ++)
             {
                 MattGuiNB.instance().getProgressBar().setValue(i);
-                String fName = "" + MattProperties.instance().get("SearchCorpus") + System.getProperty("file.separator") + index.get(i).getFile();
+                String curDir = System.getProperty("user.dir");
+
+                String fName = curDir + System.getProperty("file.separator") + MattProperties.getString("SearchCorpus") + System.getProperty("file.separator") + index.get(i).getFile();
                 File f = new File(fName);
                 TuneBook book = new TuneBook(f);
                 int x = index.get(i).getX();
@@ -214,7 +217,8 @@ public class CorpusIndex {
 
                 try
                 {
-                    File dir = new File("" + MattProperties.instance().get("SearchCorpus"));
+                    String curDir = System.getProperty("user.dir");
+                    File dir = new File(curDir + System.getProperty("file.separator")  + MattProperties.getString("SearchCorpus"));
                     File indexFile = new File("" + MattProperties.instance().get("indexFile"));
                     if (indexFile.exists())
                     {
