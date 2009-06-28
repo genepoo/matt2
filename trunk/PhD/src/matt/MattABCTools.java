@@ -16,6 +16,16 @@ import java.util.StringTokenizer;
  * @author Bryan
  */
 public class MattABCTools {
+
+    static String removeScotishThings(String key) {
+        String ret = key.replaceAll(">", "");
+
+        ret = ret.replaceAll("<", "");
+        ret = ret.replaceAll("/", "");
+        ret.replace("(", "");
+        ret.replace(")", "");
+        return ret;
+    }
     
     enum partTypes {NORMAL, REPEAT, SPECIAL12};
     

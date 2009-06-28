@@ -272,7 +272,7 @@ public class CorpusIndex {
                 int tuneStart = MattABCTools.skipHeaders(notation);
                 String key = notation.substring(tuneStart);
                 String head = notation.substring(0, tuneStart);
-                int iVariation = key.indexOf("\"");
+                int iVariation = key.toUpperCase().indexOf("\"V");
                 int start = 0;
 
                 // The comment is at the start, so skip it
@@ -338,7 +338,8 @@ public class CorpusIndex {
             key = MattABCTools.expandLongNotes(key);
             key = MattABCTools.expandParts(key);
             key = MattABCTools.stripBarDivisions(key);
-            key = MattABCTools.removeTripletMarks(key);        
+            key = MattABCTools.removeTripletMarks(key);
+            key = MattABCTools.removeScotishThings(key);
             key = key.toUpperCase();
         }
         catch (Exception e)
