@@ -6,6 +6,20 @@
 
 package matt.web;
 
+import abc.midi.*;
+import javax.sound.midi.*;
+import abc.parser.TuneBook;
+import java.awt.event.*;
+import javax.swing.*;
+import java.io.*;
+import java.awt.*;
+import javax.swing.table.*;
+import java.util.*;
+import abc.notation.Tune;
+import javax.swing.plaf.ColorUIResource;
+
+
+import abc.midi.*;
 import java.awt.Color;
 import java.net.MalformedURLException;
 import java.util.logging.Level;
@@ -33,6 +47,10 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
     final int bufSize = 16384;
     double duration, seconds;
     Transcriber transcriber = new Transcriber();
+	
+    float[] signal;
+    
+    private TunePlayer tunePlayer = new TunePlayer();
     
     private int sampleRate;
     private int numSamples;    
@@ -43,8 +61,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
 
         _instance = this;
     }
-
-
+    
     private void myInit()
     {
         // Add the graphs...
@@ -60,6 +77,15 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         MattProperties.instance(false).setProperty("tansey", "false");
         MattProperties.instance(false).setProperty("applet", "true");
         _instance = this;
+        
+        tunePlayer.addListener(new TunePlayerAdapter()
+        {
+            public void playEnd(PlayerStateChangeEvent e)
+            {
+                btnPlayTranscribed.setText("Play Transcribed");
+            }
+
+        });
     }
 
 
@@ -67,6 +93,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
     public void init() {
         MattProperties.instance(true);
         signalGraph = new Graph();
+        tunePlayer.start();
         try {
             java.awt.EventQueue.invokeAndWait(new Runnable() {
                 public void run() {
@@ -107,6 +134,8 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         jLabel2 = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
         txtStatus = new javax.swing.JLabel();
+        btnPlayTranscribed = new javax.swing.JButton();
+        btnOptions = new javax.swing.JButton();
 
         btnRecord.setText("Record");
         btnRecord.addActionListener(new java.awt.event.ActionListener() {
@@ -115,14 +144,14 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
             }
         });
 
-        btnPlay.setText("Play");
+        btnPlay.setText("Play Recording");
         btnPlay.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnPlayActionPerformed(evt);
             }
         });
 
-        btnFind.setText("Find");
+        btnFind.setText("Search!");
         btnFind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnFindActionPerformed(evt);
@@ -145,6 +174,20 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
 
         txtStatus.setText("<Press record to begin!>");
 
+        btnPlayTranscribed.setText("Play Transcribed");
+        btnPlayTranscribed.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPlayTranscribedActionPerformed(evt);
+            }
+        });
+
+        btnOptions.setText("Options");
+        btnOptions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOptionsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -153,53 +196,75 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnRecord)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnPlay))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(btnOptions)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnFind))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(btnRecord)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnPlay, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(btnTranscribe)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnPlayTranscribed)))
+                        .addGap(10, 10, 10)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnTranscribe)
+                        .addComponent(txtStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnFind))
-                    .addComponent(txtStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
-                    .addComponent(jLabel2)
-                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE))
-                .addContainerGap())
+                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(20, 20, 20))
         );
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnFind, btnPlay, btnRecord, btnTranscribe});
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnFind, btnOptions, btnPlay, btnPlayTranscribed, btnRecord, btnTranscribe});
 
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(135, 135, 135)
+                .addGap(140, 140, 140)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnRecord)
                             .addComponent(btnPlay))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnFind)
-                            .addComponent(btnTranscribe)))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnTranscribe)
+                            .addComponent(btnPlayTranscribed))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnOptions)
+                            .addComponent(btnFind)))
+                    .addComponent(jScrollPane2, 0, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtStatus))
-                .addGap(15, 15, 15))
+                    .addComponent(txtStatus)
+                    .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(24, 24, 24))
         );
     }// </editor-fold>//GEN-END:initComponents
 	
 private void btnFindActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnFindActionPerformed
 	{//GEN-HEADEREND:event_btnFindActionPerformed
-    String url = "" + MattApplet._instance.getDocumentBase();
+    /*
+     String url = "" + MattApplet._instance.getDocumentBase();
     url = url.substring(0, url.lastIndexOf("/")) + "/";
-    url += "search.jsp?q=" + URLEncoder.encode(txtABC.getText());
+    url += "search.php?q=" + URLEncoder.encode(txtABC.getText());
+     */
+    String toFind = txtABC.getText();
+    toFind = MattABCTools.expandLongNotes(toFind);
+    toFind = MattABCTools.stripWhiteSpace(toFind);
+    toFind = MattABCTools.stripBarDivisions(toFind);
+    toFind = toFind.toUpperCase();
+
+    String url = "http://www.comp.dit.ie/matt2/search.jsp?q=" + URLEncoder.encode(toFind);
+    
     System.out.println("URL" + url);
     try
     {
@@ -212,7 +277,7 @@ private void btnFindActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:e
 	}//GEN-LAST:event_btnFindActionPerformed
 
 
-private void btnRecordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRecordActionPerformed
+private void btnRecordActionPerformed(java.awt.event.ActionEvent evt) {                                          
     if (btnRecord.getText().equals("Record"))
     {
         capture.start();
@@ -223,28 +288,15 @@ private void btnRecordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
         // lines.removeAllElements();
         capture.stop();
         btnRecord.setText("Record");
-    }
-}//GEN-LAST:event_btnRecordActionPerformed
-
-private void btnPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlayActionPerformed
-    if (btnPlay.getText().equals("Play"))
-    {
-        playback.start();
-        btnPlay.setText("Stop");
-    }
-    else
-    {
-        playback.stop();
-        btnPlay.setText("Play");
-    }
-}//GEN-LAST:event_btnPlayActionPerformed
-
-private void btnTranscribeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTranscribeActionPerformed
+		
         try
         {
-            float[] signal;
-
+            synchronized(capture)
+            {
+                capture.wait();
+            }
             AudioFormat format = audioInputStream.getFormat();
+        
             numSamples = (int) audioInputStream.getFrameLength();
             audioData = new byte[(int) numSamples * 2];
             signal = new float[numSamples];
@@ -258,10 +310,14 @@ private void btnTranscribeActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             getProgressBar().setMaximum(numSamples);
             for (int signalIndex = 0; signalIndex < numSamples; signalIndex++)
             {
-                signal[signalIndex] = ((audioData[(signalIndex * 2) + 1] << 8) + audioData[signalIndex * 2]);//GEN-LAST:event_btnTranscribeActionPerformed
-
+                signal[signalIndex] = ((audioData[(signalIndex * 2) + 1] << 8) + audioData[signalIndex * 2]);                                             
                 getProgressBar().setValue(signalIndex);
             }
+            
+            Logger.log("Removing silence at the start...");
+            transcriber.setSignal(signal);
+            transcriber.removeSilence();           
+            signal = transcriber.getSignal();
             Logger.log("Graphing...");
             if (Boolean.parseBoolean("" + MattProperties.getString("drawSignalGraphs")) == true)
             {
@@ -271,23 +327,83 @@ private void btnTranscribeActionPerformed(java.awt.event.ActionEvent evt) {//GEN
                 signalGraph.repaint();
             }
             Logger.log("Done.");
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            Logger.log("Could not plot audio: " + e.getMessage());
+        }
+    }
+}                                         
 
-            transcriber.setSignal(signal);
-            
+private void btnPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlayActionPerformed
+    if (btnPlay.getText().equals("Play Recording"))
+    {
+        playback.start();
+        btnPlay.setText("Stop");
+    }
+    else
+    {
+        playback.stop();
+        btnPlay.setText("Play Recording");
+    }
+}//GEN-LAST:event_btnPlayActionPerformed
+
+private void btnTranscribeActionPerformed(java.awt.event.ActionEvent evt) {                                              
+        try
+        {            
             transcriber.setInputFile("");
             transcriber.transcribea();
         }
-        catch (IOException ex)
+        catch (Exception ex)
         {
             Logger.log(ex.toString());
             ex.printStackTrace();
         }
 }
 
+private void btnPlayTranscribedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlayTranscribedActionPerformed
+        if (tunePlayer.isPlaying())
+        {
+            tunePlayer.stopPlaying();
+            btnPlayTranscribed.setText("Play Transcribed");
+            return;
+        }        
+        try 
+        {
+            btnPlayTranscribed.setText("Stop");
+            StringBuffer tuneText = new StringBuffer();
+            tuneText.append("X:1\r\n");
+            tuneText.append("T:Temp\r\n");
+            tuneText.append("R:Reel\r\n");
+            tuneText.append("M:C|\r\n");
+            tuneText.append("L:1/8\r\n");
+            tuneText.append("K:D\r\n");
+            tuneText.append(getTxtABC().getText());
+            TuneBook book = new TuneBook();
+            book.putTune(tuneText.toString());            
+            Tune aTune = book.getTune(1);
+            tunePlayer.play(aTune);            
+        } 
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }       
+
+}//GEN-LAST:event_btnPlayTranscribedActionPerformed
+
+private void btnOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOptionsActionPerformed
+    
+    Options.instance().setVisible(true);
+}//GEN-LAST:event_btnOptionsActionPerformed
+
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnFind;
+    private javax.swing.JButton btnOptions;
     private javax.swing.JButton btnPlay;
+    private javax.swing.JButton btnPlayTranscribed;
     private javax.swing.JButton btnRecord;
     private javax.swing.JButton btnTranscribe;
     private javax.swing.JLabel jLabel2;
@@ -325,7 +441,7 @@ private void btnTranscribeActionPerformed(java.awt.event.ActionEvent evt) {//GEN
                 pausB.setEnabled(false);
                 playB.setText("Play");
                  */
-                btnPlay.setText("Play");
+                btnPlay.setText("Play Recording");
             } 
         }
 
@@ -518,7 +634,10 @@ private void btnTranscribeActionPerformed(java.awt.event.ActionEvent evt) {//GEN
                 ex.printStackTrace(); 
                 return;
             }
-
+            synchronized(this)
+            {
+                notify();
+            }
             // signalGraph.getDefaultSeries().setData(audioBytes);
         }
     } // End class Capture
@@ -551,6 +670,8 @@ private void btnTranscribeActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     public void enableButtons(boolean b)
     {
         btnRecord.setEnabled(b);
+        btnPlayTranscribed.setEnabled(b);
+        btnOptions.setEnabled(b);
         btnFind.setEnabled(b);
         btnPlay.setEnabled(b);
         btnTranscribe.setEnabled(b);

@@ -83,12 +83,14 @@ public class CorpusIndex {
     {
         index.clear();
         Connection conn = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
         Logger.log("Loading index from the database");        
         try
         {
             conn = DBHelper.getConnection();
-            PreparedStatement s = conn.prepareStatement("select * from tuneindex");
-            ResultSet r = s.executeQuery();
+            s = conn.prepareStatement("select * from tuneindex");
+            r = s.executeQuery();
 
             while (r.next())                
             {
@@ -97,6 +99,9 @@ public class CorpusIndex {
                 entry.setFile(r.getString("file"));
                 entry.setX(r.getInt("x"));
                 entry.setKey(r.getString("key"));
+                entry.setTitle(r.getString("name"));
+                
+                entry.setMidiFileName(r.getString("midiFileName"));
                 index.add(entry);                
             }
             Logger.log("Loaded " + index.size() + " tunes into the index");
@@ -107,6 +112,7 @@ public class CorpusIndex {
             Logger.log("Could not read index");
             e.printStackTrace();
         }
+        DBHelper.safeClose(conn, s, r);
     }
 
     public void loadIndex()
@@ -171,12 +177,13 @@ public class CorpusIndex {
                 int x = index.get(i).getX();
                 Tune tune = book.getTune(x);
 
-                PreparedStatement ps = conn.prepareStatement("insert into tuneindex(`file`, `name`, `x`, `notation`, `key`) values(?, ?, ?, ?, ?)");
+                PreparedStatement ps = conn.prepareStatement("insert into tuneindex(`file`, `name`, `x`, `notation`, `key`, `midiFileName`) values(?, ?, ?, ?, ?,?)");
                 ps.setString(1, fName);
                 ps.setString(2, tune.getTitles()[0]);
                 ps.setInt(3, x);
                 ps.setString(4, book.getTuneNotation(x));
                 ps.setString(5, index.get(i).getKey());
+                ps.setString(6, index.get(i).getMidiFileName());
                 ps.executeUpdate();
                 ps.close();
             }
@@ -191,9 +198,7 @@ public class CorpusIndex {
             safeClose(conn, null, null);
         }
         Logger.log("Done...");
-    }
-    
-    
+    }       
     
     public void reindex()
     {
@@ -232,7 +237,7 @@ public class CorpusIndex {
                         addTunes(files[i],  fw);
                     }
                     fw.close();
-                    if (MattProperties.getString("mode").equals("server"))
+                    //if (MattProperties.getString("mode").equals("server"))
                     {
                         reindexDatabase();
                     }

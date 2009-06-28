@@ -272,7 +272,7 @@ public class EditDistance
         {
             d[0][i] = 0;
         }
-        // Now make the first col = 1,2,3,4,5,6
+        // Now make the first col = 0,1,2,3,4,5,6
         for (int i = 0; i < pLength + 1; i++)
         {
             d[i][0] = i;
