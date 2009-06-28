@@ -74,6 +74,28 @@ public class MIDITools {
         while (! unique);
         String cmd = MattProperties.getString("ABC2MIDI") + " \"" + tempFile + "\" -o " + "\"" + fullName + "\"";
         Process abc2MIDI  = Runtime.getRuntime().exec(cmd);
+        InputStream in = abc2MIDI.getInputStream();
+
+        boolean finished = false;  // Set to true when p is finished
+	    while( !finished) {
+		try {
+		    while( in.available() > 0) {
+			// Print the output of our system call.
+			Character c = new Character( (char) in.read());
+			System.out.print( c);
+		    }
+		    // Ask the process for its exitValue.  If the process
+		    // is not finished, an IllegalThreadStateException
+		    // is thrown.  If it is finished, we fall through and
+		    // the variable finished is set to true.
+		    abc2MIDI.exitValue();
+		    finished = true;
+	        } catch (IllegalThreadStateException e) {
+		    // Sleep a little to save on CPU cycles
+		    Thread.currentThread().sleep(10);
+		}
+	    }
+        
         abc2MIDI.waitFor();
         if (! new File(fullName).exists())
         {
