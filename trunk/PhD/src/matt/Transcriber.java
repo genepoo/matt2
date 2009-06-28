@@ -119,7 +119,9 @@ public class Transcriber {
             {
                 signal[signalIndex] = ((audioData[(signalIndex * 2) + 1] << 8) + audioData[signalIndex * 2]);
                 gui.getProgressBar().setValue(signalIndex);
-            }
+            }            
+            Logger.log("Removing silence at the start...");
+            // removeSilence();            
             Logger.log("Graphing...");
             if (Boolean.parseBoolean("" + MattProperties.getString("drawSignalGraphs")) == true)
             {
@@ -130,12 +132,61 @@ public class Transcriber {
             }
             Logger.log("Done.");
             
+            /*
+             PrintWriter pw = new PrintWriter(new File("graph.txt"));
+            for (int i = 0 ; i < signal.length; i ++)
+            {
+                pw.println(signal[i]);
+            }
+            pw.close();
+             */
         }
         catch (Exception e)
         {
             Logger.log("Could not load audio file " + inputFile);
             e.printStackTrace();
         }	
+    }
+    
+    public void removeSilence()
+    {
+        float average = 0;
+        float threshold = 1500.0f;
+        int frame = 512;
+        
+        int i;
+        for (i = 0 ; i < signal.length ; i += frame)
+        {
+            float frameAverage = 0;
+            int j = 0;
+            for (j = 0 ; (j < frame) && (j + i < signal.length) ; j ++)
+            {
+                frameAverage += Math.abs(signal[i + j]);
+            }
+            frameAverage /= (float) j;
+            if (frameAverage > threshold)
+            {
+                break;
+            }
+        }
+        int newSize = signal.length - i;
+        if (newSize > 0)
+        {
+            float[] newSignal = new float[newSize];
+            for (int j = 0; j < newSignal.length ; j ++)
+            {
+                newSignal[j] = signal[j + i];
+            }
+            Logger.log("" + ((float) i / sampleRate) + " seconds of silence removed from the start");
+            signal = newSignal;
+            numSamples  = signal.length;
+        }
+        else
+        {
+            Logger.log("No audio found!");
+            signal = null;
+            numSamples = 0;
+        }
     }
     
     public void transcribe()
