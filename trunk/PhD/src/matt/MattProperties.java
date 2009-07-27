@@ -126,7 +126,7 @@ class PropertiesLoader extends Thread
         try
         {
 
-            MattProperties.instance().load(new FileReader(f));
+            MattProperties.instance().load(new FileInputStream(f));
         }
         catch (Exception e)
         {

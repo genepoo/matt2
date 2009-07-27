@@ -38,29 +38,38 @@ public class CorpusEntry {
             
     public CorpusEntry(String entry)
     {
-        StringTokenizer stTok = new StringTokenizer(entry, "\t");
-        
-        setKey(stTok.nextToken());
-        setTitle(stTok.nextToken());
-        setFile(stTok.nextToken());
-        setX(Integer.parseInt(stTok.nextToken()));
-        setParsons(stTok.nextToken());
-        setMidiFileName(stTok.nextToken());
-        String midi = stTok.nextToken();
-        stTok = new StringTokenizer(midi, ",");
-        
-        Vector<Integer> v = new Vector<Integer>();
-        while (stTok.hasMoreTokens())
+
+        try
         {
-            v.add(new Integer(stTok.nextToken()));
+
+
+            StringTokenizer stTok = new StringTokenizer(entry, "\t");
+
+            setKey(stTok.nextToken());
+            setTitle(stTok.nextToken());
+            setFile(stTok.nextToken());
+            setX(Integer.parseInt(stTok.nextToken()));
+            setParsons(stTok.nextToken());
+            setMidiFileName(stTok.nextToken());
+            String midi = stTok.nextToken();
+            stTok = new StringTokenizer(midi, ",");
+
+            Vector<Integer> v = new Vector<Integer>();
+            while (stTok.hasMoreTokens())
+            {
+                v.add(new Integer(stTok.nextToken()));
+            }
+            midiSequence = new int[v.size()];
+            for (int i = 0 ; i < v.size(); i ++)
+            {
+                midiSequence[i] = v.get(i);
+            }
         }
-        midiSequence = new int[v.size()];
-        for (int i = 0 ; i < v.size(); i ++)
+        catch (Exception e)
         {
-            midiSequence[i] = v.get(i);
-        }
-        
-        
+            Logger.log("Could not fully parse line: " + entry);
+            e.printStackTrace();
+        }        
     }
     public String getKey()
     {

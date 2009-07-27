@@ -130,19 +130,37 @@ public class MIDITools {
         Sequence sequence = MidiSystem.getSequence(new File(fileName));
         Track[] tracks = sequence.getTracks();
         ArrayList<Integer> midiSequence = new ArrayList();
-        for(int i = 0 ; i < tracks[0].size(); i ++)
+
+        // Pick the track with the most messages?
+        /*
+         int iTrack = 0;
+        for (int i = 0 ; i < tracks.length ; i ++)
         {
-            MidiMessage mm = tracks[0].get(i).getMessage();
-            int len = mm.getLength();
-            int status = mm.getStatus();
-            if (status == ShortMessage.NOTE_ON)
-            {                
-                byte[] b = mm.getMessage();
-                int currentNote = b[1];
-                midiSequence.add(new Integer(currentNote));
+            if (tracks[i].size() >= tracks[iTrack].size())
+            {
+                iTrack = i;
             }
-            
-        }        
+        }
+         */
+
+        // Find a midi sequence with note on events
+        int iTrack = 0;
+        while ((iTrack < tracks.length) && (midiSequence.size() == 0))
+        {
+            for(int i = 0 ; i < tracks[iTrack].size(); i ++)
+            {
+                MidiMessage mm = tracks[iTrack].get(i).getMessage();
+                int len = mm.getLength();
+                int status = mm.getStatus();
+                if (status == ShortMessage.NOTE_ON)
+                {
+                    byte[] b = mm.getMessage();
+                    int currentNote = b[1];
+                    midiSequence.add(new Integer(currentNote));
+                }
+            }
+            iTrack ++;
+        }
         int[] ret = new int[midiSequence.size()];
         for (int i = 0 ; i < midiSequence.size() ; i ++)
         {

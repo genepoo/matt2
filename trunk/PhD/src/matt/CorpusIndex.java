@@ -118,6 +118,7 @@ public class CorpusIndex {
     public void loadIndex()
     {
         index.clear();
+        String line = null;
         try
         {
             String curDir = System.getProperty("user.dir");
@@ -129,7 +130,7 @@ public class CorpusIndex {
                 reindex();
             }
             BufferedReader br = new BufferedReader(new FileReader(indexFile));
-            String line;
+            
             line = br.readLine();
             while (line != null)
             {
@@ -145,6 +146,8 @@ public class CorpusIndex {
         catch (Exception e)
         {
             Logger.log("Could not read index");
+            Logger.log("Possible problem with line: " + line);
+
             e.printStackTrace();
         }
     }
@@ -162,8 +165,8 @@ public class CorpusIndex {
             
             Class.forName(driver);
             conn = DriverManager.getConnection(url, user, password);
-            Statement statement = conn.createStatement();
-            statement.execute("delete from tuneindex");
+            //Statement statement = conn.createStatement();
+            //statement.execute("delete from tuneindex");
             MattGuiNB.instance().getProgressBar().setValue(0);
             MattGuiNB.instance().getProgressBar().setMaximum(index.size());
             for (int i = 0 ; i < index.size(); i ++)
@@ -177,13 +180,15 @@ public class CorpusIndex {
                 int x = index.get(i).getX();
                 Tune tune = book.getTune(x);
 
-                PreparedStatement ps = conn.prepareStatement("insert into tuneindex(`file`, `name`, `x`, `notation`, `key`, `midiFileName`) values(?, ?, ?, ?, ?,?)");
-                ps.setString(1, fName);
+                PreparedStatement ps = conn.prepareStatement("insert into tuneindex(`file`, `name`, `x`, `notation`, `key`, `midiFileName`, `source`, `type`) values(?, ?, ?, ?, ?,?, ?, ?)");
+                ps.setString(1, index.get(i).getFile());
                 ps.setString(2, tune.getTitles()[0]);
                 ps.setInt(3, x);
                 ps.setString(4, book.getTuneNotation(x));
                 ps.setString(5, index.get(i).getKey());
                 ps.setString(6, index.get(i).getMidiFileName());
+                ps.setInt(7, 3);
+                ps.setString(8, tune.getRhythm());
                 ps.executeUpdate();
                 ps.close();
             }
@@ -210,13 +215,14 @@ public class CorpusIndex {
                 Logger.log("Reindexing files...");
                 
                 String folder = MattProperties.getString("MIDIIndex");
-                File midiDir = new File(folder);
+                /*
+                 File midiDir = new File(folder);
                 String[] children = midiDir.list();
                 for (int ii = 0; ii < children.length; ii++) 
                 {
                     new File(midiDir, children[ii]).delete();
                 }
-           
+                */
                 ABCFilter filter = new ABCFilter();
                 index.clear();
 
@@ -339,8 +345,10 @@ public class CorpusIndex {
             key = MattABCTools.expandParts(key);
             key = MattABCTools.stripBarDivisions(key);
             key = MattABCTools.removeTripletMarks(key);
-            key = MattABCTools.removeScotishThings(key);
+            key = MattABCTools.removeExtraNotation(key);
             key = key.toUpperCase();
+            key = key.replace("WWWFROMMUSICAVIVAHTTPWWW.MUSICAVIVA.COMWTHEINTERNETCENTERFORFREESHEETMUSICDOWNLOADS.", "");
+
         }
         catch (Exception e)
         {

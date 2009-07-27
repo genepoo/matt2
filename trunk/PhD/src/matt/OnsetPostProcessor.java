@@ -163,7 +163,7 @@ public class OnsetPostProcessor {
                             for (int m = 1 ; m < multiple; m ++)
                             {
                                 TranscribedNote newNote = new TranscribedNote(0, current.getStart() + (m * newDuration), newDuration);
-                                newNote.setName("NEW");
+                                newNote.setSpelling("NEW");
                                 newNote.setMultiple(1);
                                 transcribedNotes.add(i + m, newNote);
                                 inserted ++;

@@ -18,7 +18,7 @@ public class ABCTranscriber {
     private static final float RANGE = 0.1f;    
     public static final float RATIO = 1.05946309436f;
     
-    TranscribedNote[] transcribedNotes;
+    private TranscribedNote[] transcribedNotes;
     Transcriber transcriber;
     
     public static final int REEL = 0;
@@ -26,6 +26,44 @@ public class ABCTranscriber {
     public static final int HORNPIPE = 2;
     public static final int MIDI_NOTES = 87;
     public static final int MIDI_START = 21;
+
+    public String spell(float frequency)
+    {
+        float distance[] = new float[knownFrequencies.length];
+        for (int j = 0 ; j < knownFrequencies.length ; j ++)
+        {
+            float difference = frequency - knownFrequencies[j];
+
+            distance[j] = difference * difference;
+        }
+        int minIndex = 0;
+        float min = Float.MAX_VALUE;
+        for (int j = 0 ; j < knownFrequencies.length ; j ++)
+        {
+            if (distance[j] < min)
+            {
+                minIndex = j;
+                min = distance[j];
+            }
+        }
+        return noteNames[minIndex];
+    }
+
+    /**
+     * @return the transcribedNotes
+     */
+    public TranscribedNote[] getTranscribedNotes()
+    {
+        return transcribedNotes;
+    }
+
+    /**
+     * @param transcribedNotes the transcribedNotes to set
+     */
+    public void setTranscribedNotes(TranscribedNote[] transcribedNotes)
+    {
+        this.transcribedNotes = transcribedNotes;
+    }
 
     
     enum pitch_model {FLUTE, WHISTLE};
@@ -139,13 +177,13 @@ public class ABCTranscriber {
     public String convertToMidi()
     {   
         StringBuffer ret = new StringBuffer();
-        for (int i = 0 ; i < transcribedNotes.length; i ++)
+        for (int i = 0 ; i < getTranscribedNotes().length; i ++)
         {
             float distance[] = new float[MIDI_NOTES];
 
             for (int j = 0 ; j < MIDI_NOTES ; j ++)
             {
-                float difference = transcribedNotes[i].getFrequency() - midiNotes[j];
+                float difference = getTranscribedNotes()[i].getFrequency() - midiNotes[j];
 
                 distance[j] = difference * difference;
             }
@@ -160,11 +198,11 @@ public class ABCTranscriber {
                 }
             }
             ret.append("" + (minIndex + MIDI_OFFSET));
-            if (i < transcribedNotes.length - 1)
+            if (i < getTranscribedNotes().length - 1)
             {
                 ret.append(",");
             }
-            transcribedNotes[i].setMidiNote(minIndex + MIDI_OFFSET);
+            getTranscribedNotes()[i].setMidiNote(minIndex + MIDI_OFFSET);
         }
         return ret.toString();
     }
@@ -174,9 +212,9 @@ public class ABCTranscriber {
         convertToMidi();
         StringBuffer parsons = new StringBuffer();
         float previousNote = -1;
-        for (int i = 0 ; i < transcribedNotes.length ; i ++)
+        for (int i = 0 ; i < getTranscribedNotes().length ; i ++)
         {
-            float currentNote = transcribedNotes[i].getMidiNote();
+            float currentNote = getTranscribedNotes()[i].getMidiNote();
             // No parsons code for the first note
             if (previousNote != -1)
             {
@@ -213,14 +251,14 @@ public class ABCTranscriber {
         Logger.log("Max energy in signal: " + ec.formatEnergy(getMaxEnergy()));
         Logger.log("Average energy in signal: " + ec.formatEnergy(getAverageEnergy()));
         int quaverQ = 0;
-        for (int i = 0 ; i < transcribedNotes.length ; i ++)
+        for (int i = 0 ; i < getTranscribedNotes().length ; i ++)
         {
             boolean found = false;
-            transcribedNotes[i].setQuaverQ(quaverQ);
-            if (isBreath(transcribedNotes[i]))
+            getTranscribedNotes()[i].setQuaverQ(quaverQ);
+            if (isBreath(getTranscribedNotes()[i]))
             {
                 Logger.log("Breath detected at frame: " + i);
-                transcribedNotes[i].setName("z");
+                getTranscribedNotes()[i].setSpelling("z");
                 if (sb.length() != 0)
                 {                    
                     found = true;
@@ -232,41 +270,25 @@ public class ABCTranscriber {
             }
             else
             {
-                float distance[] = new float[knownFrequencies.length];
-                for (int j = 0 ; j < knownFrequencies.length ; j ++)
-                {
-                    float difference = transcribedNotes[i].getFrequency() - knownFrequencies[j];
-                    
-                    distance[j] = difference * difference;
-                }
-                int minIndex = 0;
-                float min = Float.MAX_VALUE; 
-                for (int j = 0 ; j < knownFrequencies.length ; j ++)
-                {
-                    if (distance[j] < min)
-                    {
-                        minIndex = j;
-                        min = distance[j];
-                    }
-                }
-                found = true;                
-                transcribedNotes[i].setName(noteNames[minIndex]);
+                String closest = spell(getTranscribedNotes()[i].getFrequency());
+                found = true;
+                getTranscribedNotes()[i].setSpelling(closest);
             }
             if (found)
             {
                 
-                if ((sb.length() > 0) && (sb.charAt(sb.length() - 1) == 'z') && (transcribedNotes[i].getName().equals("z")))
+                if ((sb.length() > 0) && (sb.charAt(sb.length() - 1) == 'z') && (getTranscribedNotes()[i].getSpelling().equals("z")))
                 {
                     continue;
                 }
                  
-                sb.append(transcribedNotes[i].getName());
+                sb.append(getTranscribedNotes()[i].getSpelling());
                 // A breath should never be longer than a single note
                 int nearestMultiple = 0;
-                if (!transcribedNotes[i].getName().equals("z"))
+                if (!transcribedNotes[i].getSpelling().equals("z"))
                 {
                     //nearestMultiple = OnsetPostProcessor.calculateNearestMultiple(transcribedNotes[i].getDuration(), standardNote);
-                    nearestMultiple = transcribedNotes[i].getMultiple();
+                    nearestMultiple = getTranscribedNotes()[i].getMultiple();
                     if (nearestMultiple > 1)
                     {
                         // Quantise at dottet crochets 
@@ -285,7 +307,7 @@ public class ABCTranscriber {
                 }
 
                 quaverQ += nearestMultiple;
-                transcribedNotes[i].setMultiple(nearestMultiple);
+                getTranscribedNotes()[i].setMultiple(nearestMultiple);
                 if (quaverQ % NOTES_PER_BAR[tuneType] == 0)
                 {
                     // sb.append("|" + System.getProperty("line.separator"));
@@ -293,7 +315,7 @@ public class ABCTranscriber {
             }
             else
             {
-                Logger.log("Ignoring: " + transcribedNotes[i]);                
+                Logger.log("Ignoring: " + getTranscribedNotes()[i]);
             }
         }
         // Now remove z's at the end
@@ -342,12 +364,12 @@ public class ABCTranscriber {
     float calculateStandardNoteDuration()
     {      
         float duration = 0.0f;
-        float[] histData = new float[transcribedNotes.length];
+        float[] histData = new float[getTranscribedNotes().length];
         FuzzyHistogram fuzzyHistogram = new FuzzyHistogram();
         
-        for (int i = 0 ; i < transcribedNotes.length ; i ++)
+        for (int i = 0 ; i < getTranscribedNotes().length ; i ++)
         {
-            histData[i] = transcribedNotes[i].getDuration();
+            histData[i] = getTranscribedNotes()[i].getDuration();
         }
         duration = fuzzyHistogram.calculatePeek(histData, 0.3f);
         return duration;
@@ -379,13 +401,13 @@ public class ABCTranscriber {
         // Then its probably a tin whistle
         int flute = 0, whistle = 0;
         float G5 = (float) (MattProperties.getFloat(MattProperties.getString("fundamentalNote")) * Math.pow(RATIO, 17.0f));
-        for (int i = 0 ; i < transcribedNotes.length ; i ++)
+        for (int i = 0 ; i < getTranscribedNotes().length ; i ++)
         {
-            if (isBreath(transcribedNotes[i]))
+            if (isBreath(getTranscribedNotes()[i]))
             {
                 continue;
             }
-            if (transcribedNotes[i].getFrequency() < G5)
+            if (getTranscribedNotes()[i].getFrequency() < G5)
             {
                 flute ++;
             }
