@@ -4,9 +4,10 @@
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
     <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="2"/>
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
@@ -17,72 +18,99 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                  <Component id="txtStatus" alignment="0" max="32767" attributes="1"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="1" attributes="0">
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="btnOptions" linkSize="1" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="btnFind" linkSize="1" min="-2" max="-2" attributes="1"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="1">
-                              <Component id="btnRecord" linkSize="1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="btnPlay" linkSize="1" pref="111" max="32767" attributes="1"/>
+                              <Component id="cmbFundamental" min="-2" max="-2" attributes="1"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="btnTranscribe" linkSize="1" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="btnRecord" max="32767" attributes="1"/>
+                                  <Component id="btnTranscribe" alignment="0" pref="86" max="32767" attributes="1"/>
+                              </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="btnPlayTranscribed" linkSize="1" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="btnPlayTranscribed" max="32767" attributes="1"/>
+                                  <Component id="btnPlay" alignment="0" pref="61" max="32767" attributes="1"/>
+                              </Group>
                           </Group>
+                          <Component id="progressBar" alignment="0" max="32767" attributes="1"/>
                       </Group>
-                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" min="-2" pref="296" max="-2" attributes="0"/>
+                          <Component id="jScrollPane2" min="-2" pref="146" max="-2" attributes="1"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                          <Component id="cmbCorpus" linkSize="4" alignment="0" max="32767" attributes="1"/>
+                          <Component id="cmbType" linkSize="4" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
+                          <Component id="btnFind" linkSize="4" alignment="0" min="-2" max="-2" attributes="1"/>
                       </Group>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="txtStatus" pref="178" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="progressBar" min="-2" pref="352" max="-2" attributes="0"/>
-                  </Group>
               </Group>
-              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+              <EmptySpace pref="485" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
-              <EmptySpace min="-2" pref="140" max="-2" attributes="0"/>
-              <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+          <Group type="102" alignment="0" attributes="0">
               <Group type="103" groupAlignment="1" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="btnRecord" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="btnPlay" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="btnTranscribe" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="btnPlayTranscribed" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="btnOptions" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="btnFind" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="135" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="cmbCorpus" linkSize="2" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="cmbType" linkSize="2" pref="23" max="32767" attributes="1"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btnFind" linkSize="2" min="-2" max="-2" attributes="1"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jScrollPane2" min="-2" pref="101" max="-2" attributes="1"/>
+                          </Group>
                       </Group>
                   </Group>
-                  <Component id="jScrollPane2" min="0" pref="0" max="32767" attributes="1"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="155" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cmbFundamental" linkSize="3" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="btnTranscribe" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btnPlayTranscribed" linkSize="2" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                              <Component id="btnRecord" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnPlay" linkSize="3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="progressBar" min="-2" max="-2" attributes="1"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="txtStatus" min="-2" max="-2" attributes="0"/>
-                  <Component id="progressBar" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+              <Component id="txtStatus" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="82" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -98,7 +126,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnPlay">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Play Recording"/>
+        <Property name="text" type="java.lang.String" value="Play"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPlayActionPerformed"/>
@@ -138,7 +166,7 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="ABC Transcription:"/>
+        <Property name="text" type="java.lang.String" value="ABC to search for:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JProgressBar" name="progressBar">
@@ -150,19 +178,94 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnPlayTranscribed">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Play Transcribed"/>
+        <Property name="text" type="java.lang.String" value="Play"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPlayTranscribedActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="btnOptions">
+    <Component class="javax.swing.JComboBox" name="cmbFundamental">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Options"/>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="6">
+            <StringItem index="0" value="Bb"/>
+            <StringItem index="1" value="C"/>
+            <StringItem index="2" value="D"/>
+            <StringItem index="3" value="Eb"/>
+            <StringItem index="4" value="F"/>
+            <StringItem index="5" value="G"/>
+          </StringArray>
+        </Property>
+        <Property name="name" type="java.lang.String" value="cmbFundamental" noResource="true"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnOptionsActionPerformed"/>
+        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cmbFundamentalItemStateChanged"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmbFundamentalActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel3">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Corpus:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbCorpus">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="4">
+            <StringItem index="0" value="All"/>
+            <StringItem index="1" value="thesession.org"/>
+            <StringItem index="2" value="Norbeck"/>
+            <StringItem index="3" value="O&apos;Neill&apos;s 1001"/>
+          </StringArray>
+        </Property>
+        <Property name="name" type="java.lang.String" value="cmbCorpus" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel4">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Limit Search:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbType">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="24">
+            <StringItem index="0" value="All"/>
+            <StringItem index="1" value="Reel"/>
+            <StringItem index="2" value="Jig"/>
+            <StringItem index="3" value="Slip Jig"/>
+            <StringItem index="4" value="Slide"/>
+            <StringItem index="5" value="March"/>
+            <StringItem index="6" value="Mazurka"/>
+            <StringItem index="7" value="Polka"/>
+            <StringItem index="8" value="Hop"/>
+            <StringItem index="9" value="Barndance"/>
+            <StringItem index="10" value="Double Jig"/>
+            <StringItem index="11" value="Single Jig"/>
+            <StringItem index="12" value="Fling"/>
+            <StringItem index="13" value="Halling"/>
+            <StringItem index="14" value="Highland"/>
+            <StringItem index="15" value="Hornpipe"/>
+            <StringItem index="16" value="Set dance"/>
+            <StringItem index="17" value="Polska J"/>
+            <StringItem index="18" value="Polska K1"/>
+            <StringItem index="19" value="Polska L1"/>
+            <StringItem index="20" value="Polska O"/>
+            <StringItem index="21" value="Strathspey"/>
+            <StringItem index="22" value="Three-two"/>
+            <StringItem index="23" value="Waltz"/>
+          </StringArray>
+        </Property>
+        <Property name="name" type="java.lang.String" value="cmbLimit" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmbTypeActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Fundamental:"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
