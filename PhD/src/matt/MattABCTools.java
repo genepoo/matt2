@@ -17,13 +17,27 @@ import java.util.StringTokenizer;
  */
 public class MattABCTools {
 
-    static String removeScotishThings(String key) {
+    static String removeExtraNotation(String key) {
         String ret = key.replaceAll(">", "");
 
         ret = ret.replaceAll("<", "");
         ret = ret.replaceAll("/", "");
-        ret.replace("(", "");
-        ret.replace(")", "");
+        ret = ret.replace("\\", "");
+        ret = ret.replace("(", "");
+        ret = ret.replace(")", "");
+        ret = ret.replace("/", "");
+        ret = ret.replace("-", "");
+        ret = ret.replace("!", "");
+        ret = ret.replace("_", "");
+
+        // remove guitar chords
+        ret = ret.replaceAll("\\[.\\]", "");
+        ret = ret.replaceAll("\\[..\\]", "");
+        ret = ret.replaceAll("\\[...\\]", "");
+        ret = ret.replaceAll("\\[....\\]", "");
+        ret = ret.replaceAll("\\[.....\\]", "");
+        ret = ret.replaceAll("\\[.*\\]", "");
+
         return ret;
     }
     
@@ -269,6 +283,18 @@ public class MattABCTools {
             i ++;
         }
         return retValue.toString();
+    }
+
+    public static String stripAll(String key)
+    {
+        key = MattABCTools.stripComments(key);
+        key = MattABCTools.stripWhiteSpace(key);
+        key = MattABCTools.expandLongNotes(key);
+        key = MattABCTools.expandParts(key);
+        key = MattABCTools.stripBarDivisions(key);
+        key = MattABCTools.removeTripletMarks(key);
+        key = MattABCTools.removeExtraNotation(key);
+        return key.toUpperCase();
     }
     
     public static void main(String[] args)

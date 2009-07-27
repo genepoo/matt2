@@ -42,7 +42,7 @@ public class Matt {
      */
     public Matt() {
         
-        transcriber = new Transcriber();
+        transcriber = new STFTTranscriber();
         mattGui = MattGuiNB.instance();
         mattGui.setTranscriber(transcriber);
     }
@@ -64,6 +64,8 @@ public class Matt {
         matt.setOrnamentedTuneFile(PATH + "abc\\EamonnCotter.abc");
         matt.setLearnedFile(PATH + "output/casebase.xml");
          */
+         String test = "ab[AA]cd[]ef[BBB]g";
+         System.out.println(test);
         if (MattProperties.getString("mode").equals("server"))
         {
             MattServer ms = new MattServer();

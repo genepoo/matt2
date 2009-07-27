@@ -23,19 +23,19 @@ public class Transcriber {
     
     Clip clip;
     byte[] audioData;
-    private int frameSize;
-    private int hopSize;
-    private int sampleRate;
+    protected int frameSize;
+    protected int hopSize;
+    protected int sampleRate;
     private int numSamples;    
-    private String inputFile;
+    protected String inputFile;
     AudioInputStream audioInputStream;
     private float oldPowers[] = new float[numFilters];
     private float powers[] = new float[numFilters];
     private String abcTranscription;
     
-    private GUI gui;
+    protected GUI gui;
     
-    TranscribedNote[] transcribedNotes;
+    protected TranscribedNote[] transcribedNotes;
     
     String defaultFundamental = "D";
     
@@ -50,7 +50,7 @@ public class Transcriber {
     private SourceDataLine line = null;
     float staticThreshold = 0;
     
-    private float[] signal;
+    protected float[] signal;
     
     private boolean isPlaying = false;
   
@@ -570,7 +570,7 @@ public class Transcriber {
          */
     }
         
-    private float sampleToSeconds(int sample)
+    protected float sampleToSeconds(int sample)
     {
         return (float) sample / (float) sampleRate;
     }

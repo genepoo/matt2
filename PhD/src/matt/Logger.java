@@ -20,6 +20,7 @@ public class Logger {
                 smsg = smsg.substring(0, 25) + "...";
             }
             matt.web.MattApplet.setStatus(smsg);
+            System.out.println(msg);
             return;
         }
         

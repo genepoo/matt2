@@ -26,6 +26,12 @@ public class TranscribedNote {
     private int quaverQ;
     private int multiple;
     /** Creates a new instance of TranscribedNote */
+
+   public TranscribedNote()
+   {
+
+   }
+
     public TranscribedNote(float frequency, float start, float duration) {
         setFrequency(frequency);
         this.start = start;
@@ -59,17 +65,17 @@ public class TranscribedNote {
         this.duration = duration;
     }
 
-    public String getName() {
+    public String getSpelling() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setSpelling(String name) {
         this.name = name;
     }
     
     public String toString()
     {
-        return "" + getStart() + "\t" + getDuration() + "\t" + getFrequency() + "\t" + EnergyCalculator.formatEnergy(getEnergy()) + "\t" + getName() + "\t" + getMultiple() + "\t" + getQuaverQ();
+        return "" + getStart() + "\t" + getDuration() + "\t" + getFrequency() + "\t" + EnergyCalculator.formatEnergy(getEnergy()) + "\t" + getSpelling() + "\t" + getMultiple() + "\t" + getQuaverQ();
     }
 
     public float getEnergy()
