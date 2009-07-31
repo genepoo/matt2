@@ -15,7 +15,7 @@ public class Logger {
         if (MattProperties.getBoolean("applet"))
         {
             String smsg = "" + msg;
-            if (smsg.length() > 25)
+            if (smsg.length() > 200)
             {
                 smsg = smsg.substring(0, 25) + "...";
             }

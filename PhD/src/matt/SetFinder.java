@@ -4,6 +4,7 @@
  */
 
 package matt;
+import matt.dsp.PeakCalculator;
 import java.awt.*;
 import java.util.*;
 import matt.dsp.*;

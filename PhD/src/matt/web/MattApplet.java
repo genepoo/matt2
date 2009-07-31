@@ -48,7 +48,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
     AudioFormat format = null;  
     final int bufSize = 16384;
     double duration, seconds;
-    Transcriber transcriber = new STFTTranscriber();
+    ODCFTranscriber transcriber = new ODCFTranscriber();
 	
     float[] signal;
     
@@ -67,7 +67,15 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
     private void myInit()
     {
         // Add the graphs...
-        signalGraph.setBounds(10,10,getBounds().width - 20 ,120);
+        signalGraph.setBounds(10,10,getBounds().width - 20 ,80);
+        /*
+         Dimension d = new Dimension();
+        d.width = getBounds().width - 20;
+        d.height = txtStatus.getSize().height;
+
+        txtStatus.setSize(d);
+        txtStatus.setPreferredSize(d);
+        */
         getContentPane().add(signalGraph);
         //setBounds(0, 0, 630, 300);
         signalGraph.setBackground(Color.CYAN);
@@ -104,9 +112,9 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                     try 
                     {
                         String os = System.getProperty("os.name");
-                        if ((os.indexOf("Windows Vista") > -1) || (os.indexOf("Windows 7") > -1))
+                        if ((os.indexOf("Windows") > -1))
                         {
-                            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                         }
                         else
                         {
@@ -153,6 +161,10 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         jLabel4 = new javax.swing.JLabel();
         cmbType = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
+        cmbTranscriber = new javax.swing.JComboBox();
+        jLabel5 = new javax.swing.JLabel();
+        slSilence = new javax.swing.JSlider();
+        jLabel6 = new javax.swing.JLabel();
 
         btnRecord.setText("Record");
         btnRecord.addActionListener(new java.awt.event.ActionListener() {
@@ -216,7 +228,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         cmbCorpus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "thesession.org", "Norbeck", "O'Neill's 1001" }));
         cmbCorpus.setName("cmbCorpus"); // NOI18N
 
-        jLabel4.setText("Limit Search:");
+        jLabel4.setText("Limit search:");
 
         cmbType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Reel", "Jig", "Slip Jig", "Slide", "March", "Mazurka", "Polka", "Hop", "Barndance", "Double Jig", "Single Jig", "Fling", "Halling", "Highland", "Hornpipe", "Set dance", "Polska J", "Polska K1", "Polska L1", "Polska O", "Strathspey", "Three-two", "Waltz" }));
         cmbType.setName("cmbLimit"); // NOI18N
@@ -228,68 +240,96 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
 
         jLabel1.setText("Fundamental:");
 
+        cmbTranscriber.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Method 1", "Method 2" }));
+        cmbTranscriber.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbTranscriberItemStateChanged(evt);
+            }
+        });
+        cmbTranscriber.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbTranscriberActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("Transcriber:");
+
+        slSilence.setMaximum(6000);
+        slSilence.setValue(1500);
+
+        jLabel6.setText("Silence threshold:");
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, txtStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, txtStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
+                    .add(layout.createSequentialGroup()
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
-                                .add(jLabel1)
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                    .add(btnTranscribe, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
+                                    .add(btnRecord, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
+                                    .add(jLabel1)
+                                    .add(jLabel6)
+                                    .add(jLabel5))
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(cmbFundamental, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                            .add(layout.createSequentialGroup()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                                    .add(btnRecord, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .add(btnTranscribe, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                                    .add(btnPlayTranscribed, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .add(btnPlay, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 61, Short.MAX_VALUE)))
-                            .add(progressBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                    .add(btnPlayTranscribed, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
+                                    .add(btnPlay, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
+                                    .add(cmbFundamental, 0, 87, Short.MAX_VALUE)
+                                    .add(cmbTranscriber, 0, 87, Short.MAX_VALUE)
+                                    .add(slSilence, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)))
+                            .add(progressBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jLabel2)
-                            .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 146, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                            .add(jLabel3)
-                            .add(jLabel4)
-                            .add(cmbCorpus, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(cmbType, 0, 0, Short.MAX_VALUE)
-                            .add(btnFind))))
-                .addContainerGap(485, Short.MAX_VALUE))
+                            .add(layout.createSequentialGroup()
+                                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 140, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                    .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(cmbCorpus, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .add(cmbType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(btnFind)
+                                        .add(jLabel4))
+                                    .add(jLabel3)))
+                            .add(jLabel2))))
+                .add(464, 464, 464))
         );
 
         layout.linkSize(new java.awt.Component[] {btnFind, cmbCorpus, cmbType}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
+        layout.linkSize(new java.awt.Component[] {btnPlayTranscribed, btnRecord, btnTranscribe, jLabel1, jLabel5, jLabel6}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
+
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                .add(95, 95, 95)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(layout.createSequentialGroup()
-                        .add(135, 135, 135)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                            .add(layout.createSequentialGroup()
-                                .add(jLabel3)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(cmbCorpus, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jLabel4)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(cmbType, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(btnFind))
-                            .add(layout.createSequentialGroup()
-                                .add(jLabel2)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 101, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                    .add(jLabel6)
+                    .add(slSilence, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jLabel2))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
-                        .add(155, 155, 155)
+                        .add(9, 9, 9)
+                        .add(jLabel3)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(cmbCorpus, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jLabel4)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(cmbType, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(btnFind))
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(cmbTranscriber, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(jLabel5))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 9, Short.MAX_VALUE)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                             .add(jLabel1)
                             .add(cmbFundamental, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
@@ -304,10 +344,11 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                                 .add(btnRecord)
                                 .add(btnPlay)))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                        .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(txtStatus)
-                .add(82, 82, 82))
+                .add(87, 87, 87))
         );
 
         layout.linkSize(new java.awt.Component[] {btnFind, btnPlayTranscribed, cmbCorpus, cmbType}, org.jdesktop.layout.GroupLayout.VERTICAL);
@@ -335,6 +376,8 @@ private void btnFindActionPerformed(ActionEvent evt)//GEN-FIRST:event_btnFindAct
     String url = "http://www.comp.dit.ie/matt2/search5.jsp?q=" + URLEncoder.encode(toFind);
     url += "&corpus=" + (cmbCorpus.getSelectedIndex());
     url += "&type=" + cmbType.getSelectedItem();
+    url += "&silence=" + (int) slSilence.getValue();
+    url += "&method=" + cmbTranscriber.getSelectedItem();
     System.out.println("URL" + url);
     try
     {
@@ -350,6 +393,9 @@ private void btnFindActionPerformed(ActionEvent evt)//GEN-FIRST:event_btnFindAct
 private void btnRecordActionPerformed(ActionEvent evt) {                                          
     if (btnRecord.getText().equals("Record"))
     {
+        signalGraph.getDefaultSeries().clearLines();
+        signalGraph.getDefaultSeries().clear();
+        txtABC.setText("");
         capture.start();
         btnRecord.setText("Stop");
     }
@@ -386,6 +432,7 @@ private void btnRecordActionPerformed(ActionEvent evt) {
             
             Logger.log("Removing silence at the start...");
             transcriber.setSignal(signal);
+            transcriber.setSilenceThreshold(slSilence.getValue());
             transcriber.removeSilence();           
             signal = transcriber.getSignal();
             Logger.log("Graphing...");
@@ -402,6 +449,7 @@ private void btnRecordActionPerformed(ActionEvent evt) {
         {
             e.printStackTrace();
             Logger.log("Could not plot audio: " + e.getMessage());
+            Logger.log("Could not hear the melody. Try adjusting the silence threshold.");
         }
     }
 }                                         
@@ -480,6 +528,30 @@ private void cmbTypeActionPerformed(ActionEvent evt)//GEN-FIRST:event_cmbTypeAct
     // TODO add your handling code here:
 }//GEN-LAST:event_cmbTypeActionPerformed
 
+private void cmbTranscriberActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cmbTranscriberActionPerformed
+{//GEN-HEADEREND:event_cmbTranscriberActionPerformed
+
+}//GEN-LAST:event_cmbTranscriberActionPerformed
+
+private void cmbTranscriberItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_cmbTranscriberItemStateChanged
+{//GEN-HEADEREND:event_cmbTranscriberItemStateChanged
+    if (cmbTranscriber.getSelectedItem().equals("Method 1"))
+    {
+        transcriber = new ODCFTranscriber();
+    }
+    else
+    {
+        transcriber = new STFTTranscriber();
+        
+    }
+    transcriber.setGui(this);
+    transcriber.setSampleRate(sampleRate);
+    if (signal != null)
+    {
+        transcriber.setSignal(signal);
+    }
+}//GEN-LAST:event_cmbTranscriberItemStateChanged
+
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -490,13 +562,17 @@ private void cmbTypeActionPerformed(ActionEvent evt)//GEN-FIRST:event_cmbTypeAct
     private javax.swing.JButton btnTranscribe;
     private javax.swing.JComboBox cmbCorpus;
     private javax.swing.JComboBox cmbFundamental;
+    private javax.swing.JComboBox cmbTranscriber;
     private javax.swing.JComboBox cmbType;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JProgressBar progressBar;
+    private javax.swing.JSlider slSilence;
     private javax.swing.JTextArea txtABC;
     private javax.swing.JLabel txtStatus;
     // End of variables declaration//GEN-END:variables
@@ -766,6 +842,8 @@ private void cmbTypeActionPerformed(ActionEvent evt)//GEN-FIRST:event_cmbTypeAct
         cmbFundamental.setEnabled(b);
         cmbType.setEnabled(b);
         txtABC.setEnabled(b);
+        slSilence.setEnabled(b);
+        cmbTranscriber.setEnabled(b);
     }
 
     public void clearFFTGraphs()

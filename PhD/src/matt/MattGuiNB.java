@@ -25,7 +25,7 @@ import javax.swing.plaf.ColorUIResource;
  */
 public class MattGuiNB extends javax.swing.JFrame implements GUI{
     
-    private Transcriber transcriber = null;
+    private ODCFTranscriber transcriber = null;
     private BatchJob batchJob = null;
     private Matt matt;
     private static MattGuiNB _instance;
@@ -740,11 +740,11 @@ public class MattGuiNB extends javax.swing.JFrame implements GUI{
         frame.validate();
     }
     
-    public Transcriber getTranscriber() {
+    public ODCFTranscriber getTranscriber() {
         return transcriber;
     }
 
-    public void setTranscriber(Transcriber transcriber) {
+    public void setTranscriber(ODCFTranscriber transcriber) {
         this.transcriber = transcriber;
     }
     

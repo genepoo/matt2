@@ -4,17 +4,18 @@
  */
 
 package matt;
+import matt.dsp.FastFourierTransform;
 import java.util.*;
 /**
  *
  * @author Bryan Duggan
  */
-public class OnsetPostProcessor {
+public class OrnamentationFilter {
     private Vector<TranscribedNote> transcribedNotes;    
     private int sampleRate;
     private float[] signal;
     
-    public OnsetPostProcessor(Vector<TranscribedNote> transcribedNotes, int sampleRate, float[] signal)
+    public OrnamentationFilter(Vector<TranscribedNote> transcribedNotes, int sampleRate, float[] signal)
     {
         this.transcribedNotes = transcribedNotes;
         this.sampleRate = sampleRate;
@@ -35,7 +36,7 @@ public class OnsetPostProcessor {
      * Remove false positives
      * @return
      */
-    TranscribedNote[] postProcess()
+    TranscribedNote[] filter()
     {
         
         int start, end;

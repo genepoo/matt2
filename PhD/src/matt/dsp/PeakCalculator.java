@@ -7,8 +7,9 @@
  * and open the template in the editor.
  */
 
-package matt;
+package matt.dsp;
 
+import matt.*;
 import java.util.*;
 /**
  *
@@ -20,7 +21,7 @@ public class PeakCalculator {
     public PeakCalculator() {
     }
     
-    static Vector<Integer> calculatePeaks2(float[] data, int border, int howFar, float thresholdNormal)
+    public static Vector<Integer> calculatePeaks2(float[] data, int border, int howFar, float thresholdNormal)
     {
         float thresholdValue = 0;
         // First calculate the threshold
@@ -67,7 +68,7 @@ public class PeakCalculator {
         return peaks;
     }
     
-    static Vector calculatePeaks(float[] data, int border, int howFar, float thresholdNormal)
+    public static Vector calculatePeaks(float[] data, int border, int howFar, float thresholdNormal)
     {
         float thresholdValue = 0;
         // First calculate the threshold
@@ -115,7 +116,7 @@ public class PeakCalculator {
         return peaks;
     }
     
-    static Vector<Integer> calculateTrough(float[] data, int border, int howFar, float thresholdNormal, Graph g, int sj)
+    public static Vector<Integer> calculateTrough(float[] data, int border, int howFar, float thresholdNormal, Graph g, int sj)
     {        
         Vector<Integer> troughs = new Vector();
         float thresholdValue = Float.MAX_VALUE;

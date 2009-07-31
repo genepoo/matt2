@@ -20,7 +20,7 @@ public class Matt {
     private String unOrnamentedTuneFile;
     private String ornamentedTuneFile;
     private String learnedFile;    
-    private Transcriber transcriber;
+    private ODCFTranscriber transcriber;
     private MattGuiNB mattGui;
     
     private static Matt _instance = null;
@@ -113,11 +113,11 @@ public class Matt {
    
     
 
-    public Transcriber getTranscriber() {
+    public ODCFTranscriber getTranscriber() {
         return transcriber;
     }
 
-    public void setTranscriber(Transcriber transcriber) {
+    public void setTranscriber(ODCFTranscriber transcriber) {
         this.transcriber = transcriber;
     }
 }

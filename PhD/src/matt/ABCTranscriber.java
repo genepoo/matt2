@@ -19,7 +19,7 @@ public class ABCTranscriber {
     public static final float RATIO = 1.05946309436f;
     
     private TranscribedNote[] transcribedNotes;
-    Transcriber transcriber;
+    ODCFTranscriber transcriber;
     
     public static final int REEL = 0;
     public static final int JIG = 1;
@@ -168,7 +168,7 @@ public class ABCTranscriber {
         
     }
         
-    public ABCTranscriber(Transcriber transcriber) {
+    public ABCTranscriber(ODCFTranscriber transcriber) {
         this.transcribedNotes = transcriber.getTranscribedNotes();
         this.transcriber = transcriber;
         makeMidiNotes();

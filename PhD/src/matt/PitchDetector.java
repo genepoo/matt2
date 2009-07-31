@@ -4,6 +4,8 @@
  */
 
 package matt;
+import matt.dsp.PeakCalculator;
+import matt.dsp.FastFourierTransform;
 import java.util.*;
 /**
  *

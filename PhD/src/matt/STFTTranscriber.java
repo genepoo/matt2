@@ -5,13 +5,15 @@
 
 package matt;
 
+import matt.dsp.FastFourierTransform;
+import matt.dsp.SpectralCentroid;
 import java.util.Vector;
 
 /**
  *
  * @author Bryan Duggan
  */
-public class STFTTranscriber extends Transcriber{
+public class STFTTranscriber extends ODCFTranscriber{
 
     public STFTTranscriber()
     {
@@ -41,9 +43,13 @@ public class STFTTranscriber extends Transcriber{
         sc.setSampleRate(sampleRate);
         sc.setFrameSize(frameSize);
         float fftFrame[] = new float[frameSize];
-        Logger.log("Spectral range:" + (sc.getBinWidth()) * frameSize);
+        float stdDevs[] = new float[signal.length / hopSize];
+        int iStdDev = 0;
+        gui.getProgressBar().setMaximum(signal.length);
+        gui.getProgressBar().setValue(0);
         for (int i = 0 ; i < (signal.length - frameSize) ; i += hopSize)
         {
+            gui.getProgressBar().setValue(i);
             String spelling;
 
             for (int j = 0 ; j < frameSize ; j ++)
@@ -59,11 +65,26 @@ public class STFTTranscriber extends Transcriber{
 
             float[] fftOut = fft.fftMag(fftFrame, 0, frameSize);
             sc.setFftMag(fftOut);
-            Logger.log("Centroid: " + i + "\t" + sc.calculate());
+            // Logger.log("Centroid: " + i + "\t" + sc.calculate());
+            float stdDev = SD.sdFast(fftOut);
+            stdDevs[iStdDev ++] = stdDev;
+            if (Boolean.parseBoolean("" + MattProperties.getString("drawFFTGraphs")) == true)
+            {
+                Graph fftGraph = new Graph();
+
+                fftGraph.setBounds(0, 0, 1000, 1000);
+                fftGraph.getDefaultSeries().setScale(false);
+                fftGraph.getDefaultSeries().setData(fftOut);
+                MattGuiNB.instance().addFFTGraph(fftGraph, "" + i);
+            }
+            ec.setStart(i);
+            ec.setEnd(i + frameSize);
+            noteEnergy = ec.calculateAverageEnergy();
             PitchDetector pitchDetector = new PitchDetector();
             float mFrequency = pitchDetector.mikelsFrequency(fftOut, sampleRate, frameSize);
             frequency = mFrequency;
             spelling = MattABCTools.stripAll(abcTranscriber.spell(frequency));
+
             unfilteredSpellings += spelling;
             if (lastSpelling == null)
             {
@@ -76,16 +97,24 @@ public class STFTTranscriber extends Transcriber{
                 note.setSpelling(lastSpelling);
                 note.setEnergy(noteEnergy);
                 note.setFrequency(lastFrequency);
+                Logger.log("Found note: " + lastSpelling + ", energy: " + noteEnergy + ", frequency: " + lastFrequency);
                 if (notes.size() == 0)
                 {
                     note.setStart(0);
+                    note.setUnmergedStart(0);
                     note.setDuration(sampleToSeconds(i));
+                    note.setUnmergedDuration(sampleToSeconds(i));
                 }
                 else
                 {
                     TranscribedNote lastNote = notes.get(notes.size() -1);
-                    note.setStart(lastNote.getStart() + lastNote.getDuration());
-                    note.setDuration(sampleToSeconds(i) - note.getStart());
+                    float start, duration;
+                    start = lastNote.getStart() + lastNote.getDuration();
+                    note.setStart(start);
+                    note.setUnmergedStart(start);
+                    duration = sampleToSeconds(i) - note.getStart();
+                    note.setDuration(duration);
+                    note.setUnmergedDuration(duration);
                 }
                 lastSpelling = spelling;
                 lastFrequency = frequency;
@@ -93,6 +122,15 @@ public class STFTTranscriber extends Transcriber{
                 notes.add(note);
             }
         }
+
+        /*
+         Graph stdGraph = new Graph();
+
+        stdGraph.setBounds(0, 0, 1000, 1000);
+        stdGraph.getDefaultSeries().setScale(false);
+        stdGraph.getDefaultSeries().setData(stdDevs);
+        MattGuiNB.instance().addFFTGraph(stdGraph, "STD DEVS");
+         */
         // Add the last note
         if (lastSpelling != null)
         {
@@ -103,19 +141,28 @@ public class STFTTranscriber extends Transcriber{
             if (notes.size() == 0)
             {
                 note.setStart(0);
+                note.setUnmergedStart(0);
+
                 note.setDuration(sampleToSeconds(signal.length));
+                note.setUnmergedDuration(sampleToSeconds(signal.length));
             }
             else
             {
                 TranscribedNote lastNote = notes.get(notes.size() -1);
-                note.setStart(lastNote.getStart() + lastNote.getDuration());
-                note.setDuration(sampleToSeconds(signal.length) - note.getStart());
+                float start, duration;
+                start = lastNote.getStart() + lastNote.getDuration();
+                note.setStart(start);
+                note.setUnmergedStart(start);
+
+                duration = sampleToSeconds(signal.length) - note.getStart();
+                note.setDuration(duration);
+                note.setUnmergedDuration(duration);
             }
             notes.add(note);
         }
 
-        OnsetPostProcessor opp = new OnsetPostProcessor(notes, sampleRate, signal);
-        transcribedNotes = opp.postProcess();
+        OrnamentationFilter opp = new OrnamentationFilter(notes, sampleRate, signal);
+        transcribedNotes = opp.filter();
         /*
          transcribedNotes = new TranscribedNote[notes.size()];
         for (int i = 0 ; i < notes.size() ; i ++)
@@ -131,7 +178,9 @@ public class STFTTranscriber extends Transcriber{
         notesString  = abcTranscriber.convertToABC();
         printNotes();
         Logger.log(unfilteredSpellings);
+        gui.getProgressBar().setValue(signal.length);
         gui.getTxtABC().setText(notesString);
+        Logger.log("Done");
     }
 
 }
