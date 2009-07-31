@@ -19,7 +19,7 @@ public class BatchJob extends Thread
     private boolean running = false;
     
     ABCFinder finder = null;
-    Transcriber transcriber = null;
+    ODCFTranscriber transcriber = null;
     private long jobId;
     public static final int NEW = 0;
     public static final int TRANSCRIBING = 1;

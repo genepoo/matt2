@@ -9,6 +9,10 @@
 
 package matt;
 
+import matt.dsp.FrequencyDomainCombFilter;
+import matt.dsp.TimeDomainCombFilter;
+import matt.dsp.PeakCalculator;
+import matt.dsp.FastFourierTransform;
 import javax.sound.sampled.*;
 import java.io.*;
 import java.awt.*;
@@ -17,7 +21,7 @@ import java.util.*;
  *
  * @author bduggan
  */
-public class Transcriber {       
+public class ODCFTranscriber {
     
     int numFilters = 12;
     
@@ -32,6 +36,8 @@ public class Transcriber {
     private float oldPowers[] = new float[numFilters];
     private float powers[] = new float[numFilters];
     private String abcTranscription;
+
+    private float silenceThreshold = 1500.0f;
     
     protected GUI gui;
     
@@ -55,7 +61,7 @@ public class Transcriber {
     private boolean isPlaying = false;
   
     /** Creates a new instance of Transcriber */
-    public Transcriber() {
+    public ODCFTranscriber() {
         frameSize = 2048;
         hopSize = (int) ((float) frameSize * 0.25f);                   
     }
@@ -121,7 +127,7 @@ public class Transcriber {
                 gui.getProgressBar().setValue(signalIndex);
             }            
             Logger.log("Removing silence at the start...");
-            // removeSilence();            
+            removeSilence();            
             Logger.log("Graphing...");
             if (Boolean.parseBoolean("" + MattProperties.getString("drawSignalGraphs")) == true)
             {
@@ -151,7 +157,7 @@ public class Transcriber {
     public void removeSilence()
     {
         float average = 0;
-        float threshold = 1500.0f;
+        
         int frame = 512;
         
         int i;
@@ -164,7 +170,7 @@ public class Transcriber {
                 frameAverage += Math.abs(signal[i + j]);
             }
             frameAverage /= (float) j;
-            if (frameAverage > threshold)
+            if (frameAverage > getSilenceThreshold())
             {
                 break;
             }
@@ -492,8 +498,8 @@ public class Transcriber {
             Logger.log("");             
         }
 
-        OnsetPostProcessor opp = new OnsetPostProcessor(notes, sampleRate, signal);
-        TranscribedNote[] postProcessed = opp.postProcess();
+        OrnamentationFilter opp = new OrnamentationFilter(notes, sampleRate, signal);
+        TranscribedNote[] postProcessed = opp.filter();
         for (int i = 0 ; i < postProcessed.length ; i ++)
         {
             float start = postProcessed[i].getStart();
@@ -721,5 +727,21 @@ public class Transcriber {
     public void setIsPlaying(boolean isPlaying)
     {
         this.isPlaying = isPlaying;
+    }
+
+    /**
+     * @return the silenceThreshold
+     */
+    public float getSilenceThreshold()
+    {
+        return silenceThreshold;
+    }
+
+    /**
+     * @param silenceThreshold the silenceThreshold to set
+     */
+    public void setSilenceThreshold(float silenceThreshold)
+    {
+        this.silenceThreshold = silenceThreshold;
     }
 }

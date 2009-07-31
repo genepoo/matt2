@@ -5,6 +5,8 @@
 
 package matt;
 
+import matt.dsp.TimeDomainCombFilter;
+
 /**
  *
  * @author Bryan Duggan
