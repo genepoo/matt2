@@ -18,7 +18,8 @@ import java.io.*;
  * @author Bryan
  */
 public class ABCMatch implements Comparator {
-    
+
+    private String myStr;
     private String fileName;
     private String notation = null;
     private String line;
@@ -26,6 +27,7 @@ public class ABCMatch implements Comparator {
     private CorpusEntry corpusEntry;
     private float editDistance;
     private int x;
+    private int source;
     private int index;
     private int which = -1;
     private int repititions = -1;
@@ -52,7 +54,7 @@ public class ABCMatch implements Comparator {
             try
             {
                 String curDir = System.getProperty("user.dir");
-                String fName = curDir + System.getProperty("file.separator") + MattProperties.instance().get("SearchCorpus") + System.getProperty("file.separator") + getFileName();
+                String fName = curDir + System.getProperty("file.separator") + MattProperties.instance().get("SearchCorpus") + System.getProperty("file.separator") + getSource() +  System.getProperty("file.separator") + getFileName();
                 File f = new File(fName);
                 TuneBook book = new TuneBook(f);
                 setTune(book.getTune(x));
@@ -203,5 +205,31 @@ public class ABCMatch implements Comparator {
     public void setCorpusEntry(CorpusEntry corpusEntry)
     {
         this.corpusEntry = corpusEntry;
+    }
+
+    /**
+     * @return the myStr
+     */
+    public String getMyStr()
+    {
+        return myStr;
+    }
+
+    /**
+     * @param myStr the myStr to set
+     */
+    public void setMyStr(String myStr)
+    {
+        this.myStr = myStr;
+    }
+
+    public int getSource()
+    {
+        return source;
+    }
+
+    public void setSource(int source)
+    {
+        this.source = source;
     }
 }
