@@ -126,6 +126,7 @@ public class FinderThread extends Thread{
             match.setFileName(entry.getFile());
             match.setX(entry.getX());
             match.setTitle(entry.getTitle());
+            match.setSource(entry.getSource());
             match.setIndex(entry.getIndex());
             match.setCorpusEntry(entry);
             pq.add(match);

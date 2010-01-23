@@ -19,6 +19,7 @@ import javax.sound.midi.Sequencer;
  */
 public class CorpusEntry {
     private String key;
+    private String keySignature;
     private String file;
     private int x;
     private String title;
@@ -26,6 +27,7 @@ public class CorpusEntry {
     private int index;
     private int[] midiSequence;
     private String midiFileName;
+    private int source;
 
     public CorpusEntry()
     {
@@ -41,14 +43,14 @@ public class CorpusEntry {
 
         try
         {
-
-
             StringTokenizer stTok = new StringTokenizer(entry, "\t");
-
             setKey(stTok.nextToken());
+            setKeySignature(stTok.nextToken());
             setTitle(stTok.nextToken());
             setFile(stTok.nextToken());
             setX(Integer.parseInt(stTok.nextToken()));
+            int source = Integer.parseInt(stTok.nextToken());
+            setSource(source);
             setParsons(stTok.nextToken());
             setMidiFileName(stTok.nextToken());
             String midi = stTok.nextToken();
@@ -125,18 +127,22 @@ public class CorpusEntry {
         StringBuffer sb = new StringBuffer();
         sb.append(key);
         sb.append("\t");
+        sb.append(keySignature);
+        sb.append("\t");
         sb.append(title);
         sb.append("\t");
         sb.append(file);
         sb.append("\t");
         sb.append(x);
         sb.append("\t");
+        sb.append(source);
+        sb.append("\t");
         sb.append(parsons);      
         sb.append("\t");
-        sb.append(midiFileName);      
+        sb.append(midiFileName);
         sb.append("\t");        
         sb.append(MIDITools.instance().arrayToString(midiSequence));
-        sb.append(System.getProperty("line.separator"));
+        // sb.append(System.getProperty("line.separator"));
         
         return sb.toString();                
     }
@@ -175,6 +181,36 @@ public class CorpusEntry {
     public void setMidiFileName(String midiFileName)
     {
         this.midiFileName = midiFileName;
+    }
+
+    /**
+     * @return the source
+     */
+    public int getSource()
+    {
+        return source;
+    }
+
+    /**
+     * @param source the source to set
+     */
+    public void setSource(int source)
+    {
+        this.source = source;
+    }
+
+    /**
+     * @return the keySignature
+     */
+    public String getKeySignature() {
+        return keySignature;
+    }
+
+    /**
+     * @param keySignature the keySignature to set
+     */
+    public void setKeySignature(String keySignature) {
+        this.keySignature = keySignature;
     }
     
       
