@@ -125,10 +125,12 @@ public class CorpusIndex {
             String fileName = curDir + System.getProperty("file.separator") + MattProperties.getString("indexFile");
             File indexFile = new File(fileName);
 
-            if (! indexFile.exists())
+            /*
+             if (! indexFile.exists())
             {
                 reindex();
             }
+             */ 
             BufferedReader br = new BufferedReader(new FileReader(indexFile));
             
             line = br.readLine();
@@ -150,6 +152,63 @@ public class CorpusIndex {
 
             e.printStackTrace();
         }
+    }
+
+    public void makeSQLiteDatabase()
+    {
+        Connection conn = null;
+
+        try
+        {
+            Class.forName("org.sqlite.JDBC");
+            Logger.log("Creating iTunePal index...");
+            conn = DriverManager.getConnection("jdbc:sqlite:itunepal.sqlite");
+
+            // Create the schema
+            //Statement stat = conn.createStatement();
+            //stat.executeUpdate("drop table if exists tuneindex;");
+            //stat.executeUpdate("create table tuneindex(name, occupation);");
+
+            //Statement statement = conn.createStatement();
+            //statement.execute("delete from tuneindex");
+            MattGuiNB.instance().getProgressBar().setValue(0);
+            MattGuiNB.instance().getProgressBar().setMaximum(index.size());
+            for (int i = 0 ; i < index.size(); i ++)
+            {
+                System.out.println(i);
+                MattGuiNB.instance().getProgressBar().setValue(i);
+                String curDir = System.getProperty("user.dir");
+
+                String fName = curDir + System.getProperty("file.separator") + MattProperties.getString("SearchCorpus") + System.getProperty("file.separator") + index.get(i).getSource() + System.getProperty("file.separator") + index.get(i).getFile();
+                File f = new File(fName);
+                TuneBook book = new TuneBook(f);
+                int x = index.get(i).getX();
+                Tune tune = book.getTune(x);
+
+                PreparedStatement ps = conn.prepareStatement("insert into tuneindex(`title`, `alt_title`, `x`, `notation`, `key`, `source`) values(?, ?, ?, ?, ?,?)");
+                ps.setString(1, tune.getTitles()[0]);
+                if (tune.getTitles().length > 1)
+                {
+                    ps.setString(2, tune.getTitles()[1]);
+                }
+                ps.setInt(3, x);
+                ps.setString(4, book.getTuneNotation(x));
+                ps.setString(5, index.get(i).getKey());
+                ps.setInt(6, index.get(i).getSource());
+                ps.executeUpdate();
+                ps.close();
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.log("Could not update database");
+            e.printStackTrace();
+        }
+        finally
+        {
+            safeClose(conn, null, null);
+        }
+        Logger.log("Done...");
     }
     
     public void reindexDatabase()
@@ -174,7 +233,7 @@ public class CorpusIndex {
                 MattGuiNB.instance().getProgressBar().setValue(i);
                 String curDir = System.getProperty("user.dir");
 
-                String fName = curDir + System.getProperty("file.separator") + MattProperties.getString("SearchCorpus") + System.getProperty("file.separator") + index.get(i).getFile();
+                String fName = curDir + System.getProperty("file.separator") + MattProperties.getString("SearchCorpus") + System.getProperty("file.separator") + index.get(i).getSource() + System.getProperty("file.separator") + index.get(i).getFile();
                 File f = new File(fName);
                 TuneBook book = new TuneBook(f);
                 int x = index.get(i).getX();
@@ -187,7 +246,7 @@ public class CorpusIndex {
                 ps.setString(4, book.getTuneNotation(x));
                 ps.setString(5, index.get(i).getKey());
                 ps.setString(6, index.get(i).getMidiFileName());
-                ps.setInt(7, 3);
+                ps.setInt(7, index.get(i).getSource());
                 ps.setString(8, tune.getRhythm());
                 ps.executeUpdate();
                 ps.close();
@@ -207,22 +266,25 @@ public class CorpusIndex {
     
     public void reindex()
     {
+        System.out.print(this);
         new Thread()
         {
             public void run()
             {
+
                 ready = false;
                 Logger.log("Reindexing files...");
                 
                 String folder = MattProperties.getString("MIDIIndex");
-                /*
+
+                Logger.log("Deleting MIDI files...");
                  File midiDir = new File(folder);
                 String[] children = midiDir.list();
                 for (int ii = 0; ii < children.length; ii++) 
                 {
                     new File(midiDir, children[ii]).delete();
                 }
-                */
+                Logger.log("Done");
                 ABCFilter filter = new ABCFilter();
                 index.clear();
 
@@ -235,12 +297,36 @@ public class CorpusIndex {
                     {
                         indexFile.delete();
                     }
-                    FileWriter fw = new FileWriter(indexFile);           
-                    File[] files = dir.listFiles(filter);
+                    PrintWriter fw = new PrintWriter(indexFile);           
+                    File[] dirs = dir.listFiles();
 
-                    for (int i = 0 ; i < files.length ; i ++)
+                    for (int i = 0 ; i < dirs.length ; i ++)
                     {
-                        addTunes(files[i],  fw);
+                        if (dirs[i].isDirectory())
+                        {
+                            int source = -1;
+                            try
+                            {
+                                String numberPart = ("" + dirs[i]);
+                                numberPart = numberPart.substring(numberPart.lastIndexOf(System.getProperty("file.separator")) + 1);
+                                source = Integer.parseInt("" + numberPart);
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.log(dirs[i] + " is not a number, so I'm skipping that folder");
+                                continue;
+                            }
+                            File[] files = dirs[i].listFiles(filter);
+                            for (int j = 0 ; j < files.length ; j ++)
+                            {
+                                addTunes(source, files[j],  fw);
+                            }
+                        }
+                        else
+                        {
+                            addTunes(-1, dirs[i],  fw);
+                        }
+                        
                     }
                     fw.close();
                     //if (MattProperties.getString("mode").equals("server"))
@@ -259,7 +345,7 @@ public class CorpusIndex {
         }.start();
     }
     
-    private void addTunes(File f, FileWriter fw) throws IOException
+    private void addTunes(int source, File f, PrintWriter fw) throws IOException
     {
         Tune tune = null;
         Logger.log("Indexing tunebook: " + f.toString());
@@ -294,7 +380,7 @@ public class CorpusIndex {
                     while (! endOfTune)
                     {
                         String subKey = key.substring(start, iVariation);                    
-                        createCorpusEntry(fw, head, subKey, f.getName(), tune.getTitles()[0], tune.getReferenceNumber());                    
+                        createCorpusEntry(source, fw, head, subKey, f.getName(), tune.getTitles()[0], tune.getReferenceNumber(), tune);
                         // Find the end of the comment
                         iVariation = key.indexOf("\"", iVariation + 1);
                         start = iVariation + 1;
@@ -304,14 +390,14 @@ public class CorpusIndex {
                         {
                             endOfTune = true;
                             subKey = key.substring(start, key.length());                    
-                            createCorpusEntry(fw, head, subKey, f.getName(), tune.getTitles()[0], tune.getReferenceNumber());                    
+                            createCorpusEntry(source, fw, head, subKey, f.getName(), tune.getTitles()[0], tune.getReferenceNumber(), tune);
                         }
                     }
                 }
                 else
                 {                
                     // Create an entry for the whole tune
-                    createCorpusEntry(fw, head, key, f.getName(), tune.getTitles()[0], tune.getReferenceNumber());                    
+                    createCorpusEntry(source, fw, head, key, f.getName(), tune.getTitles()[0], tune.getReferenceNumber(), tune);
                 }
             }
             catch (Exception e)
@@ -329,13 +415,14 @@ public class CorpusIndex {
         }
     }
     
-    private void createCorpusEntry(FileWriter fw, String head, String key, String fileName, String title, int x) throws Exception
+    private void createCorpusEntry(int source, PrintWriter fw, String head, String key, String fileName, String title, int x, Tune tune) throws Exception
     {
         String parsons = null;
         String midiFile = MIDITools.instance().createMIDI(head, key, fileName, title, x);
         int[] midiSequence = MIDITools.instance().toMIDISequence(midiFile);
         parsons = MIDITools.instance().toParsons(midiSequence);
-        
+
+
         try
         {
             key = MattABCTools.stripComments(key);
@@ -346,6 +433,7 @@ public class CorpusIndex {
             key = MattABCTools.stripBarDivisions(key);
             key = MattABCTools.removeTripletMarks(key);
             key = MattABCTools.removeExtraNotation(key);
+            //key = MattABCTools.removeLongNotes(key);
             key = key.toUpperCase();
             key = key.replace("WWWFROMMUSICAVIVAHTTPWWW.MUSICAVIVA.COMWTHEINTERNETCENTERFORFREESHEETMUSICDOWNLOADS.", "");
 
@@ -363,13 +451,15 @@ public class CorpusIndex {
         {            
             CorpusEntry ce = new CorpusEntry();
             ce.setFile(fileName);
+            ce.setSource(source);
             ce.setTitle(title);
             ce.setX(x);
             ce.setKey(key);
             ce.setParsons(parsons);
             ce.setMidiSequence(midiSequence);
             ce.setMidiFileName(midiFile);
-            fw.write(ce.toIndexFile());
+            ce.setKeySignature(tune.getKey().toLitteralNotation());
+            fw.println(ce.toIndexFile());
             fw.flush();                
             index.add(ce);
         }
