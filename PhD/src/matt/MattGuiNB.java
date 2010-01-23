@@ -561,7 +561,8 @@ public class MattGuiNB extends javax.swing.JFrame implements GUI{
     }//GEN-LAST:event_btnBestActionPerformed
 
     private void btnReindexActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReindexActionPerformed
-        CorpusIndex.instance().reindex();
+        //CorpusIndex.instance().reindex();
+        CorpusIndex.instance().makeSQLiteDatabase();
     }//GEN-LAST:event_btnReindexActionPerformed
 
     private void btnBatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatchActionPerformed

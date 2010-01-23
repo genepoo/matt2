@@ -38,7 +38,37 @@ public class MattABCTools {
         ret = ret.replaceAll("\\[.....\\]", "");
         ret = ret.replaceAll("\\[.*\\]", "");
 
+        
+        StringBuffer ret1 = new StringBuffer();
+        for (int i = 0 ; i < ret.length() ; i ++)
+        {
+            char cur = ret.charAt(i);
+            if (((cur >= 'A') && (cur <= 'G')) || ((cur >= 'a') && (cur <= 'g')))
+            {
+                ret1.append(cur);       
+            }
+            
+        }
+        ret = ret1.toString();
+        
         return ret;
+    }
+
+    static String removeLongNotes(String key) {
+        StringBuffer ret = new StringBuffer();
+        char lastChar = '*';
+
+        for (int i = 0 ; i < key.length() ; i ++)
+        {
+            char current = key.charAt(i);
+            if (current != lastChar)
+            {
+                ret.append(current);
+                lastChar = current;
+            }
+        }
+
+        return ret.toString();
     }
     
     enum partTypes {NORMAL, REPEAT, SPECIAL12};

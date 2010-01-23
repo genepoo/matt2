@@ -42,7 +42,7 @@ public class Matt {
      */
     public Matt() {
         
-        transcriber = new STFTTranscriber();
+        transcriber = new ODCFTranscriber();
         mattGui = MattGuiNB.instance();
         mattGui.setTranscriber(transcriber);
     }

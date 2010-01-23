@@ -108,6 +108,7 @@ public class SetFinder extends Thread{
                 match.setWhich(whichTune);
                 match.setIndex(bestIndex);
                 match.setNotation(firstTune.getKey());
+                match.setSource(firstTune.getSource());
                 match.setTitle(firstTune.getTitle());                
                 match.setFileName(firstTune.getFile());
                 match.setX(firstTune.getX());

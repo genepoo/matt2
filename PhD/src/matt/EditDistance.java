@@ -285,7 +285,8 @@ public class EditDistance
             for (int j = 1; j <= tLength; j++)
             {
                 int v = d[i - 1][j - 1];
-                if ((text.charAt(j - 1) != sc) && (text.charAt(j - 1) != 'Z') && sc != 'Z')                
+                //if ((text.charAt(j - 1) != sc) && (text.charAt(j - 1) != 'Z') && sc != 'Z')                
+                if ((text.charAt(j - 1) != sc)  && sc != 'Z')
                 {
                     difference = 1;
                 }
