@@ -37,7 +37,8 @@ public class PitchDetector
     
     float maxPeek(float[] fftMag, int sampleRate, int frameSize)
     {
-        return maxFreq(maxFrameIndex(fftMag), sampleRate, frameSize);
+        int maxIndex = maxFrameIndex(fftMag);
+        return maxFreq(maxIndex, sampleRate, frameSize);
     }
     
     float maxFilter(float[] fftMag, int sampleRate, int frameSize, float startAt)

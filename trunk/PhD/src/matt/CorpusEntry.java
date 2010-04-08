@@ -7,6 +7,7 @@ package matt;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.*;
 import java.util.*;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
@@ -19,11 +20,15 @@ import javax.sound.midi.Sequencer;
  */
 public class CorpusEntry {
     private String key;
+    private String tunePalID;
+    private String type;
     private String keySignature;
     private String file;
     private int x;
     private String title;
+    private String altTitle;
     private String parsons;
+    private String notation;
     private int index;
     private int[] midiSequence;
     private String midiFileName;
@@ -38,38 +43,43 @@ public class CorpusEntry {
     {
     }
             
-    public CorpusEntry(String entry)
+    public CorpusEntry(ResultSet rs)
     {
-
+        int id = -1;
         try
         {
-            StringTokenizer stTok = new StringTokenizer(entry, "\t");
-            setKey(stTok.nextToken());
-            setKeySignature(stTok.nextToken());
-            setTitle(stTok.nextToken());
-            setFile(stTok.nextToken());
-            setX(Integer.parseInt(stTok.nextToken()));
-            int source = Integer.parseInt(stTok.nextToken());
-            setSource(source);
-            setParsons(stTok.nextToken());
-            setMidiFileName(stTok.nextToken());
-            String midi = stTok.nextToken();
-            stTok = new StringTokenizer(midi, ",");
+            id = rs.getInt("id");
+            setTitle(rs.getString("title"));
+            setAltTitle(rs.getString("alt_title"));
+            setKey(rs.getString("search_key"));
+            setFile(rs.getString("file_name"));
+            setX(rs.getInt("x"));
+            setNotation(rs.getString("notation"));
+            setKeySignature(rs.getString("key_sig"));            
+            setSource(rs.getInt("source"));
+            setMidiFileName(rs.getString("midi_file_name"));
+            setParsons(rs.getString("parsons"));
+            setTunePalID(rs.getString("tunepalid"));            
+            setType(rs.getString("tune_type"));
+            String midiSequence = rs.getString("midi_sequence");
 
+            StringTokenizer stTok = new StringTokenizer(midiSequence, ",");
             Vector<Integer> v = new Vector<Integer>();
             while (stTok.hasMoreTokens())
             {
                 v.add(new Integer(stTok.nextToken()));
             }
-            midiSequence = new int[v.size()];
+            int midiNotes[] = new int[v.size()];
             for (int i = 0 ; i < v.size(); i ++)
             {
-                midiSequence[i] = v.get(i);
+                midiNotes[i] = v.get(i);
             }
+            setMidiSequence(midiNotes);
+
         }
         catch (Exception e)
         {
-            Logger.log("Could not fully parse line: " + entry);
+            Logger.log("Could not load record: " + id);
             e.printStackTrace();
         }        
     }
@@ -211,6 +221,62 @@ public class CorpusEntry {
      */
     public void setKeySignature(String keySignature) {
         this.keySignature = keySignature;
+    }
+
+    /**
+     * @return the tunePalID
+     */
+    public String getTunePalID() {
+        return tunePalID;
+    }
+
+    /**
+     * @param tunePalID the tunePalID to set
+     */
+    public void setTunePalID(String tunePalID) {
+        this.tunePalID = tunePalID;
+    }
+
+    /**
+     * @return the altTitle
+     */
+    public String getAltTitle() {
+        return altTitle;
+    }
+
+    /**
+     * @param altTitle the altTitle to set
+     */
+    public void setAltTitle(String altTitle) {
+        this.altTitle = altTitle;
+    }
+
+    /**
+     * @return the notation
+     */
+    public String getNotation() {
+        return notation;
+    }
+
+    /**
+     * @param notation the notation to set
+     */
+    public void setNotation(String notation) {
+        this.notation = notation;
+    }
+
+    /**
+     * @return the type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type) {
+        this.type = type;
     }
     
       

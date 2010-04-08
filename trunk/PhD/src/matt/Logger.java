@@ -12,7 +12,8 @@ package matt;
 public class Logger {
     public static void log(Object msg)
     {
-        if (MattProperties.getBoolean("applet"))
+        /*
+         if (MattProperties.getBoolean("applet"))
         {
             String smsg = "" + msg;
             if (smsg.length() > 200)
@@ -30,6 +31,7 @@ public class Logger {
             MattGuiNB.log(msg);
         }
         else
+         */
         {
             System.out.println(msg);
         }

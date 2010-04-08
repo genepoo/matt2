@@ -96,7 +96,7 @@ public class FinderThread extends Thread{
             {
                 while (toFind.length() > nlSearchIn.length())
                 {
-                    MattGuiNB.log("Expanding: " + nlSearchIn);
+                    //Logger.log("Expanding: " + nlSearchIn);
                     needsExpansion = true;
                     nlSearchIn.append(searchIn);
                 }
@@ -122,6 +122,7 @@ public class FinderThread extends Thread{
             }                       
             ABCMatch match = new ABCMatch();
             match.setLine(bestBit);
+            match.setTunepalid(entry.getTunePalID());
             match.setEditDistance(bestEditdistance);
             match.setFileName(entry.getFile());
             match.setX(entry.getX());
