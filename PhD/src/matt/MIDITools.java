@@ -29,7 +29,7 @@ public class MIDITools {
         return _instance;
     }
 
-    public String createMIDI(String head, String key, String fileName, String title, int x) throws IOException, InterruptedException
+    public String createMIDI(String head, String key, String fileName, String title, int x, String uniqueId) throws IOException, InterruptedException
     {
         head = head.trim() + "\r";
         key = key.trim();
@@ -43,18 +43,14 @@ public class MIDITools {
         fw.write(key);
         fw.flush();
         fw.close();
-        String midiFileName = "";
-        String fullName = "";
+        String midiFileName;
+        String fullName;
         int variation = 0;
         boolean unique = false;
-        title = title.replace(System.getProperty("file.separator").charAt(0), '~');
-        title = title.replace('\'', '~');
-        title = title.replace('?', '~');
-        title = title.replace('"', '~');
         do
         {
             
-            midiFileName = x + "-" + fileName + "-" + title;
+            midiFileName = uniqueId;
             if (variation > 0)
             {
                 midiFileName += "-Variation " + variation;

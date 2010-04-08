@@ -20,6 +20,7 @@ import java.io.*;
 public class ABCMatch implements Comparator {
 
     private String myStr;
+    private String tunepalid;
     private String fileName;
     private String notation = null;
     private String line;
@@ -231,5 +232,21 @@ public class ABCMatch implements Comparator {
     public void setSource(int source)
     {
         this.source = source;
+    }
+
+    /**
+     * @return the tunepalid
+     */
+    public String getTunepalid()
+    {
+        return tunepalid;
+    }
+
+    /**
+     * @param tunepalid the tunepalid to set
+     */
+    public void setTunepalid(String tunepalid)
+    {
+        this.tunepalid = tunepalid;
     }
 }

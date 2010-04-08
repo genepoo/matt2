@@ -125,7 +125,13 @@ public class ODCFTranscriber {
             {
                 signal[signalIndex] = ((audioData[(signalIndex * 2) + 1] << 8) + audioData[signalIndex * 2]);
                 gui.getProgressBar().setValue(signalIndex);
-            }            
+            }
+
+            FastFourierTransform fft = new FastFourierTransform();
+            float[] ffts = fft.fftMag(signal, 0, frameSize);
+            PitchDetector pd = new PitchDetector();
+            float freq = pd.maxPeek(ffts, sampleRate, frameSize);
+
             Logger.log("Removing silence at the start...");
             removeSilence();            
             Logger.log("Graphing...");
