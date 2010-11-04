@@ -20,6 +20,7 @@ public class WebTune implements Comparable, Serializable
     public String source;
     public int sourceid;
     public String tunepalid;
+    public String key_sig;
     public String type;
     public String notation;
     public String line;
@@ -41,6 +42,8 @@ public class WebTune implements Comparable, Serializable
         tunepalid = r.getString("tunepalid");
         x = r.getInt("x");
         midiFileName = r.getString("midi_file_name");
+        key_sig = r.getString("key_sig");
+        type = r.getString("tune_type");
         source = r.getString("sourcename");
         sourceid = r.getInt("sourceid");
     }
