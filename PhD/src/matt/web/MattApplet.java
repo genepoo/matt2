@@ -20,6 +20,7 @@ import javax.swing.plaf.ColorUIResource;
 
 
 import abc.midi.*;
+import java.applet.AppletContext;
 import java.awt.Color;
 import java.net.MalformedURLException;
 import java.util.logging.Level;
@@ -120,6 +121,8 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                         {
                             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                         }
+                        
+                        //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                     } 
                     catch(Exception e) 
                     {
@@ -225,8 +228,13 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
 
         jLabel3.setText("Corpus:");
 
-        cmbCorpus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "thesession.org", "Norbeck", "O'Neill's 1001" }));
+        cmbCorpus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "thesession.org", "Norbeck", "O'Neill's 1001", "Ceol Rince na h…ireann 1", "Ceol Rince na h…ireann 2", "Ceol Rince na h…ireann 3", "Ceol Rince na h…ireann 4", "Johnny O'Leary", "Nigel Gatherer" }));
         cmbCorpus.setName("cmbCorpus"); // NOI18N
+        cmbCorpus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbCorpusActionPerformed(evt);
+            }
+        });
 
         jLabel4.setText("Limit search:");
 
@@ -266,7 +274,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, txtStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, txtStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
@@ -286,21 +294,19 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                             .add(progressBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(layout.createSequentialGroup()
-                                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 140, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                        .add(cmbCorpus, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .add(cmbType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(btnFind)
-                                        .add(jLabel4))
-                                    .add(jLabel3)))
-                            .add(jLabel2))))
+                            .add(jLabel2)
+                            .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 116, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                                .add(jLabel4)
+                                .add(cmbType, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .add(cmbCorpus, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .add(btnFind, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .add(jLabel3))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 142, Short.MAX_VALUE)))
                 .add(464, 464, 464))
         );
-
-        layout.linkSize(new java.awt.Component[] {btnFind, cmbCorpus, cmbType}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
         layout.linkSize(new java.awt.Component[] {btnPlayTranscribed, btnRecord, btnTranscribe, jLabel1, jLabel5, jLabel6}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
@@ -313,8 +319,8 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                     .add(slSilence, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jLabel2))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(layout.createSequentialGroup()
                         .add(9, 9, 9)
                         .add(jLabel3)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -322,10 +328,8 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(jLabel4)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(cmbType, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnFind))
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
+                        .add(cmbType, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE))
+                    .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                             .add(cmbTranscriber, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(jLabel5))
@@ -344,11 +348,16 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                                 .add(btnRecord)
                                 .add(btnPlay)))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
+                        .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(txtStatus)
                 .add(87, 87, 87))
+            .add(layout.createSequentialGroup()
+                .add(124, 124, 124)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(btnFind)
+                    .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 130, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(107, Short.MAX_VALUE))
         );
 
         layout.linkSize(new java.awt.Component[] {btnFind, btnPlayTranscribed, cmbCorpus, cmbType}, org.jdesktop.layout.GroupLayout.VERTICAL);
@@ -371,14 +380,18 @@ private void btnFindActionPerformed(ActionEvent evt)//GEN-FIRST:event_btnFindAct
     toFind = toFind.toUpperCase();
 
 
-    //String url = "http://localhost:8080/MattWeb/search.jsp?q=" + URLEncoder.encode(toFind);
+    String docBase = "" + getDocumentBase();
+    int li = docBase.lastIndexOf("/");
+    String url = docBase.substring(0, li) + "/search8.jsp?version=1.4&q=" + URLEncoder.encode(toFind);
+    System.out.println(url);
+    //String url = "http://localhost:8080/MattWeb/search8.jsp?q=" + URLEncoder.encode(toFind);
     //String url = "http://skooter500.s156.eatj.com/MattWeb/search.jsp?q=" + URLEncoder.encode(toFind);
-    String url = "http://www.comp.dit.ie/matt2/search5.jsp?q=" + URLEncoder.encode(toFind);
+    //String url = "http://www.comp.dit.ie/matt2/search8.jsp?q=" + URLEncoder.encode(toFind);
     url += "&corpus=" + (cmbCorpus.getSelectedIndex());
     url += "&type=" + cmbType.getSelectedItem();
     url += "&silence=" + (int) slSilence.getValue();
     url += "&method=" + cmbTranscriber.getSelectedItem();
-    System.out.println("URL" + url);
+    System.out.println("URL: " + url);
     try
     {
         getAppletContext().showDocument(new java.net.URL(url), "results");
@@ -428,6 +441,7 @@ private void btnRecordActionPerformed(ActionEvent evt) {
             {
                 signal[signalIndex] = ((audioData[(signalIndex * 2) + 1] << 8) + audioData[signalIndex * 2]);                                             
                 getProgressBar().setValue(signalIndex);
+                System.out.println(signal[signalIndex]);
             }
             
             Logger.log("Removing silence at the start...");
@@ -551,6 +565,10 @@ private void cmbTranscriberItemStateChanged(java.awt.event.ItemEvent evt)//GEN-F
         transcriber.setSignal(signal);
     }
 }//GEN-LAST:event_cmbTranscriberItemStateChanged
+
+private void cmbCorpusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbCorpusActionPerformed
+// TODO add your handling code here:
+}//GEN-LAST:event_cmbCorpusActionPerformed
 
 
 
