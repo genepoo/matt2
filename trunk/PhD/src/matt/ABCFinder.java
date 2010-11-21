@@ -146,7 +146,7 @@ public class ABCFinder extends Thread
                 }
                 
             }           
-            // printTop(10);
+            printTop(10);
             ABCMatch best = pq.peek();
             MattGuiNB.instance().setBestSoFar(best);
             Logger.log("Searched " + CorpusIndex.instance().size() + " tunes");
