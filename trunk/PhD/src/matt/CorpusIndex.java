@@ -495,7 +495,8 @@ public class CorpusIndex {
             if ((!lastUniqueId.equals(uniqueId)))
             {
 
-                PreparedStatement ps = conn.prepareStatement("insert into tuneindex(`file_name`, `title`, `alt_title`, `x`, `notation`, `source`, `tune_type`, `tunepalid`, `key_sig`) values(?, ?, ?,?, ?, ?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+                //PreparedStatement ps = conn.prepareStatement("insert into tuneindex(`file_name`, `title`, `alt_title`, `x`, `notation`, `source`, `tune_type`, `tunepalid`, `key_sig`) values(?, ?, ?,?, ?, ?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement ps = conn.prepareStatement("insert into tuneindex(`file_name`, `title`, `alt_title`, `x`, `notation`, `source`, `tune_type`, `tunepalid`, `key_sig`) values(?, ?, ?,?, ?, ?,?,?,?)");
                 ps.setString(1, ce.getFile());
                 ps.setString(2, ce.getTitle());
                 ps.setString(3, ce.getAltTitle());
@@ -507,7 +508,8 @@ public class CorpusIndex {
                 ps.setString(9, ce.getKeySignature());
                 ps.executeUpdate();
 
-                ResultSet rs = ps.getGeneratedKeys();
+                tuneid = getLastId("tuneindex", conn);
+                /*ResultSet rs = ps.getGeneratedKeys();
                 if (rs.next())
                 {
                     tuneid = rs.getInt(1);
@@ -516,6 +518,7 @@ public class CorpusIndex {
                     System.out.println("There are no generated keys.");
                     System.exit(0);
                 }
+                 */
                 ps.close();
                 lastUniqueId = uniqueId;
                 lastTuneId = tuneid;
@@ -530,6 +533,19 @@ public class CorpusIndex {
             ps.executeUpdate();
             ps.close();
         }
+    }
+
+    public int getLastId(String table, Connection conn) throws SQLException
+    {
+        int lastId = 0;
+        Statement statement = conn.createStatement();
+        ResultSet rs = statement.executeQuery("select max(id) as max from " + table);
+        if (rs.next())
+        {
+            lastId = rs.getInt("max");
+        }
+        return lastId;
+
     }
 
     public boolean isReady()
