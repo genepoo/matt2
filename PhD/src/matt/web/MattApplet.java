@@ -6,6 +6,12 @@
 
 package matt.web;
 
+import matt.MattProperties;
+import matt.Logger;
+import matt.ODCFTranscriber;
+import matt.MattABCTools;
+import matt.STFTTranscriber;
+import matt.Series;
 import abc.midi.*;
 import javax.sound.midi.*;
 import abc.parser.TuneBook;
@@ -14,7 +20,7 @@ import javax.swing.*;
 import java.io.*;
 import java.awt.*;
 import javax.swing.table.*;
-import java.util.*;
+//import java.util.*;
 import abc.notation.Tune;
 import javax.swing.plaf.ColorUIResource;
 
@@ -30,17 +36,23 @@ import javax.swing.UIManager;
 import matt.Graph;
 import java.io.*;
 import java.net.URLEncoder;
+import java.util.TimerTask;
+import java.util.Timer;
 import javax.sound.sampled.*;
+import javax.swing.UIManager.LookAndFeelInfo;
 import matt.*;
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
+
+
 
 /**
  *
  * @author  Bryan Duggan
  */
 public class MattApplet extends javax.swing.JApplet implements matt.GUI {
-    
+
+    CheckList newframe = new CheckList();
     static public MattApplet _instance;
     Capture capture = new Capture();
     Playback playback = new Playback();
@@ -64,11 +76,22 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
 
         _instance = this;
     }
+
+//    @Override
+//    public void paint(Graphics g) {
+//
+//        super.paint(g);
+//
+//        Graphics2D g2d = (Graphics2D) g;
+//        GradientPaint gradient = new GradientPaint(0, 0, Color.BLUE, this.getWidth(),   this.getHeight(),Color.CYAN);
+//        g2d.setPaint(gradient);
+//        g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
+//    }
     
     private void myInit()
     {
         // Add the graphs...
-        signalGraph.setBounds(10,10,getBounds().width - 20 ,80);
+        signalGraph.setBounds(10,10,getBounds().width - 160 ,80);
         /*
          Dimension d = new Dimension();
         d.width = getBounds().width - 20;
@@ -77,9 +100,10 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         txtStatus.setSize(d);
         txtStatus.setPreferredSize(d);
         */
+       
         getContentPane().add(signalGraph);
         //setBounds(0, 0, 630, 300);
-        signalGraph.setBackground(Color.CYAN);
+        signalGraph.setBackground(new Color(176,210,13));
         format = new AudioFormat(44100, 16, 1, true, false);
         transcriber.setGui(this);
 
@@ -94,7 +118,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         {
             public void playEnd(PlayerStateChangeEvent e)
             {
-                btnPlayTranscribed.setText("Play");
+                btnPlayTranscribed.setText("Play ABC");
             }
 
         });
@@ -110,23 +134,39 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         try {
             java.awt.EventQueue.invokeAndWait(new Runnable() {
                 public void run() {
-                    try 
-                    {
-                        String os = System.getProperty("os.name");
-                        if ((os.indexOf("Windows") > -1))
-                        {
-                            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//                    try
+//                    {
+//                        String os = System.getProperty("os.name");
+//                        if ((os.indexOf("Windows") > -1))
+//                        {
+//                            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//                        }
+//                        else
+//                        {
+//                            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+//                        }
+//
+//                        //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+//                    }
+//                    catch(Exception e)
+//                    {
+//                        System.out.println("Error setting native LAF: " + e);
+//                    }
+                    try {
+                        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                            if ("Nimbus".equals(info.getName())) {
+                                UIManager.setLookAndFeel(info.getClassName());
+                                break;
+                            }
                         }
-                        else
-                        {
-                            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-                        }
-                        
-                        //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-                    } 
-                    catch(Exception e) 
-                    {
-                        System.out.println("Error setting native LAF: " + e);
+                    } catch (UnsupportedLookAndFeelException e) {
+                        // handle exception
+                    } catch (ClassNotFoundException e) {
+                        // handle exception
+                    } catch (InstantiationException e) {
+                        // handle exception
+                    } catch (IllegalAccessException e) {
+                        // handle exception
                     }
                     initComponents();
                     myInit();
@@ -148,26 +188,48 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btnRecord = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        btnPlayTranscribed = new javax.swing.JButton();
         btnPlay = new javax.swing.JButton();
-        btnFind = new javax.swing.JButton();
+        btnRecord = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        slSilence = new javax.swing.JSlider();
+        jLabel1 = new javax.swing.JLabel();
+        cmbFundamental = new javax.swing.JComboBox();
         btnTranscribe = new javax.swing.JButton();
+        cmbCorpus = new javax.swing.JComboBox();
+        cmbType = new javax.swing.JComboBox();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        txtStatus = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtABC = new javax.swing.JTextArea();
-        jLabel2 = new javax.swing.JLabel();
+        btnFind = new javax.swing.JButton();
         progressBar = new javax.swing.JProgressBar();
-        txtStatus = new javax.swing.JLabel();
-        btnPlayTranscribed = new javax.swing.JButton();
-        cmbFundamental = new javax.swing.JComboBox();
-        jLabel3 = new javax.swing.JLabel();
-        cmbCorpus = new javax.swing.JComboBox();
-        jLabel4 = new javax.swing.JLabel();
-        cmbType = new javax.swing.JComboBox();
-        jLabel1 = new javax.swing.JLabel();
-        cmbTranscriber = new javax.swing.JComboBox();
         jLabel5 = new javax.swing.JLabel();
-        slSilence = new javax.swing.JSlider();
-        jLabel6 = new javax.swing.JLabel();
+        cmbTranscriber = new javax.swing.JComboBox();
+
+        setBackground(new java.awt.Color(221, 221, 221));
+
+        jPanel1.setFocusable(false);
+        jPanel1.setOpaque(false);
+
+        btnPlayTranscribed.setText("Play ABC");
+        btnPlayTranscribed.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPlayTranscribedActionPerformed(evt);
+            }
+        });
+
+        btnPlay.setText("Playback");
+        btnPlay.setEnabled(false);
+        btnPlay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPlayActionPerformed(evt);
+            }
+        });
 
         btnRecord.setText("Record");
         btnRecord.addActionListener(new java.awt.event.ActionListener() {
@@ -176,42 +238,12 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
             }
         });
 
-        btnPlay.setText("Play");
-        btnPlay.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPlayActionPerformed(evt);
-            }
-        });
+        jLabel6.setText("Silence threshold:");
 
-        btnFind.setText("Search!");
-        btnFind.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnFindActionPerformed(evt);
-            }
-        });
+        slSilence.setMaximum(6000);
+        slSilence.setValue(1500);
 
-        btnTranscribe.setText("Transcribe");
-        btnTranscribe.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTranscribeActionPerformed(evt);
-            }
-        });
-
-        txtABC.setColumns(20);
-        txtABC.setLineWrap(true);
-        txtABC.setRows(5);
-        jScrollPane2.setViewportView(txtABC);
-
-        jLabel2.setText("ABC to search for:");
-
-        txtStatus.setText("<Press record to begin!>");
-
-        btnPlayTranscribed.setText("Play");
-        btnPlayTranscribed.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPlayTranscribedActionPerformed(evt);
-            }
-        });
+        jLabel1.setText("Fundamental:");
 
         cmbFundamental.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Bb", "C", "D", "Eb", "F", "G" }));
         cmbFundamental.setName("cmbFundamental"); // NOI18N
@@ -226,17 +258,21 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
             }
         });
 
-        jLabel3.setText("Corpus:");
+        btnTranscribe.setText("Transcribe");
+        btnTranscribe.setEnabled(false);
+        btnTranscribe.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTranscribeActionPerformed(evt);
+            }
+        });
 
-        cmbCorpus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "thesession.org", "Norbeck", "O'Neill's 1001", "Ceol Rince na h�ireann 1", "Ceol Rince na h�ireann 2", "Ceol Rince na h�ireann 3", "Ceol Rince na h�ireann 4", "Johnny O'Leary", "Nigel Gatherer" }));
+        cmbCorpus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "thesession.org", "Norbeck", "O'Neill's 1001", "Ceol Rince na hÉireann 1", "Ceol Rince na hÉireann 2", "Ceol Rince na hÉireann 3", "Ceol Rince na hÉireann 4", "Johnny O'Leary", "Nigel Gatherer", "The Microphone Rambles", "John Tose", "Jack Campin", "Fife and Drum", "Nottingham Database" }));
         cmbCorpus.setName("cmbCorpus"); // NOI18N
         cmbCorpus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmbCorpusActionPerformed(evt);
             }
         });
-
-        jLabel4.setText("Limit search:");
 
         cmbType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Reel", "Jig", "Slip Jig", "Slide", "March", "Mazurka", "Polka", "Hop", "Barndance", "Double Jig", "Single Jig", "Fling", "Halling", "Highland", "Hornpipe", "Set dance", "Polska J", "Polska K1", "Polska L1", "Polska O", "Strathspey", "Three-two", "Waltz" }));
         cmbType.setName("cmbLimit"); // NOI18N
@@ -246,9 +282,136 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
             }
         });
 
-        jLabel1.setText("Fundamental:");
+        jLabel3.setText("Tune Book:");
+
+        jLabel4.setText("Tune Type:");
+
+        txtStatus.setText("<Press record to begin!>");
+        txtStatus.setMaximumSize(new java.awt.Dimension(68, 14));
+        txtStatus.setMinimumSize(new java.awt.Dimension(68, 14));
+        txtStatus.setPreferredSize(new java.awt.Dimension(68, 20));
+
+        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(txtStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
+                    .add(jPanel1Layout.createSequentialGroup()
+                        .add(jLabel6)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(slSilence, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE))
+                    .add(jPanel1Layout.createSequentialGroup()
+                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(btnTranscribe, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
+                            .add(btnRecord, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
+                            .add(jLabel1))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(btnPlayTranscribed, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
+                            .add(btnPlay, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
+                            .add(cmbFundamental, 0, 86, Short.MAX_VALUE)))
+                    .add(jPanel1Layout.createSequentialGroup()
+                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                            .add(jLabel4)
+                            .add(jLabel3))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(cmbType, 0, 118, Short.MAX_VALUE)
+                            .add(cmbCorpus, 0, 118, Short.MAX_VALUE))))
+                .addContainerGap())
+        );
+
+        jPanel1Layout.linkSize(new java.awt.Component[] {btnPlayTranscribed, btnRecord, btnTranscribe, jLabel1, jLabel6}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
+
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(txtStatus, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 13, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(12, 12, 12)
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(jLabel6)
+                    .add(slSilence, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel1)
+                    .add(cmbFundamental, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jPanel1Layout.createSequentialGroup()
+                        .add(29, 29, 29)
+                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(btnTranscribe)
+                            .add(btnPlayTranscribed)))
+                    .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                        .add(btnRecord)
+                        .add(btnPlay)))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel3)
+                    .add(cmbCorpus, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(2, 2, 2)
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(cmbType, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 18, Short.MAX_VALUE)
+                    .add(jLabel4))
+                .addContainerGap())
+        );
+
+        jPanel1Layout.linkSize(new java.awt.Component[] {btnPlay, cmbFundamental}, org.jdesktop.layout.GroupLayout.VERTICAL);
+
+        jPanel2.setFocusable(false);
+        jPanel2.setOpaque(false);
+
+        jLabel2.setText("ABC to search for:");
+
+        txtABC.setColumns(20);
+        txtABC.setLineWrap(true);
+        txtABC.setRows(5);
+        jScrollPane2.setViewportView(txtABC);
+
+        btnFind.setText("Search!");
+        btnFind.setMaximumSize(new java.awt.Dimension(32767, 32767));
+        btnFind.setMinimumSize(new java.awt.Dimension(73, 18));
+        btnFind.setPreferredSize(new java.awt.Dimension(78, 20));
+        btnFind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFindActionPerformed(evt);
+            }
+        });
+
+        org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, btnFind, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
+                        .add(jLabel2)
+                        .add(progressBar, 0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jLabel2)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(btnFind, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
+                .addContainerGap())
+        );
 
         cmbTranscriber.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Method 1", "Method 2" }));
+        cmbTranscriber.setOpaque(false);
         cmbTranscriber.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cmbTranscriberItemStateChanged(evt);
@@ -260,110 +423,36 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
             }
         });
 
-        jLabel5.setText("Transcriber:");
-
-        slSilence.setMaximum(6000);
-        slSilence.setValue(1500);
-
-        jLabel6.setText("Silence threshold:");
-
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+            .add(layout.createSequentialGroup()
+                .add(86, 86, 86)
+                .add(jLabel5)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(cmbTranscriber, 0, 87, Short.MAX_VALUE)
+                .add(1408, 1408, 1408))
+            .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, txtStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE)
-                    .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(layout.createSequentialGroup()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(btnTranscribe, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
-                                    .add(btnRecord, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
-                                    .add(jLabel1)
-                                    .add(jLabel6)
-                                    .add(jLabel5))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(btnPlayTranscribed, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
-                                    .add(btnPlay, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
-                                    .add(cmbFundamental, 0, 87, Short.MAX_VALUE)
-                                    .add(cmbTranscriber, 0, 87, Short.MAX_VALUE)
-                                    .add(slSilence, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)))
-                            .add(progressBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jLabel2)
-                            .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 116, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                                .add(jLabel4)
-                                .add(cmbType, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .add(cmbCorpus, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .add(btnFind, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .add(jLabel3))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 142, Short.MAX_VALUE)))
-                .add(464, 464, 464))
+                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(1227, Short.MAX_VALUE))
         );
-
-        layout.linkSize(new java.awt.Component[] {btnPlayTranscribed, btnRecord, btnTranscribe, jLabel1, jLabel5, jLabel6}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
-
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .add(95, 95, 95)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(jLabel6)
-                    .add(slSilence, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jLabel2))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(9, 9, 9)
-                        .add(jLabel3)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(cmbCorpus, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jLabel4)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(cmbType, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE))
-                    .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(cmbTranscriber, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(jLabel5))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 9, Short.MAX_VALUE)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(jLabel1)
-                            .add(cmbFundamental, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(layout.createSequentialGroup()
-                                .add(29, 29, 29)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                                    .add(btnTranscribe)
-                                    .add(btnPlayTranscribed)))
-                            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                                .add(btnRecord)
-                                .add(btnPlay)))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(txtStatus)
-                .add(87, 87, 87))
             .add(layout.createSequentialGroup()
-                .add(124, 124, 124)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(btnFind)
-                    .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 130, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(107, Short.MAX_VALUE))
+                .add(56, 56, 56)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(cmbTranscriber, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jLabel5))
+                .add(18, 18, 18)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                    .add(jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(152, Short.MAX_VALUE))
         );
-
-        layout.linkSize(new java.awt.Component[] {btnFind, btnPlayTranscribed, cmbCorpus, cmbType}, org.jdesktop.layout.GroupLayout.VERTICAL);
-
-        layout.linkSize(new java.awt.Component[] {btnPlay, cmbFundamental}, org.jdesktop.layout.GroupLayout.VERTICAL);
-
     }// </editor-fold>//GEN-END:initComponents
 	
 private void btnFindActionPerformed(ActionEvent evt)//GEN-FIRST:event_btnFindActionPerformed
@@ -403,7 +492,55 @@ private void btnFindActionPerformed(ActionEvent evt)//GEN-FIRST:event_btnFindAct
 	}//GEN-LAST:event_btnFindActionPerformed
 
 
-private void btnRecordActionPerformed(ActionEvent evt) {                                          
+class RemindTask extends TimerTask {
+    int secleft = 5;
+
+    public void run() {
+      if (countdown) {
+          if (secleft > 0) {
+            txtStatus.setText("Recording in " + secleft + "...");
+            secleft--;
+          } else {
+            txtStatus.setText("Recording.");
+            btnRecord.setText("Record");
+            countdown = false;
+            record();
+            this.cancel();
+          }
+        }
+       else {
+          txtStatus.setText("<Press record to begin!>");
+          this.cancel();
+       }
+    } 
+  }
+
+public boolean countdown = false;
+
+private void btnRecordActionPerformed(ActionEvent evt) {
+    //.setVisible(true);
+    Timer timer = new Timer();
+    if (btnRecord.getText().equals("Record"))
+    {
+        btnRecord.setText("Stop");
+        timer.schedule(new RemindTask(), 0, 1 * 1000);
+        countdown = true;
+    }
+    else if (countdown)
+    {
+        timer.cancel();
+        countdown = false;
+        btnRecord.setText("Record");
+    }
+    else
+    {
+        timer.cancel();
+        record();
+    }
+}
+
+private void record() {
+    //timer.cancel();
     if (btnRecord.getText().equals("Record"))
     {
         signalGraph.getDefaultSeries().clearLines();
@@ -441,7 +578,7 @@ private void btnRecordActionPerformed(ActionEvent evt) {
             {
                 signal[signalIndex] = ((audioData[(signalIndex * 2) + 1] << 8) + audioData[signalIndex * 2]);                                             
                 getProgressBar().setValue(signalIndex);
-                System.out.println(signal[signalIndex]);
+                //System.out.println(signal[signalIndex]);
             }
             
             Logger.log("Removing silence at the start...");
@@ -458,6 +595,8 @@ private void btnRecordActionPerformed(ActionEvent evt) {
                 signalGraph.repaint();
             }
             Logger.log("Done.");
+            btnPlay.setEnabled(true);
+            btnTranscribe.setEnabled(true);
         }
         catch(Exception e)
         {
@@ -469,7 +608,7 @@ private void btnRecordActionPerformed(ActionEvent evt) {
 }                                         
 
 private void btnPlayActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnPlayActionPerformed
-    if (btnPlay.getText().equals("Play"))
+    if (btnPlay.getText().equals("Playback"))
     {
         playback.start();
         btnPlay.setText("Stop");
@@ -477,7 +616,7 @@ private void btnPlayActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnPlayA
     else
     {
         playback.stop();
-        btnPlay.setText("Play");
+        btnPlay.setText("Playback");
     }
 }//GEN-LAST:event_btnPlayActionPerformed
 
@@ -489,6 +628,7 @@ private void btnTranscribeActionPerformed(ActionEvent evt) {
             transcriber.setInputFile("");
             MattProperties.setString("fundamentalNote", "" + cmbFundamental.getSelectedItem());
             transcriber.transcribea();
+            btnPlayTranscribed.setEnabled(true);
         }
         catch (Exception ex)
         {
@@ -501,7 +641,7 @@ private void btnPlayTranscribedActionPerformed(ActionEvent evt) {//GEN-FIRST:eve
         if (tunePlayer.isPlaying())
         {
             tunePlayer.stopPlaying();
-            btnPlayTranscribed.setText("Play");
+            btnPlayTranscribed.setText("Play ABC");
             return;
         }        
         try 
@@ -514,7 +654,7 @@ private void btnPlayTranscribedActionPerformed(ActionEvent evt) {//GEN-FIRST:eve
             tuneText.append("M:C|\r\n");
             tuneText.append("L:1/8\r\n");
             tuneText.append("K:D\r\n");
-            //tuneText.append(getTxtABC().getText());
+            tuneText.append(getTxtABC().getText());
             TuneBook book = new TuneBook();
             book.putTune(tuneText.toString());            
             Tune aTune = book.getTune(1);
@@ -571,7 +711,6 @@ private void cmbCorpusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
 }//GEN-LAST:event_cmbCorpusActionPerformed
 
 
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnFind;
     private javax.swing.JButton btnPlay;
@@ -588,6 +727,8 @@ private void cmbCorpusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JSlider slSilence;
@@ -623,7 +764,7 @@ private void cmbCorpusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
                 pausB.setEnabled(false);
                 playB.setText("Play");
                  */
-                btnPlay.setText("Play");
+                btnPlay.setText("Playback");
             } 
         }
 
@@ -874,9 +1015,9 @@ private void cmbCorpusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
         return null;
     }
 
-    public void getTxtABC()
+    public JTextArea getTxtABC()
     {
-        //return txtABC;
+        return txtABC;
     }
     
     public static void setStatus(String msg)
