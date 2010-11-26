@@ -228,7 +228,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
 
         jLabel3.setText("Corpus:");
 
-        cmbCorpus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "thesession.org", "Norbeck", "O'Neill's 1001", "Ceol Rince na hÉireann 1", "Ceol Rince na hÉireann 2", "Ceol Rince na hÉireann 3", "Ceol Rince na hÉireann 4", "Johnny O'Leary", "Nigel Gatherer" }));
+        cmbCorpus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "thesession.org", "Norbeck", "O'Neill's 1001", "Ceol Rince na hï¿½ireann 1", "Ceol Rince na hï¿½ireann 2", "Ceol Rince na hï¿½ireann 3", "Ceol Rince na hï¿½ireann 4", "Johnny O'Leary", "Nigel Gatherer" }));
         cmbCorpus.setName("cmbCorpus"); // NOI18N
         cmbCorpus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -514,7 +514,7 @@ private void btnPlayTranscribedActionPerformed(ActionEvent evt) {//GEN-FIRST:eve
             tuneText.append("M:C|\r\n");
             tuneText.append("L:1/8\r\n");
             tuneText.append("K:D\r\n");
-            tuneText.append(getTxtABC().getText());
+            //tuneText.append(getTxtABC().getText());
             TuneBook book = new TuneBook();
             book.putTune(tuneText.toString());            
             Tune aTune = book.getTune(1);
@@ -874,9 +874,9 @@ private void cmbCorpusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
         return null;
     }
 
-    public JTextArea getTxtABC()
+    public void getTxtABC()
     {
-        return txtABC;
+        //return txtABC;
     }
     
     public static void setStatus(String msg)
