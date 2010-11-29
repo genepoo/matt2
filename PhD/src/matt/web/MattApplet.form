@@ -54,16 +54,6 @@
               <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
               <EmptySpace pref="1217" max="32767" attributes="0"/>
           </Group>
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="cmbCorpus" pref="299" max="32767" attributes="1"/>
-              <EmptySpace min="-2" pref="1276" max="-2" attributes="0"/>
-          </Group>
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="cmbType" pref="299" max="32767" attributes="1"/>
-              <EmptySpace min="-2" pref="1276" max="-2" attributes="0"/>
-          </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -79,11 +69,7 @@
                   <Component id="jPanel2" alignment="0" max="32767" attributes="1"/>
                   <Component id="jPanel1" alignment="0" max="32767" attributes="1"/>
               </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="cmbCorpus" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="cmbType" pref="18" max="32767" attributes="1"/>
-              <EmptySpace min="-2" pref="86" max="-2" attributes="0"/>
+              <EmptySpace pref="141" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -374,55 +360,6 @@
       <Events>
         <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cmbTranscriberItemStateChanged"/>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmbTranscriberActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JComboBox" name="cmbCorpus">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="new javax.swing.DefaultComboBoxModel(new String[] { &quot;All&quot;, &quot;thesession.org&quot;, &quot;Norbeck&quot;, &quot;O&apos;Neill&apos;s 1001&quot;, &quot;Ceol Rince na h&#xc9;ireann 1&quot;, &quot;Ceol Rince na h&#xc9;ireann 2&quot;, &quot;Ceol Rince na h&#xc9;ireann 3&quot;, &quot;Ceol Rince na h&#xc9;ireann 4&quot;, &quot;Johnny O&apos;Leary&quot;, &quot;Nigel Gatherer&quot;, &quot;The Microphone Rambles&quot;, &quot;John Tose&quot;, &quot;Jack Campin&quot;, &quot;Fife and Drum&quot;, &quot;Nottingham Database&quot; })" type="code"/>
-        </Property>
-        <Property name="name" type="java.lang.String" value="cmbCorpus" noResource="true"/>
-        <Property name="opaque" type="boolean" value="false"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmbCorpusActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JComboBox" name="cmbType">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="24">
-            <StringItem index="0" value="All"/>
-            <StringItem index="1" value="Reel"/>
-            <StringItem index="2" value="Jig"/>
-            <StringItem index="3" value="Slip Jig"/>
-            <StringItem index="4" value="Slide"/>
-            <StringItem index="5" value="March"/>
-            <StringItem index="6" value="Mazurka"/>
-            <StringItem index="7" value="Polka"/>
-            <StringItem index="8" value="Hop"/>
-            <StringItem index="9" value="Barndance"/>
-            <StringItem index="10" value="Double Jig"/>
-            <StringItem index="11" value="Single Jig"/>
-            <StringItem index="12" value="Fling"/>
-            <StringItem index="13" value="Halling"/>
-            <StringItem index="14" value="Highland"/>
-            <StringItem index="15" value="Hornpipe"/>
-            <StringItem index="16" value="Set dance"/>
-            <StringItem index="17" value="Polska J"/>
-            <StringItem index="18" value="Polska K1"/>
-            <StringItem index="19" value="Polska L1"/>
-            <StringItem index="20" value="Polska O"/>
-            <StringItem index="21" value="Strathspey"/>
-            <StringItem index="22" value="Three-two"/>
-            <StringItem index="23" value="Waltz"/>
-          </StringArray>
-        </Property>
-        <Property name="name" type="java.lang.String" value="cmbLimit" noResource="true"/>
-        <Property name="opaque" type="boolean" value="false"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmbTypeActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
