@@ -6,34 +6,16 @@
 
 package matt.web;
 
-import matt.MattProperties;
-import matt.Logger;
-import matt.ODCFTranscriber;
-import matt.MattABCTools;
-import matt.STFTTranscriber;
-import matt.Series;
-import abc.midi.*;
-import javax.sound.midi.*;
 import abc.parser.TuneBook;
 import java.awt.event.*;
 import javax.swing.*;
-import java.io.*;
-import java.awt.*;
-import javax.swing.table.*;
-//import java.util.*;
 import abc.notation.Tune;
-import javax.swing.plaf.ColorUIResource;
-
-
 import abc.midi.*;
-import java.applet.AppletContext;
 import java.awt.Color;
 import java.net.MalformedURLException;
-import java.util.logging.Level;
 import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
-import matt.Graph;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.TimerTask;
@@ -41,18 +23,16 @@ import java.util.Timer;
 import javax.sound.sampled.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import matt.*;
-import org.jdesktop.layout.GroupLayout;
-import org.jdesktop.layout.LayoutStyle;
-
 
 
 /**
  *
  * @author  Bryan Duggan
  */
+
+
 public class MattApplet extends javax.swing.JApplet implements matt.GUI {
 
-    //CheckList newframe = new CheckList();
     static public MattApplet _instance;
     Capture capture = new Capture();
     Playback playback = new Playback();
@@ -77,21 +57,12 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         _instance = this;
     }
 
-//    @Override
-//    public void paint(Graphics g) {
-//
-//        super.paint(g);
-//
-//        Graphics2D g2d = (Graphics2D) g;
-//        GradientPaint gradient = new GradientPaint(0, 0, Color.BLUE, this.getWidth(),   this.getHeight(),Color.CYAN);
-//        g2d.setPaint(gradient);
-//        g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
-//    }
-    
     private void myInit()
     {
         // Add the graphs...
-        signalGraph.setBounds(10,10,getBounds().width - 160 ,80);
+        signalGraph.setBounds(10,10,getBounds().width - 20 ,80);
+        setBackground(new Color(249,249,249));
+
         /*
          Dimension d = new Dimension();
         d.width = getBounds().width - 20;
@@ -106,7 +77,8 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         signalGraph.setBackground(new Color(176,210,13));
         format = new AudioFormat(44100, 16, 1, true, false);
         transcriber.setGui(this);
-
+        theCorpusList.setGui(this);
+        theTypeList.setGui(this);
 
         MattProperties.instance(false).setProperty("drawFFTGraphs", "false");
         MattProperties.instance(false).setProperty("drawODFGraphs", "false");
@@ -129,29 +101,12 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
     /** Initializes the applet MattApplet */
     public void init() {
         MattProperties.instance(true);
+        setBackground(new Color(249,249,249));
         signalGraph = new Graph();
         tunePlayer.start();
         try {
             java.awt.EventQueue.invokeAndWait(new Runnable() {
                 public void run() {
-//                    try
-//                    {
-//                        String os = System.getProperty("os.name");
-//                        if ((os.indexOf("Windows") > -1))
-//                        {
-//                            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//                        }
-//                        else
-//                        {
-//                            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-//                        }
-//
-//                        //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-//                    }
-//                    catch(Exception e)
-//                    {
-//                        System.out.println("Error setting native LAF: " + e);
-//                    }
                     try {
                         for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                             if ("Nimbus".equals(info.getName())) {
@@ -188,6 +143,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btnFind = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         btnPlayTranscribed = new javax.swing.JButton();
         btnPlay = new javax.swing.JButton();
@@ -197,21 +153,31 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         jLabel1 = new javax.swing.JLabel();
         cmbFundamental = new javax.swing.JComboBox();
         btnTranscribe = new javax.swing.JButton();
-        cmbCorpus = new javax.swing.JComboBox();
-        cmbType = new javax.swing.JComboBox();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         txtStatus = new javax.swing.JLabel();
+        TuneBookBtn = new javax.swing.JButton();
+        TuneTypeBtn = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtABC = new javax.swing.JTextArea();
-        btnFind = new javax.swing.JButton();
         progressBar = new javax.swing.JProgressBar();
+        btnFind1 = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         cmbTranscriber = new javax.swing.JComboBox();
+        cmbCorpus = new javax.swing.JComboBox();
+        cmbType = new javax.swing.JComboBox();
 
-        setBackground(new java.awt.Color(221, 221, 221));
+        btnFind.setText("Search!");
+        btnFind.setMaximumSize(new java.awt.Dimension(32767, 32767));
+        btnFind.setMinimumSize(new java.awt.Dimension(73, 18));
+        btnFind.setPreferredSize(new java.awt.Dimension(78, 20));
+        btnFind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFindActionPerformed(evt);
+            }
+        });
+
+        setBackground(new java.awt.Color(249, 249, 249));
 
         jPanel1.setFocusable(false);
         jPanel1.setOpaque(false);
@@ -266,30 +232,29 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
             }
         });
 
-        cmbCorpus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "thesession.org", "Norbeck", "O'Neill's 1001", "Ceol Rince na hÉireann 1", "Ceol Rince na hÉireann 2", "Ceol Rince na hÉireann 3", "Ceol Rince na hÉireann 4", "Johnny O'Leary", "Nigel Gatherer", "The Microphone Rambles", "John Tose", "Jack Campin", "Fife and Drum", "Nottingham Database" }));
-        cmbCorpus.setName("cmbCorpus"); // NOI18N
-        cmbCorpus.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbCorpusActionPerformed(evt);
-            }
-        });
-
-        cmbType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Reel", "Jig", "Slip Jig", "Slide", "March", "Mazurka", "Polka", "Hop", "Barndance", "Double Jig", "Single Jig", "Fling", "Halling", "Highland", "Hornpipe", "Set dance", "Polska J", "Polska K1", "Polska L1", "Polska O", "Strathspey", "Three-two", "Waltz" }));
-        cmbType.setName("cmbLimit"); // NOI18N
-        cmbType.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbTypeActionPerformed(evt);
-            }
-        });
-
-        jLabel3.setText("Tune Book:");
-
-        jLabel4.setText("Tune Type:");
-
         txtStatus.setText("<Press record to begin!>");
         txtStatus.setMaximumSize(new java.awt.Dimension(68, 14));
         txtStatus.setMinimumSize(new java.awt.Dimension(68, 14));
         txtStatus.setPreferredSize(new java.awt.Dimension(68, 20));
+
+        TuneBookBtn.setText("Tune Books: ...");
+        TuneBookBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TuneBookBtnMouseClicked(evt);
+            }
+        });
+
+        TuneTypeBtn.setText("Tune Types: ...");
+        TuneTypeBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TuneTypeBtnMouseClicked(evt);
+            }
+        });
+        TuneTypeBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TuneTypeBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -298,33 +263,32 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(slSilence, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnTranscribe, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
-                            .addComponent(btnRecord, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
-                            .addComponent(jLabel1))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnPlayTranscribed, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
-                            .addComponent(btnPlay, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
-                            .addComponent(cmbFundamental, 0, 86, Short.MAX_VALUE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(txtStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(slSilence, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(btnTranscribe, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
+                                    .addComponent(btnRecord, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnPlay, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
+                                    .addComponent(cmbFundamental, 0, 96, Short.MAX_VALUE)
+                                    .addComponent(btnPlayTranscribed, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE))))
+                        .addGap(10, 10, 10))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cmbType, 0, 118, Short.MAX_VALUE)
-                            .addComponent(cmbCorpus, 0, 118, Short.MAX_VALUE))))
-                .addContainerGap())
+                            .addComponent(TuneTypeBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
+                            .addComponent(TuneBookBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE))
+                        .addContainerGap())))
         );
 
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnPlayTranscribed, btnRecord, btnTranscribe, jLabel1, jLabel6});
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnRecord, btnTranscribe, jLabel1, jLabel6});
 
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -350,13 +314,9 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                         .addComponent(btnRecord)
                         .addComponent(btnPlay)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(cmbCorpus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(2, 2, 2)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cmbType, javax.swing.GroupLayout.DEFAULT_SIZE, 18, Short.MAX_VALUE)
-                    .addComponent(jLabel4))
+                .addComponent(TuneBookBtn)
+                .addGap(5, 5, 5)
+                .addComponent(TuneTypeBtn)
                 .addContainerGap())
         );
 
@@ -372,13 +332,13 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         txtABC.setRows(5);
         jScrollPane2.setViewportView(txtABC);
 
-        btnFind.setText("Search!");
-        btnFind.setMaximumSize(new java.awt.Dimension(32767, 32767));
-        btnFind.setMinimumSize(new java.awt.Dimension(73, 18));
-        btnFind.setPreferredSize(new java.awt.Dimension(78, 20));
-        btnFind.addActionListener(new java.awt.event.ActionListener() {
+        btnFind1.setText("Search!");
+        btnFind1.setMaximumSize(new java.awt.Dimension(32767, 32767));
+        btnFind1.setMinimumSize(new java.awt.Dimension(73, 18));
+        btnFind1.setPreferredSize(new java.awt.Dimension(78, 20));
+        btnFind1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnFindActionPerformed(evt);
+                btnFind1ActionPerformed(evt);
             }
         });
 
@@ -388,12 +348,12 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnFind, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
                         .addComponent(jLabel2)
-                        .addComponent(progressBar, 0, 0, Short.MAX_VALUE)))
+                        .addComponent(progressBar, 0, 0, Short.MAX_VALUE))
+                    .addComponent(btnFind1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -406,7 +366,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnFind, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
+                .addComponent(btnFind1, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -420,6 +380,24 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         cmbTranscriber.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmbTranscriberActionPerformed(evt);
+            }
+        });
+
+        cmbCorpus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "thesession.org", "Norbeck", "O'Neill's 1001", "Ceol Rince na hÉireann 1", "Ceol Rince na hÉireann 2", "Ceol Rince na hÉireann 3", "Ceol Rince na hÉireann 4", "Johnny O'Leary", "Nigel Gatherer", "The Microphone Rambles", "John Tose", "Jack Campin", "Fife and Drum", "Nottingham Database" }));
+        cmbCorpus.setName("cmbCorpus"); // NOI18N
+        cmbCorpus.setOpaque(false);
+        cmbCorpus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbCorpusActionPerformed(evt);
+            }
+        });
+
+        cmbType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Reel", "Jig", "Slip Jig", "Slide", "March", "Mazurka", "Polka", "Hop", "Barndance", "Double Jig", "Single Jig", "Fling", "Halling", "Highland", "Hornpipe", "Set dance", "Polska J", "Polska K1", "Polska L1", "Polska O", "Strathspey", "Three-two", "Waltz" }));
+        cmbType.setName("cmbLimit"); // NOI18N
+        cmbType.setOpaque(false);
+        cmbType.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbTypeActionPerformed(evt);
             }
         });
 
@@ -438,7 +416,15 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(1227, Short.MAX_VALUE))
+                .addContainerGap(1217, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(cmbCorpus, 0, 299, Short.MAX_VALUE)
+                .addGap(1276, 1276, 1276))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(cmbType, 0, 299, Short.MAX_VALUE)
+                .addGap(1276, 1276, 1276))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -451,7 +437,11 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(152, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cmbCorpus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cmbType, javax.swing.GroupLayout.DEFAULT_SIZE, 18, Short.MAX_VALUE)
+                .addGap(86, 86, 86))
         );
     }// </editor-fold>//GEN-END:initComponents
 	
@@ -477,7 +467,10 @@ private void btnFindActionPerformed(ActionEvent evt)//GEN-FIRST:event_btnFindAct
     //String url = "http://skooter500.s156.eatj.com/MattWeb/search.jsp?q=" + URLEncoder.encode(toFind);
     //String url = "http://www.comp.dit.ie/matt2/search8.jsp?q=" + URLEncoder.encode(toFind);
     url += "&corpus=" + (cmbCorpus.getSelectedIndex());
+    //url += "&corpus=" + theCorpusList.getVals();
+    //System.out.println(theCorpusList.getVals());
     url += "&type=" + cmbType.getSelectedItem();
+    //url += "&type=" + theTypeList.getVals();
     url += "&silence=" + (int) slSilence.getValue();
     url += "&method=" + cmbTranscriber.getSelectedItem();
     System.out.println("URL: " + url);
@@ -493,51 +486,97 @@ private void btnFindActionPerformed(ActionEvent evt)//GEN-FIRST:event_btnFindAct
 
 
 class RemindTask extends TimerTask {
-    int secleft = 5;
-
+    int secleft = 17;
+    int countup = 1;
     public void run() {
-      if (countdown) {
-          if (secleft > 0) {
-            txtStatus.setText("Recording in " + secleft + "...");
+          if (secleft > 12) {
+            txtStatus.setText("Recording in " + (secleft-12) + "...");
+            btnRecord.setText("Stop");
             secleft--;
-          } else {
-            txtStatus.setText("Recording.");
+          }
+          else if (secleft == 12) {
+            btnRecord.setText("Recording in 0...");
+            getProgressBar().setValue(0);
+            getProgressBar().setMaximum(12);
+            countdown= false;
+            recording = true;
+            secleft--;
+            countup++;
             btnRecord.setText("Record");
+            record();
+          }
+          else if (secleft > 0) {
+            //btnRecord.setText("Stop");
+            txtStatus.setText("Recording!");
+            getProgressBar().setValue(countup);
+            secleft--;
+            countup++;
+          }
+          else {
+            //btnRecord.setText("Record");
             countdown = false;
+            recording = false;
             record();
             this.cancel();
           }
-        }
-       else {
-          txtStatus.setText("<Press record to begin!>");
-          this.cancel();
-       }
-    } 
+    }
   }
 
 public boolean countdown = false;
+public boolean recording = false;
+public Timer cdtimer;
+public CheckList theCorpusList = new CheckList(new String[]
+    {"All", "thesession.org", "Norbeck", "O'Neill's 1001", "Ceol Rince na hÉireann 1",
+     "Ceol Rince na hÉireann 2", "Ceol Rince na hÉireann 3", "Ceol Rince na hÉireann 4",
+     "Johnny O'Leary", "Nigel Gatherer", "The Microphone Rambles", "John Tose", "Jack Campin",
+     "Fife and Drum", "Nottingham Database"});
+
+public CheckList theTypeList = new CheckList(new String[]
+    {"All", "Reel", "Jig", "Slip Jig", "Slide", "March", "Mazurka", "Polka", "Hop",
+     "Barndance", "Double Jig", "Single Jig", "Fling", "Halling", "Highland", "Hornpipe",
+     "Set dance", "Polska J", "Polska K1", "Polska L1", "Polska O", "Strathspey",
+     "Three-two", "Waltz"});
+
+public String corpString = "";
+public String typeString = "";
+
 
 private void btnRecordActionPerformed(ActionEvent evt) {
-    //.setVisible(true);
-    Timer timer = new Timer();
+    //theCorpusList.setVisible(true);
+    
+    //Timer recTimer = new Timer();
     if (btnRecord.getText().equals("Record"))
     {
-        btnRecord.setText("Stop");
-        timer.schedule(new RemindTask(), 0, 1 * 1000);
+        cdtimer = new Timer();
         countdown = true;
+        btnRecord.setText("Stop");
+        cdtimer.schedule(new RemindTask(), 0, 1 * 1000);
+        //recTimer.schedule(new StartTask(), 0, 1 * 1000);
     }
-    else if (countdown)
+    else if (countdown || recording)
     {
-        timer.cancel();
+        txtStatus.setText("<Press record to begin!>");
+        cdtimer.cancel();
+        cdtimer.purge();
+        cdtimer = null;
         countdown = false;
+        recording = false;
         btnRecord.setText("Record");
     }
     else
     {
-        timer.cancel();
+        countdown = false;
+        recording = false;
+        cdtimer.cancel();
+        cdtimer.purge();
+        cdtimer = null;
+        txtStatus.setText("<Press record to begin!>");
+        cdtimer.cancel();
         record();
     }
 }
+
+
 
 private void record() {
     //timer.cancel();
@@ -710,9 +749,61 @@ private void cmbCorpusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
 // TODO add your handling code here:
 }//GEN-LAST:event_cmbCorpusActionPerformed
 
+private void btnFind1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFind1ActionPerformed
+    /*
+     String url = "" + MattApplet._instance.getDocumentBase();
+    url = url.substring(0, url.lastIndexOf("/")) + "/";
+    url += "search.php?q=" + URLEncoder.encode(txtABC.getText());
+     */
+    TuneBookBtn.setText("Tune Books: " + theCorpusList.getWhat());
+    TuneTypeBtn.setText("Tune Types: " + theTypeList.getWhat());
+
+    String toFind = txtABC.getText();
+    toFind = MattABCTools.expandLongNotes(toFind);
+    toFind = MattABCTools.stripWhiteSpace(toFind);
+    toFind = MattABCTools.stripBarDivisions(toFind);
+    toFind = toFind.toUpperCase();
+
+
+    String docBase = "" + getDocumentBase();
+    int li = docBase.lastIndexOf("/");
+    String url = docBase.substring(0, li) + "/search8.jsp?version=1.4&q=" + URLEncoder.encode(toFind);
+    System.out.println(url);
+    //String url = "http://localhost:8080/MattWeb/search8.jsp?q=" + URLEncoder.encode(toFind);
+    //String url = "http://skooter500.s156.eatj.com/MattWeb/search.jsp?q=" + URLEncoder.encode(toFind);
+    //String url = "http://www.comp.dit.ie/matt2/search8.jsp?q=" + URLEncoder.encode(toFind);
+    //url += "&corpus=" + (cmbCorpus.getSelectedIndex());
+    url += "&corpus=" + theCorpusList.getVals();
+    //url += "&type=" + cmbType.getSelectedItem();
+    url += "&type=" + theTypeList.getVals();
+    url += "&silence=" + (int) slSilence.getValue();
+    url += "&method=" + cmbTranscriber.getSelectedItem();
+    System.out.println("URL: " + url);
+    try {
+        getAppletContext().showDocument(new java.net.URL(url), "results");
+    } catch (MalformedURLException ex) {
+        Logger.log(ex.toString());
+    }
+}//GEN-LAST:event_btnFind1ActionPerformed
+
+private void TuneBookBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TuneBookBtnMouseClicked
+    theCorpusList.setVisible(true);
+}//GEN-LAST:event_TuneBookBtnMouseClicked
+
+private void TuneTypeBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TuneTypeBtnMouseClicked
+    theTypeList.setVisible(true);
+}//GEN-LAST:event_TuneTypeBtnMouseClicked
+
+private void TuneTypeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TuneTypeBtnActionPerformed
+    // TODO add your handling code here:
+}//GEN-LAST:event_TuneTypeBtnActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton TuneBookBtn;
+    private javax.swing.JButton TuneTypeBtn;
     private javax.swing.JButton btnFind;
+    private javax.swing.JButton btnFind1;
     private javax.swing.JButton btnPlay;
     private javax.swing.JButton btnPlayTranscribed;
     private javax.swing.JButton btnRecord;
@@ -723,8 +814,6 @@ private void cmbCorpusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
     private javax.swing.JComboBox cmbType;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
