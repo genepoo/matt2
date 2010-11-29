@@ -164,8 +164,6 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         btnFind1 = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         cmbTranscriber = new javax.swing.JComboBox();
-        cmbCorpus = new javax.swing.JComboBox();
-        cmbType = new javax.swing.JComboBox();
 
         btnFind.setText("Search!");
         btnFind.setMaximumSize(new java.awt.Dimension(32767, 32767));
@@ -383,24 +381,6 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
             }
         });
 
-        cmbCorpus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "thesession.org", "Norbeck", "O'Neill's 1001", "Ceol Rince na hÉireann 1", "Ceol Rince na hÉireann 2", "Ceol Rince na hÉireann 3", "Ceol Rince na hÉireann 4", "Johnny O'Leary", "Nigel Gatherer", "The Microphone Rambles", "John Tose", "Jack Campin", "Fife and Drum", "Nottingham Database" }));
-        cmbCorpus.setName("cmbCorpus"); // NOI18N
-        cmbCorpus.setOpaque(false);
-        cmbCorpus.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbCorpusActionPerformed(evt);
-            }
-        });
-
-        cmbType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Reel", "Jig", "Slip Jig", "Slide", "March", "Mazurka", "Polka", "Hop", "Barndance", "Double Jig", "Single Jig", "Fling", "Halling", "Highland", "Hornpipe", "Set dance", "Polska J", "Polska K1", "Polska L1", "Polska O", "Strathspey", "Three-two", "Waltz" }));
-        cmbType.setName("cmbLimit"); // NOI18N
-        cmbType.setOpaque(false);
-        cmbType.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbTypeActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -417,14 +397,6 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(1217, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(cmbCorpus, 0, 299, Short.MAX_VALUE)
-                .addGap(1276, 1276, 1276))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(cmbType, 0, 299, Short.MAX_VALUE)
-                .addGap(1276, 1276, 1276))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -437,11 +409,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(cmbCorpus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cmbType, javax.swing.GroupLayout.DEFAULT_SIZE, 18, Short.MAX_VALUE)
-                .addGap(86, 86, 86))
+                .addContainerGap(141, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 	
@@ -466,10 +434,10 @@ private void btnFindActionPerformed(ActionEvent evt)//GEN-FIRST:event_btnFindAct
     //String url = "http://localhost:8080/MattWeb/search8.jsp?q=" + URLEncoder.encode(toFind);
     //String url = "http://skooter500.s156.eatj.com/MattWeb/search.jsp?q=" + URLEncoder.encode(toFind);
     //String url = "http://www.comp.dit.ie/matt2/search8.jsp?q=" + URLEncoder.encode(toFind);
-    url += "&corpus=" + (cmbCorpus.getSelectedIndex());
+  //  url += "&corpus=" + (cmbCorpus.getSelectedIndex());
     //url += "&corpus=" + theCorpusList.getVals();
     //System.out.println(theCorpusList.getVals());
-    url += "&type=" + cmbType.getSelectedItem();
+//    url += "&type=" + cmbType.getSelectedItem();
     //url += "&type=" + theTypeList.getVals();
     url += "&silence=" + (int) slSilence.getValue();
     url += "&method=" + cmbTranscriber.getSelectedItem();
@@ -716,11 +684,6 @@ private void cmbFundamentalItemStateChanged(ItemEvent evt)//GEN-FIRST:event_cmbF
     MattProperties.setString("fundamentalNote", "" + cmbFundamental.getSelectedItem());
 }//GEN-LAST:event_cmbFundamentalItemStateChanged
 
-private void cmbTypeActionPerformed(ActionEvent evt)//GEN-FIRST:event_cmbTypeActionPerformed
-{//GEN-HEADEREND:event_cmbTypeActionPerformed
-    // TODO add your handling code here:
-}//GEN-LAST:event_cmbTypeActionPerformed
-
 private void cmbTranscriberActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cmbTranscriberActionPerformed
 {//GEN-HEADEREND:event_cmbTranscriberActionPerformed
 
@@ -744,10 +707,6 @@ private void cmbTranscriberItemStateChanged(java.awt.event.ItemEvent evt)//GEN-F
         transcriber.setSignal(signal);
     }
 }//GEN-LAST:event_cmbTranscriberItemStateChanged
-
-private void cmbCorpusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbCorpusActionPerformed
-// TODO add your handling code here:
-}//GEN-LAST:event_cmbCorpusActionPerformed
 
 private void btnFind1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFind1ActionPerformed
     /*
@@ -808,10 +767,8 @@ private void TuneTypeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JButton btnPlayTranscribed;
     private javax.swing.JButton btnRecord;
     private javax.swing.JButton btnTranscribe;
-    private javax.swing.JComboBox cmbCorpus;
     private javax.swing.JComboBox cmbFundamental;
     private javax.swing.JComboBox cmbTranscriber;
-    private javax.swing.JComboBox cmbType;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
@@ -1086,9 +1043,9 @@ private void TuneTypeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         btnFind.setEnabled(b);
         btnPlay.setEnabled(b);
         btnTranscribe.setEnabled(b);
-        cmbCorpus.setEnabled(b);
+//        cmbCorpus.setEnabled(b);
         cmbFundamental.setEnabled(b);
-        cmbType.setEnabled(b);
+    //    cmbType.setEnabled(b);
         txtABC.setEnabled(b);
         slSilence.setEnabled(b);
         cmbTranscriber.setEnabled(b);
