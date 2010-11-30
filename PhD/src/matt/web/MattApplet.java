@@ -18,6 +18,7 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import java.io.*;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.TimerTask;
 import java.util.Timer;
 import javax.sound.sampled.*;
@@ -709,32 +710,41 @@ private void cmbTranscriberItemStateChanged(java.awt.event.ItemEvent evt)//GEN-F
 }//GEN-LAST:event_cmbTranscriberItemStateChanged
 
 private void btnFind1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFind1ActionPerformed
-    /*
-     String url = "" + MattApplet._instance.getDocumentBase();
-    url = url.substring(0, url.lastIndexOf("/")) + "/";
-    url += "search.php?q=" + URLEncoder.encode(txtABC.getText());
-     */
-    TuneBookBtn.setText("Tune Books: " + theCorpusList.getWhat());
-    TuneTypeBtn.setText("Tune Types: " + theTypeList.getWhat());
 
+    // set the buttons to show what's being searched for
+    if (theCorpusList.getWhat().length() > 15)
+        TuneBookBtn.setText("Tune Books: " + theCorpusList.getWhat().substring(0, 5) + "..." + theCorpusList.getWhat().substring((theCorpusList.getWhat().length() - 5)));
+    else
+        TuneBookBtn.setText("Tune Books: " + theCorpusList.getWhat());
+    if (theTypeList.getWhat().length() > 15)
+        TuneTypeBtn.setText("Tune Types: " + theTypeList.getWhat().substring(0, 5) + "..." + theTypeList.getWhat().substring((theTypeList.getWhat().length() - 5)));
+    else
+        TuneTypeBtn.setText("Tune Types: " + theTypeList.getWhat());
+
+    // set string to use as query
     String toFind = txtABC.getText();
     toFind = MattABCTools.expandLongNotes(toFind);
     toFind = MattABCTools.stripWhiteSpace(toFind);
     toFind = MattABCTools.stripBarDivisions(toFind);
     toFind = toFind.toUpperCase();
 
-
+    
     String docBase = "" + getDocumentBase();
     int li = docBase.lastIndexOf("/");
     String url = docBase.substring(0, li) + "/search8.jsp?version=1.4&q=" + URLEncoder.encode(toFind);
-    System.out.println(url);
-    //String url = "http://localhost:8080/MattWeb/search8.jsp?q=" + URLEncoder.encode(toFind);
-    //String url = "http://skooter500.s156.eatj.com/MattWeb/search.jsp?q=" + URLEncoder.encode(toFind);
-    //String url = "http://www.comp.dit.ie/matt2/search8.jsp?q=" + URLEncoder.encode(toFind);
-    //url += "&corpus=" + (cmbCorpus.getSelectedIndex());
-    url += "&corpus=" + theCorpusList.getVals();
-    //url += "&type=" + cmbType.getSelectedItem();
-    url += "&type=" + theTypeList.getVals();
+
+    ArrayList typeSrchList= theTypeList.getVals();
+    for (int i= 0; i < typeSrchList.size(); i++) {
+         url += "&type[]=";
+         url += typeSrchList.get(i);
+    }
+
+    ArrayList corpSrchList= theCorpusList.getVals();
+    for (int i= 0; i < corpSrchList.size(); i++) {
+         url += "&corpus[]=";
+         url += corpSrchList.get(i);
+    }
+    
     url += "&silence=" + (int) slSilence.getValue();
     url += "&method=" + cmbTranscriber.getSelectedItem();
     System.out.println("URL: " + url);
@@ -747,10 +757,12 @@ private void btnFind1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
 private void TuneBookBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TuneBookBtnMouseClicked
     theCorpusList.setVisible(true);
+    theCorpusList.setLocationRelativeTo(null);
 }//GEN-LAST:event_TuneBookBtnMouseClicked
 
 private void TuneTypeBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TuneTypeBtnMouseClicked
     theTypeList.setVisible(true);
+    theTypeList.setLocationRelativeTo(null);
 }//GEN-LAST:event_TuneTypeBtnMouseClicked
 
 private void TuneTypeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TuneTypeBtnActionPerformed

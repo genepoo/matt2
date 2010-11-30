@@ -2,6 +2,7 @@ package matt.web;
 
 import java.awt.Component;
 //import java.awt.List;
+import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -105,15 +106,16 @@ public class CheckList extends JFrame
      //this.setVisible(true);
    }
 
-   public String getVals(){
-       String selected = "";
+   public ArrayList getVals(){
+       //String[] selected = new String[1];
+       ArrayList selected = new ArrayList();
        for (int i = 0; i < cli.length; i++) {
             if (cli[i].isSelected()) {
-                selected += i;
-                selected += ",";
+                selected.add(i);
+                //selected += ",";
            }
        }
-       selected = selected.substring(0, selected.length()-1);
+       //selected = selected.substring(0, selected.length()-1);
        System.out.println(selected);
        return selected;
    }
