@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.util.ArrayList;
 import javax.swing.JButton;
 
@@ -23,9 +24,45 @@ import javax.swing.UnsupportedLookAndFeelException;
 import matt.GUI;
 
 
-
+// Represents items in the list that can be selected
 public class CheckList extends JFrame
 {
+    
+    public wfl wf = new wfl();
+
+    @Override
+    public void setVisible(final boolean visible) {
+      // make sure that frame is marked as not disposed if it is asked to be visible
+      if (visible) {
+          //setDisposed(false);
+      }
+      // let's handle visibility...
+      if (!visible || !isVisible()) { // have to check this condition simply because super.setVisible(true) invokes toFront if frame was already visible
+          super.setVisible(visible);
+      }
+      // ...and bring frame to the front.. in a strange and weird way
+      if (visible) {
+          int state = super.getExtendedState();
+          state &= ~JFrame.ICONIFIED;
+          super.setExtendedState(state);
+          super.setAlwaysOnTop(true);
+          super.toFront();
+          super.requestFocus();
+          super.setAlwaysOnTop(false);
+      }
+    }
+
+    @Override
+    public void toFront() {
+      super.setVisible(true);
+      int state = super.getExtendedState();
+      state &= ~JFrame.ICONIFIED;
+      super.setExtendedState(state);
+      super.setAlwaysOnTop(true);
+      super.toFront();
+      super.requestFocus();
+      super.setAlwaysOnTop(false);
+    }
    protected GUI gui;
 
    public void setGui(GUI mattGui) {
@@ -35,6 +72,7 @@ public class CheckList extends JFrame
    private CheckListItem cli[];
    CheckList(String[] obs)
    {
+       this.addWindowFocusListener(wf);
     // create from input
      cli = new CheckListItem[obs.length];
      for (int i = 0; i < obs.length; i++) {
@@ -102,9 +140,25 @@ public class CheckList extends JFrame
 
      this.add(new JScrollPane(list));
      this.pack();
-    
+
+
      //this.setVisible(true);
    }
+ public class wfl implements WindowFocusListener {
+
+    public void wfl() {
+        
+    }
+
+    public void windowGainedFocus(WindowEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void windowLostFocus(WindowEvent e) {
+        gui.setBns();
+    }
+
+ }
 
    public String getVals(){
        String selected = ""; // = new String[1];
@@ -139,8 +193,6 @@ public class CheckList extends JFrame
            return "None";
    }
 }
-
-// Represents items in the list that can be selected
 
 class CheckListItem
 {

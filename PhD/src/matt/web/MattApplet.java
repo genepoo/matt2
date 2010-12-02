@@ -91,7 +91,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         {
             public void playEnd(PlayerStateChangeEvent e)
             {
-                btnPlayTranscribed.setText("Play ABC");
+               // playABCbtn.setText("Play ABC");
             }
 
         });
@@ -135,6 +135,10 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         }
     }
 
+    public void windowClosing(WindowEvent e) {
+        
+    }
+
     /** This method is called from within the init() method to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -146,7 +150,6 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
 
         btnFind = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        btnPlayTranscribed = new javax.swing.JButton();
         btnPlay = new javax.swing.JButton();
         btnRecord = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
@@ -157,6 +160,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         txtStatus = new javax.swing.JLabel();
         TuneBookBtn = new javax.swing.JButton();
         TuneTypeBtn = new javax.swing.JButton();
+        playABCbtn = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -180,13 +184,6 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
 
         jPanel1.setFocusable(false);
         jPanel1.setOpaque(false);
-
-        btnPlayTranscribed.setText("Play ABC");
-        btnPlayTranscribed.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPlayTranscribedActionPerformed(evt);
-            }
-        });
 
         btnPlay.setText("Playback");
         btnPlay.setEnabled(false);
@@ -255,6 +252,13 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
             }
         });
 
+        playABCbtn.setText("Play ABC");
+        playABCbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                playABCbtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -264,7 +268,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
+                            .addComponent(txtStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel6)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -275,19 +279,20 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                                     .addComponent(btnRecord, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
                                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btnPlay, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
-                                    .addComponent(cmbFundamental, 0, 96, Short.MAX_VALUE)
-                                    .addComponent(btnPlayTranscribed, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE))))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(btnPlay, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
+                                        .addComponent(cmbFundamental, 0, 96, Short.MAX_VALUE))
+                                    .addComponent(playABCbtn, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(10, 10, 10))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(TuneTypeBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
-                            .addComponent(TuneBookBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE))
+                            .addComponent(TuneTypeBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+                            .addComponent(TuneBookBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE))
                         .addContainerGap())))
         );
 
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnRecord, btnTranscribe, jLabel1, jLabel6});
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnPlay, btnRecord, btnTranscribe, jLabel1, jLabel6, playABCbtn});
 
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -308,7 +313,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                         .addGap(29, 29, 29)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnTranscribe)
-                            .addComponent(btnPlayTranscribed)))
+                            .addComponent(playABCbtn)))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnRecord)
                         .addComponent(btnPlay)))
@@ -319,7 +324,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                 .addContainerGap())
         );
 
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnPlay, cmbFundamental});
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnPlay, btnRecord, btnTranscribe, cmbFundamental, playABCbtn});
 
         jPanel2.setFocusable(false);
         jPanel2.setOpaque(false);
@@ -387,17 +392,17 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(1206, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
                 .addGap(86, 86, 86)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cmbTranscriber, 0, 87, Short.MAX_VALUE)
                 .addGap(1408, 1408, 1408))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(1217, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -455,7 +460,7 @@ private void btnFindActionPerformed(ActionEvent evt)//GEN-FIRST:event_btnFindAct
 
 
 class RemindTask extends TimerTask {
-    int secleft = 17;
+    int secleft = 15;
     int countup = 1;
     public void run() {
           if (secleft > 12) {
@@ -530,6 +535,7 @@ private void btnRecordActionPerformed(ActionEvent evt) {
         cdtimer = null;
         countdown = false;
         recording = false;
+        getProgressBar().setValue(0);
         btnRecord.setText("Record");
     }
     else
@@ -539,6 +545,7 @@ private void btnRecordActionPerformed(ActionEvent evt) {
         cdtimer.cancel();
         cdtimer.purge();
         cdtimer = null;
+        getProgressBar().setValue(0);
         txtStatus.setText("<Press record to begin!>");
         cdtimer.cancel();
         record();
@@ -610,7 +617,7 @@ private void record() {
         {
             e.printStackTrace();
             Logger.log("Could not plot audio: " + e.getMessage());
-            Logger.log("Could not hear the melody. Try adjusting the silence threshold.");
+            Logger.log("Could not hear the melody.");
         }
     }
 }                                         
@@ -636,7 +643,7 @@ private void btnTranscribeActionPerformed(ActionEvent evt) {
             transcriber.setInputFile("");
             MattProperties.setString("fundamentalNote", "" + cmbFundamental.getSelectedItem());
             transcriber.transcribea();
-            btnPlayTranscribed.setEnabled(true);
+            playABCbtn.setEnabled(true);
         }
         catch (Exception ex)
         {
@@ -644,36 +651,6 @@ private void btnTranscribeActionPerformed(ActionEvent evt) {
             ex.printStackTrace();
         }
 }
-
-private void btnPlayTranscribedActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnPlayTranscribedActionPerformed
-        if (tunePlayer.isPlaying())
-        {
-            tunePlayer.stopPlaying();
-            btnPlayTranscribed.setText("Play ABC");
-            return;
-        }        
-        try 
-        {
-            btnPlayTranscribed.setText("Stop");
-            StringBuffer tuneText = new StringBuffer();
-            tuneText.append("X:1\r\n");
-            tuneText.append("T:Temp\r\n");
-            tuneText.append("R:Reel\r\n");
-            tuneText.append("M:C|\r\n");
-            tuneText.append("L:1/8\r\n");
-            tuneText.append("K:D\r\n");
-            tuneText.append(getTxtABC().getText());
-            TuneBook book = new TuneBook();
-            book.putTune(tuneText.toString());            
-            Tune aTune = book.getTune(1);
-            tunePlayer.play(aTune);            
-        } 
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }       
-
-}//GEN-LAST:event_btnPlayTranscribedActionPerformed
 
 private void cmbFundamentalActionPerformed(ActionEvent evt)//GEN-FIRST:event_cmbFundamentalActionPerformed
 {//GEN-HEADEREND:event_cmbFundamentalActionPerformed
@@ -710,16 +687,6 @@ private void cmbTranscriberItemStateChanged(java.awt.event.ItemEvent evt)//GEN-F
 }//GEN-LAST:event_cmbTranscriberItemStateChanged
 
 private void btnFind1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFind1ActionPerformed
-
-    // set the buttons to show what's being searched for
-    if (theCorpusList.getWhat().length() > 15)
-        TuneBookBtn.setText("Tune Books: " + theCorpusList.getWhat().substring(0, 5) + "..." + theCorpusList.getWhat().substring((theCorpusList.getWhat().length() - 5)));
-    else
-        TuneBookBtn.setText("Tune Books: " + theCorpusList.getWhat());
-    if (theTypeList.getWhat().length() > 15)
-        TuneTypeBtn.setText("Tune Types: " + theTypeList.getWhat().substring(0, 5) + "..." + theTypeList.getWhat().substring((theTypeList.getWhat().length() - 5)));
-    else
-        TuneTypeBtn.setText("Tune Types: " + theTypeList.getWhat());
 
     // set string to use as query
     String toFind = txtABC.getText();
@@ -773,6 +740,35 @@ private void TuneTypeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     // TODO add your handling code here:
 }//GEN-LAST:event_TuneTypeBtnActionPerformed
 
+private void playABCbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playABCbtnActionPerformed
+        if (tunePlayer.isPlaying())
+        {
+            tunePlayer.stopPlaying();
+            //playABCbtn.setText("Play ABC");
+            return;
+        }
+        try
+        {
+            //playABCbtn.setText("Stop");
+            StringBuffer tuneText = new StringBuffer();
+            tuneText.append("X:1\r\n");
+            tuneText.append("T:Temp\r\n");
+            tuneText.append("R:Reel\r\n");
+            tuneText.append("M:C|\r\n");
+            tuneText.append("L:1/8\r\n");
+            tuneText.append("K:D\r\n");
+            tuneText.append(getTxtABC().getText());
+            TuneBook book = new TuneBook();
+            book.putTune(tuneText.toString());
+            Tune aTune = book.getTune(1);
+            tunePlayer.play(aTune);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }     // TODO add your handling code here:
+}//GEN-LAST:event_playABCbtnActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton TuneBookBtn;
@@ -780,7 +776,6 @@ private void TuneTypeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JButton btnFind;
     private javax.swing.JButton btnFind1;
     private javax.swing.JButton btnPlay;
-    private javax.swing.JButton btnPlayTranscribed;
     private javax.swing.JButton btnRecord;
     private javax.swing.JButton btnTranscribe;
     private javax.swing.JComboBox cmbFundamental;
@@ -792,13 +787,15 @@ private void TuneTypeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JButton playABCbtn;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JSlider slSilence;
     private javax.swing.JTextArea txtABC;
     private javax.swing.JLabel txtStatus;
     // End of variables declaration//GEN-END:variables
     private Graph signalGraph;
-    
+
+   
     public class Playback implements Runnable {
 
         SourceDataLine line;
@@ -1055,7 +1052,7 @@ private void TuneTypeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     public void enableButtons(boolean b)
     {
         btnRecord.setEnabled(b);
-        btnPlayTranscribed.setEnabled(b);
+        playABCbtn.setEnabled(b);
         btnFind.setEnabled(b);
         btnPlay.setEnabled(b);
         btnTranscribe.setEnabled(b);
@@ -1086,4 +1083,15 @@ private void TuneTypeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     {
         _instance.txtStatus.setText(msg);
     }
+
+    public void setBns() {
+        if (theCorpusList.getWhat().length() > 15)
+            TuneBookBtn.setText("Tune Books: " + theCorpusList.getWhat().substring(0, 5) + "..." + theCorpusList.getWhat().substring((theCorpusList.getWhat().length() - 5)));
+        else
+            TuneBookBtn.setText("Tune Books: " + theCorpusList.getWhat());
+        if (theTypeList.getWhat().length() > 15)
+            TuneTypeBtn.setText("Tune Types: " + theTypeList.getWhat().substring(0, 5) + "..." + theTypeList.getWhat().substring((theTypeList.getWhat().length() - 5)));
+        else
+            TuneTypeBtn.setText("Tune Types: " + theTypeList.getWhat());
+        }
 }
