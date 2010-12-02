@@ -871,4 +871,8 @@ public class MattGuiNB extends javax.swing.JFrame implements GUI{
     {
         this.fftGraphs = fftGraphs;
     }
+
+    public void setBns() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

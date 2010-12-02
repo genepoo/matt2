@@ -21,4 +21,6 @@ public interface GUI {
    public void clearFFTGraphs();
    
    public javax.swing.JTextArea getTxtABC();
+
+    public void setBns();
 }
