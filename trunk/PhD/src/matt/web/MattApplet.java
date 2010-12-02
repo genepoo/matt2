@@ -733,17 +733,21 @@ private void btnFind1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     int li = docBase.lastIndexOf("/");
     String url = docBase.substring(0, li) + "/search8.jsp?version=1.4&q=" + URLEncoder.encode(toFind);
 
-    ArrayList typeSrchList= theTypeList.getVals();
-    for (int i= 0; i < typeSrchList.size(); i++) {
-         url += "&type[]=";
-         url += typeSrchList.get(i);
-    }
+    url += "&sources=";
+    url += theCorpusList.getVals();
+    url += "&types=";
+    url += theTypeList.getVals();
+//    ArrayList typeSrchList= theTypeList.getVals();
+//    for (int i= 0; i < typeSrchList.size(); i++) {
+//         url += "&type[]=";
+//         url += typeSrchList.get(i);
+//    }
 
-    ArrayList corpSrchList= theCorpusList.getVals();
-    for (int i= 0; i < corpSrchList.size(); i++) {
-         url += "&corpus[]=";
-         url += corpSrchList.get(i);
-    }
+//    ArrayList corpSrchList= theCorpusList.getVals();
+//    for (int i= 0; i < corpSrchList.size(); i++) {
+//         url += "&corpus[]=";
+//         url += corpSrchList.get(i);
+//    }
     
     url += "&silence=" + (int) slSilence.getValue();
     url += "&method=" + cmbTranscriber.getSelectedItem();
