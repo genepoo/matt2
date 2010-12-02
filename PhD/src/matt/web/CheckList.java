@@ -106,16 +106,16 @@ public class CheckList extends JFrame
      //this.setVisible(true);
    }
 
-   public ArrayList getVals(){
-       //String[] selected = new String[1];
-       ArrayList selected = new ArrayList();
+   public String getVals(){
+       String selected = ""; // = new String[1];
+       //ArrayList selected = new ArrayList();
        for (int i = 0; i < cli.length; i++) {
             if (cli[i].isSelected()) {
-                selected.add(i);
-                //selected += ",";
+                selected += (i);
+                selected += ",";
            }
        }
-       //selected = selected.substring(0, selected.length()-1);
+       selected = selected.substring(0, selected.length()-1);
        System.out.println(selected);
        return selected;
    }
