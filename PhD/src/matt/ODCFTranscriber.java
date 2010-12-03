@@ -391,6 +391,7 @@ public class ODCFTranscriber {
             // System.exit(0);
         }
          MattProperties.setString("fundamentalNote", defaultFundamental);
+         gui.getProgressBar().setValue(0);
          Logger.log("Done.");
     }    
     

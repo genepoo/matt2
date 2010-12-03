@@ -609,6 +609,7 @@ private void record() {
 
                 signalGraph.repaint();
             }
+            getProgressBar().setValue(0);
             Logger.log("Done.");
             btnPlay.setEnabled(true);
             btnTranscribe.setEnabled(true);
