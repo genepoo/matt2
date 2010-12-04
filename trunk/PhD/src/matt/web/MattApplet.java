@@ -619,6 +619,7 @@ private void record() {
             e.printStackTrace();
             Logger.log("Could not plot audio: " + e.getMessage());
             Logger.log("Could not hear the melody.");
+            getProgressBar().setValue(0);
         }
     }
 }                                         
