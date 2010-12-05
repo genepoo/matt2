@@ -503,7 +503,7 @@ public CheckList theCorpusList = new CheckList(new String[]
     {"All", "thesession.org", "Norbeck", "O'Neill's 1001", "Ceol Rince na hÉireann 1",
      "Ceol Rince na hÉireann 2", "Ceol Rince na hÉireann 3", "Ceol Rince na hÉireann 4",
      "Johnny O'Leary", "Nigel Gatherer", "The Microphone Rambles", "John Tose", "Jack Campin",
-     "Fife and Drum", "Nottingham Database"});
+     "Fife and Drum", "Nottingham Database", "Aird's Airs"});
 
 public CheckList theTypeList = new CheckList(new String[]
     {"All", "Reel", "Jig", "Slip Jig", "Slide", "March", "Mazurka", "Polka", "Hop",
