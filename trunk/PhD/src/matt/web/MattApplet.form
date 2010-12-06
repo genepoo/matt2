@@ -114,10 +114,11 @@
                           <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="1" attributes="0">
-                          <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="TuneTypeBtn" alignment="0" pref="198" max="32767" attributes="0"/>
-                              <Component id="TuneBookBtn" alignment="1" pref="198" max="32767" attributes="0"/>
-                          </Group>
+                          <Component id="TuneBookBtn" pref="198" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="progressBar" pref="198" max="32767" attributes="1"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -155,9 +156,9 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="TuneBookBtn" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-                  <Component id="TuneTypeBtn" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <Component id="progressBar" min="-2" max="-2" attributes="1"/>
+                  <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -246,15 +247,6 @@
             <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="TuneBookBtnMouseClicked"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="TuneTypeBtn">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Tune Types: ..."/>
-          </Properties>
-          <Events>
-            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="TuneTypeBtnMouseClicked"/>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="TuneTypeBtnActionPerformed"/>
-          </Events>
-        </Component>
         <Component class="javax.swing.JButton" name="playABCbtn">
           <Properties>
             <Property name="text" type="java.lang.String" value="Play ABC"/>
@@ -262,6 +254,8 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="playABCbtnActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JProgressBar" name="progressBar">
         </Component>
       </SubComponents>
     </Container>
@@ -274,14 +268,11 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="jScrollPane2" alignment="0" pref="125" max="32767" attributes="1"/>
-                          <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="progressBar" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
-                      </Group>
+                      <Component id="jScrollPane2" alignment="0" pref="125" max="32767" attributes="1"/>
+                      <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="btnFind1" alignment="1" pref="125" max="32767" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -294,9 +285,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jScrollPane2" min="-2" max="-2" attributes="1"/>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="progressBar" min="-2" max="-2" attributes="1"/>
+                  <Component id="jScrollPane2" min="-2" pref="116" max="-2" attributes="1"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="btnFind1" pref="50" max="32767" attributes="1"/>
                   <EmptySpace max="-2" attributes="0"/>
@@ -326,8 +315,6 @@
             </Component>
           </SubComponents>
         </Container>
-        <Component class="javax.swing.JProgressBar" name="progressBar">
-        </Component>
         <Component class="javax.swing.JButton" name="btnFind1">
           <Properties>
             <Property name="text" type="java.lang.String" value="Search!"/>
