@@ -79,7 +79,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         format = new AudioFormat(44100, 16, 1, true, false);
         transcriber.setGui(this);
         theCorpusList.setGui(this);
-        theTypeList.setGui(this);
+        //theTypeList.setGui(this);
 
         MattProperties.instance(false).setProperty("drawFFTGraphs", "false");
         MattProperties.instance(false).setProperty("drawODFGraphs", "false");
@@ -159,13 +159,12 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
         btnTranscribe = new javax.swing.JButton();
         txtStatus = new javax.swing.JLabel();
         TuneBookBtn = new javax.swing.JButton();
-        TuneTypeBtn = new javax.swing.JButton();
         playABCbtn = new javax.swing.JButton();
+        progressBar = new javax.swing.JProgressBar();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtABC = new javax.swing.JTextArea();
-        progressBar = new javax.swing.JProgressBar();
         btnFind1 = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         cmbTranscriber = new javax.swing.JComboBox();
@@ -240,18 +239,6 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
             }
         });
 
-        TuneTypeBtn.setText("Tune Types: ...");
-        TuneTypeBtn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                TuneTypeBtnMouseClicked(evt);
-            }
-        });
-        TuneTypeBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TuneTypeBtnActionPerformed(evt);
-            }
-        });
-
         playABCbtn.setText("Play ABC");
         playABCbtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -286,9 +273,10 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                                     .addComponent(playABCbtn, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(10, 10, 10))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(TuneTypeBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
-                            .addComponent(TuneBookBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE))
+                        .addComponent(TuneBookBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
                         .addContainerGap())))
         );
 
@@ -319,9 +307,9 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                         .addComponent(btnPlay)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(TuneBookBtn)
-                .addGap(5, 5, 5)
-                .addComponent(TuneTypeBtn)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(14, 14, 14))
         );
 
         jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnPlay, btnRecord, btnTranscribe, cmbFundamental, playABCbtn});
@@ -353,10 +341,8 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
-                        .addComponent(jLabel2)
-                        .addComponent(progressBar, 0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
+                    .addComponent(jLabel2)
                     .addComponent(btnFind1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -366,9 +352,7 @@ public class MattApplet extends javax.swing.JApplet implements matt.GUI {
                 .addContainerGap()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnFind1, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
                 .addContainerGap())
@@ -505,11 +489,11 @@ public CheckList theCorpusList = new CheckList(new String[]
      "Johnny O'Leary", "Nigel Gatherer", "The Microphone Rambles", "John Tose", "Jack Campin",
      "Fife and Drum", "Nottingham Database", "Aird's Airs"});
 
-public CheckList theTypeList = new CheckList(new String[]
-    {"All", "Reel", "Jig", "Slip Jig", "Slide", "March", "Mazurka", "Polka", "Hop",
-     "Barndance", "Double Jig", "Single Jig", "Fling", "Halling", "Highland", "Hornpipe",
-     "Set dance", "Polska J", "Polska K1", "Polska L1", "Polska O", "Strathspey",
-     "Three-two", "Waltz"});
+//public CheckList theTypeList = new CheckList(new String[]
+//    {"All", "Reel", "Jig", "Slip Jig", "Slide", "March", "Mazurka", "Polka", "Hop",
+//     "Barndance", "Double Jig", "Single Jig", "Fling", "Halling", "Highland", "Hornpipe",
+//     "Set dance", "Polska J", "Polska K1", "Polska L1", "Polska O", "Strathspey",
+//     "Three-two", "Waltz"});
 
 public String corpString = "";
 public String typeString = "";
@@ -704,8 +688,8 @@ private void btnFind1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
     url += "&sources=";
     url += theCorpusList.getVals();
-    url += "&types=";
-    url += theTypeList.getVals();
+    //url += "&types=";
+    //url += theTypeList.getVals();
 //    ArrayList typeSrchList= theTypeList.getVals();
 //    for (int i= 0; i < typeSrchList.size(); i++) {
 //         url += "&type[]=";
@@ -732,15 +716,6 @@ private void TuneBookBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST
     theCorpusList.setVisible(true);
     theCorpusList.setLocationRelativeTo(null);
 }//GEN-LAST:event_TuneBookBtnMouseClicked
-
-private void TuneTypeBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TuneTypeBtnMouseClicked
-    theTypeList.setVisible(true);
-    theTypeList.setLocationRelativeTo(null);
-}//GEN-LAST:event_TuneTypeBtnMouseClicked
-
-private void TuneTypeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TuneTypeBtnActionPerformed
-    // TODO add your handling code here:
-}//GEN-LAST:event_TuneTypeBtnActionPerformed
 
 private void playABCbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playABCbtnActionPerformed
         if (tunePlayer.isPlaying())
@@ -774,7 +749,6 @@ private void playABCbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton TuneBookBtn;
-    private javax.swing.JButton TuneTypeBtn;
     private javax.swing.JButton btnFind;
     private javax.swing.JButton btnFind1;
     private javax.swing.JButton btnPlay;
@@ -1091,9 +1065,9 @@ private void playABCbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
             TuneBookBtn.setText("Tune Books: " + theCorpusList.getWhat().substring(0, 5) + "..." + theCorpusList.getWhat().substring((theCorpusList.getWhat().length() - 5)));
         else
             TuneBookBtn.setText("Tune Books: " + theCorpusList.getWhat());
-        if (theTypeList.getWhat().length() > 15)
-            TuneTypeBtn.setText("Tune Types: " + theTypeList.getWhat().substring(0, 5) + "..." + theTypeList.getWhat().substring((theTypeList.getWhat().length() - 5)));
-        else
-            TuneTypeBtn.setText("Tune Types: " + theTypeList.getWhat());
+//        if (theTypeList.getWhat().length() > 15)
+//            TuneTypeBtn.setText("Tune Types: " + theTypeList.getWhat().substring(0, 5) + "..." + theTypeList.getWhat().substring((theTypeList.getWhat().length() - 5)));
+//        else
+//            TuneTypeBtn.setText("Tune Types: " + theTypeList.getWhat());
         }
 }
