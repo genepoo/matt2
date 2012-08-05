@@ -214,8 +214,8 @@ public class CorpusIndex {
             
             Class.forName(driver);
             conn = DriverManager.getConnection(url, user, password);
-            Statement statement = conn.createStatement();
-            statement.execute("delete from tuneindex");
+            //Statement statement = conn.createStatement();
+            //statement.execute("delete from tuneindex");
 
             String folder = MattProperties.getString("MIDIIndex");
 
@@ -418,7 +418,16 @@ public class CorpusIndex {
             {
                 if (tune != null)
                 {
+                    if (tune.getTitles() != null)
+                    {
                         Logger.log("Problem indexing tune " + tune.getReferenceNumber() + " " + tune.getTitles()[0] + " or the one after it.");
+                    }
+                    else
+                    {
+                        Logger.log("Problem indexing tune " + tune.getReferenceNumber());
+                    }
+
+
                 }
                 else
                 {
