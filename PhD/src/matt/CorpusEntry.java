@@ -42,6 +42,43 @@ public class CorpusEntry {
     public void reset()
     {
     }
+    
+    public void updateFromNotation() {
+        String lines[] = notation.split("\\r?\\n");
+        boolean titleSet = false;
+        boolean keySet = false;
+        for (int i = 0; i < lines.length; i++) {
+            if (lines[i].toUpperCase().startsWith("K:") && (keySet == false)) {
+                this.setKeySignature(lines[i].substring(2).trim());
+                keySet = true;
+                break;
+            }
+            if (lines[i].toUpperCase().startsWith("R:")) {
+                this.setType(lines[i].substring(2).trim());
+                continue;
+            }
+            if (lines[i].toUpperCase().startsWith("X:"))
+            {
+            	try
+            	{
+            		this.setX(Integer.parseInt(lines[i].substring(2).trim()));
+            	}
+            	catch (NumberFormatException e)
+            	{
+            		e.printStackTrace();
+            	}
+            }
+            if (lines[i].toUpperCase().startsWith("T:")) {
+                if (!titleSet) {
+                    this.setTitle(lines[i].substring(2).trim());
+                    titleSet = true;
+                } else {
+                    this.setAltTitle(lines[i].substring(2).trim());
+                }
+                continue;
+            }
+        }
+    }
             
     public CorpusEntry(ResultSet rs)
     {

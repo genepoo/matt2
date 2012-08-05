@@ -484,10 +484,17 @@ public boolean countdown = false;
 public boolean recording = false;
 public Timer cdtimer;
 public CheckList theCorpusList = new CheckList(new String[]
-    {"All", "thesession.org", "Norbeck", "O'Neill's 1001", "Ceol Rince na h√âireann 1",
-     "Ceol Rince na h√âireann 2", "Ceol Rince na h√âireann 3", "Ceol Rince na h√âireann 4",
+    {"All", "thesession.org", "Norbeck", "O'Neill's 1001", "Ceol Rince na h…ireann 1",
+     "Ceol Rince na h…ireann 2", "Ceol Rince na h…ireann 3", "Ceol Rince na h…ireann 4",
      "Johnny O'Leary", "Nigel Gatherer", "The Microphone Rambles", "John Tose", "Jack Campin",
-     "Fife and Drum", "Nottingham Database", "Aird's Airs"});
+     "Fife and Drum", "Nottingham Database", "Aird's Airs"
+     , "Ceol Rince na h…ireann 5"
+     , "The Feis Ceoil Collection of Irish Airs"
+     , "OíFarrellís Collection of National Irish Music"
+     , "Nealís Celebrated Irish Tunes"
+     , "Ryanís Mammoth Collection"
+     , "Tunes of the Munster Pipers"
+     });
 
 //public CheckList theTypeList = new CheckList(new String[]
 //    {"All", "Reel", "Jig", "Slip Jig", "Slide", "March", "Mazurka", "Polka", "Hop",
