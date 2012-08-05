@@ -19,8 +19,8 @@ public class CorpusIndex {
     static CorpusIndex _instance = null;;
     int current;
     
-    private boolean createMIDI = true;
-    private boolean createParsons = true;
+    private boolean createMIDI = false;
+    private boolean createParsons = false;
     
     
     private boolean ready;
@@ -361,24 +361,25 @@ public class CorpusIndex {
     
     private void addTunes(int source, File f, Connection conn) throws IOException, SQLException
     {
-        Tune tune = null;
+        CorpusEntry tune = null;
         Logger.log("Indexing tunebook: " + f.toString());
-        TuneBook tuneBook = new TuneBook(f);        
-        int numTunes = tuneBook.size();
+                
+        ArrayList<CorpusEntry> tunes = QuickAndDirtyABCParser.parse(f.toString()); 
         
-        int[] tuneRefs = tuneBook.getReferenceNumbers();
-        for (int i = 0 ; i < tuneRefs.length ; i ++)
+        for (int i = 0 ; i < tunes.size(); i ++)
         {
             try
             {
-                tune = tuneBook.getTune(tuneRefs[i]);
-                Logger.log("Indexing tune: " + tune.getReferenceNumber() + " " + tune.getTitles()[0]);                   
-                String notation = tuneBook.getTuneNotation(tuneRefs[i]);
-
+                tune = tunes.get(i);
+                Logger.log("Indexing tune: " + tune.getX() + " " + tune.getTitle());                   
+                String notation = tune.getNotation();
+                notation = MattABCTools.fixNotationForTunepal(notation);
+                
                 int tuneStart = MattABCTools.skipHeaders(notation);
                 String key = notation.substring(tuneStart);
                 String head = notation.substring(0, tuneStart);
-                int iVariation = key.toUpperCase().indexOf("\"V");
+                // Disable separate keys for variations
+                int iVariation = -1; // key.toUpperCase().indexOf("\"V");
                 int start = 0;
 
                 // The comment is at the start, so skip it
@@ -394,7 +395,7 @@ public class CorpusIndex {
                     while (! endOfTune)
                     {
                         String subKey = key.substring(start, iVariation);                    
-                        createCorpusEntry(source, head, subKey, f.getName(), tune.getTitles()[0], tune.getReferenceNumber(), tune, tuneBook, conn);
+                        createCorpusEntry(notation, source, head, subKey, f.getName(), tune.getTitle(), tune.getX(), tune, conn);
                         // Find the end of the comment
                         iVariation = key.indexOf("\"", iVariation + 1);
                         start = iVariation + 1;
@@ -404,23 +405,27 @@ public class CorpusIndex {
                         {
                             endOfTune = true;
                             subKey = key.substring(start, key.length());                    
-                            createCorpusEntry(source, head, subKey, f.getName(), tune.getTitles()[0], tune.getReferenceNumber(), tune, tuneBook, conn);
+                            createCorpusEntry(notation, source, head, subKey, f.getName(), tune.getTitle(), tune.getX(), tune, conn);
                         }
                     }
                 }
                 else
                 {                
                     // Create an entry for the whole tune
-                    createCorpusEntry(source, head, key, f.getName(), tune.getTitles()[0], tune.getReferenceNumber(), tune, tuneBook, conn);
+                    createCorpusEntry(notation, source, head, key, f.getName(), tune.getTitle(), tune.getX(), tune, conn);
                 }
             }
             catch (Exception e)
             {
                 if (tune != null)
                 {
+<<<<<<< .mine
+                        Logger.log("Problem indexing tune " + tune.getX() + " " + tune.getTitle() + " or the one after it.");
+=======
                     if (tune.getTitles() != null)
                     {
                         Logger.log("Problem indexing tune " + tune.getReferenceNumber() + " " + tune.getTitles()[0] + " or the one after it.");
+>>>>>>> .r165
                     }
                     else
                     {
@@ -438,7 +443,9 @@ public class CorpusIndex {
         }
     }
 
-    static String createUniqueTunePalID(int x, int corpus, String fileName, String title)
+    
+
+	static String createUniqueTunePalID(int x, int corpus, String fileName, String title)
     {
         String tunePalId = "";        
         title = title.replace(System.getProperty("file.separator").charAt(0), '~');
@@ -450,13 +457,13 @@ public class CorpusIndex {
         return tunePalId;
     }
 
-    private void createCorpusEntry(int source, String head, String body, String fileName, String title, int x, Tune tune, TuneBook book, Connection conn) throws Exception
+    private void createCorpusEntry(String notation, int source, String head, String body, String fileName, String title, int x, CorpusEntry ce, Connection conn) throws Exception
     {
         String parsons = null;
         String uniqueId = createUniqueTunePalID(x, source, fileName, title);
-        String midiFile = MIDITools.instance().createMIDI(head, body, fileName, title, x, uniqueId);
-        int[] midiSequence = MIDITools.instance().toMIDISequence(midiFile);
-        parsons = MIDITools.instance().toParsons(midiSequence);
+        //String midiFile = MIDITools.instance().createMIDI(head, body, fileName, title, x, uniqueId);
+        //int[] midiSequence = MIDITools.instance().toMIDISequence(midiFile);
+        //parsons = MIDITools.instance().toParsons(midiSequence);
         int tuneid = -1;        
        try
         {
@@ -483,23 +490,15 @@ public class CorpusIndex {
             Logger.log("Could not index: " + title);
         }
         else
-        {            
-            CorpusEntry ce = new CorpusEntry();
+        {                        
             ce.setFile(fileName);
-            ce.setSource(source);
-
-            String titles[] = tune.getTitles();
-            if (titles.length > 1)
-            {
-                ce.setAltTitle(tune.getTitles()[1]);
-            }
+            ce.setSource(source);            
             ce.setTitle(title);
             ce.setX(x);
             ce.setKey(body);
             ce.setParsons(parsons);
-            ce.setMidiSequence(midiSequence);
-            ce.setMidiFileName(midiFile);
-            ce.setKeySignature(tune.getKey().toLitteralNotation());
+            //ce.setMidiSequence(midiSequence);
+            //ce.setMidiFileName(midiFile);            
             // Is it a new tune, so insert a tune into the tuneindex table
             if ((!lastUniqueId.equals(uniqueId)))
             {
@@ -510,9 +509,9 @@ public class CorpusIndex {
                 ps.setString(2, ce.getTitle());
                 ps.setString(3, ce.getAltTitle());
                 ps.setInt(4, x);
-                ps.setString(5, book.getTuneNotation(x));
+                ps.setString(5, notation);
                 ps.setInt(6, source);
-                ps.setString(7, tune.getRhythm());
+                ps.setString(7, ce.getType());
                 ps.setString(8, uniqueId);
                 ps.setString(9, ce.getKeySignature());
                 ps.executeUpdate();
@@ -536,9 +535,9 @@ public class CorpusIndex {
             PreparedStatement ps = conn.prepareStatement("insert into tunekeys(`search_key`, `tuneid`, `midi_file_name`, `midi_sequence`, `parsons`) values(?, ?, ?, ?, ?)");
             ps.setString(1, body);
             ps.setInt(2, lastTuneId);
-            ps.setString(3, midiFile);
-            ps.setString(4, MIDITools.instance().arrayToString(ce.getMidiSequence()));
-            ps.setString(5, ce.getParsons());
+            ps.setString(3, "");
+            ps.setString(4, ""); // MIDITools.instance().arrayToString(ce.getMidiSequence()));
+            ps.setString(5, ""); // ce.getParsons());
             ps.executeUpdate();
             ps.close();
         }

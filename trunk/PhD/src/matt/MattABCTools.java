@@ -16,6 +16,24 @@ import java.util.StringTokenizer;
  * @author Bryan
  */
 public class MattABCTools {
+	
+	static String fixNotationForTunepal(String notation) {
+		notation = notation.replace("á", "\\\'a");
+		notation = notation.replace("é", "\\\'e");
+		notation = notation.replace("í", "\\\'i");
+		notation = notation.replace("ó", "\\\'o");
+		notation = notation.replace("ú", "\\\'u");
+		notation = notation.replace("Á", "\\\'A");
+		notation = notation.replace("É", "\\\'E");
+		notation = notation.replace("Í", "\\\'I");
+		notation = notation.replace("Ó", "\\\'O");
+		notation = notation.replace("Ú", "\\\'U");
+		/*notation = notation.replace("I:linebreak $\n", "");
+		notation = notation.replace("I:linebreak $\r\n", "");
+		notation = notation.replace("I:linebreak $\r", "");
+		*/
+		return notation;
+	} 
 
     static String removeExtraNotation(String key) {
         String ret = key.replaceAll(">", "");
@@ -110,61 +128,76 @@ public class MattABCTools {
     
     public static String expandParts(String notes)
     {
-        StringBuffer retValue = new StringBuffer(notes);
-        int start = 0;
-        int end = 0;
-        String endToken = ":|";
-        while (true)
-        {
-            end = retValue.indexOf(endToken);
-
-            if ((end == -1))
-            {
-                break;
-            }
-            else
-            {
-                int newStart = retValue.lastIndexOf("|:", end);
-                if (newStart != -1)
-                {
-                    start = newStart + 2;
-                }
-                if ((retValue.length() > end + 2) && Character.isDigit(retValue.charAt(end + 2)))
-                {
-                    int numSpecialBars = 1;
-                    StringBuffer expanded = new StringBuffer();
-                    int normalPart = retValue.lastIndexOf("|", end);
-                    if (! Character.isDigit(retValue.charAt(normalPart + 1)))
-                    {
-                        normalPart = retValue.lastIndexOf("|", normalPart - 1);
-                        numSpecialBars ++;
-                    }
-                    expanded.append(retValue.substring(start, normalPart));
-                    expanded.append("|");
-                    expanded.append(retValue.substring(normalPart + 2, end));
-                    int secondTime = end;
-                    while ((numSpecialBars --) > 0) 
-                    {
-                        secondTime = retValue.indexOf("|", secondTime + 2);
-                    }
-                    expanded.append("|");
-                    expanded.append(retValue.substring(start, normalPart));
-                    expanded.append("|");
-                    expanded.append(retValue.substring(end + 3, secondTime));
-                    expanded.append("|");
-                    retValue.replace(start, secondTime, expanded.toString());
-                }
-                else
-                {
-                    StringBuffer expanded = new StringBuffer();
-                    expanded.append(retValue.substring(start, end));
-                    expanded.append("|");
-                    expanded.append(retValue.substring(start, end));
-                    retValue.replace(start, end + 2, expanded.toString());
-                    start = start + expanded.toString().length();
-                }
-            }
-        }
+    	StringBuffer retValue = new StringBuffer(notes);
+    	try
+    	{
+	        
+	        int start = 0;
+	        int end = 0;
+	        String endToken = ":|";
+	        int count = 0;
+	        while (true)
+	        {	        	
+	        	if (count > 10)
+	        	{
+	        		throw new ArrayIndexOutOfBoundsException("Too many parts in tune" + notes);
+	        	}
+	        	count ++;
+	            end = retValue.indexOf(endToken);
+	
+	            if ((end == -1))
+	            {
+	                break;
+	            }
+	            else
+	            {
+	                int newStart = retValue.lastIndexOf("|:", end);
+	                if (newStart != -1)
+	                {
+	                    start = newStart + 2;
+	                }
+	                if ((retValue.length() > end + 2) && Character.isDigit(retValue.charAt(end + 2)))
+	                {
+	                    int numSpecialBars = 1;
+	                    StringBuffer expanded = new StringBuffer();
+	                    int normalPart = retValue.lastIndexOf("|", end);
+	                    if (! Character.isDigit(retValue.charAt(normalPart + 1)))
+	                    {
+	                        normalPart = retValue.lastIndexOf("|", normalPart - 1);
+	                        numSpecialBars ++;
+	                    }
+	                    expanded.append(retValue.substring(start, normalPart));
+	                    expanded.append("|");
+	                    expanded.append(retValue.substring(normalPart + 2, end));
+	                    int secondTime = end;
+	                    while ((numSpecialBars --) > 0) 
+	                    {
+	                        secondTime = retValue.indexOf("|", secondTime + 2);
+	                    }
+	                    expanded.append("|");
+	                    expanded.append(retValue.substring(start, normalPart));
+	                    expanded.append("|");
+	                    expanded.append(retValue.substring(end + 3, secondTime));
+	                    expanded.append("|");
+	                    retValue.replace(start, secondTime, expanded.toString());
+	                }
+	                else
+	                {
+	                    StringBuffer expanded = new StringBuffer();
+	                    expanded.append(retValue.substring(start, end));
+	                    expanded.append("|");
+	                    expanded.append(retValue.substring(start, end));
+	                    retValue.replace(start, end + 2, expanded.toString());
+	                    start = start + expanded.toString().length();
+	                }
+	            }
+	        }
+    	}
+    	catch (Exception e)
+    	{
+    		e.printStackTrace();
+    		retValue = new StringBuffer(notes);
+    	}
         return retValue.toString();
     }
 

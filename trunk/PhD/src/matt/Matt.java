@@ -35,7 +35,7 @@ public class Matt {
         return _instance;
     }
     
-    public static final String PATH = "c:\\Users\\Bryan Duggan\\Documents\\Projects\\PhD\\"; 
+    public static final String PATH = "c:\\Users\\Bryan\\Documents\\Projects\\PhD\\"; 
     
     /**
      * Creates a new instance of Matt
