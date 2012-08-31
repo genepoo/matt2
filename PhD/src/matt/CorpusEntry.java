@@ -19,6 +19,7 @@ import javax.sound.midi.Sequencer;
  * @author Bryan Duggan
  */
 public class CorpusEntry {
+	private int id;
     private String key;
     private String tunePalID;
     private String type;
@@ -82,10 +83,9 @@ public class CorpusEntry {
             
     public CorpusEntry(ResultSet rs)
     {
-        int id = -1;
         try
         {
-            id = rs.getInt("id");
+            setId(rs.getInt("id"));
             setTitle(rs.getString("title"));
             setAltTitle(rs.getString("alt_title"));
             setKey(rs.getString("search_key"));
@@ -116,7 +116,7 @@ public class CorpusEntry {
         }
         catch (Exception e)
         {
-            Logger.log("Could not load record: " + id);
+            Logger.log("Could not load record: " + getId());
             e.printStackTrace();
         }        
     }
@@ -315,6 +315,14 @@ public class CorpusEntry {
     public void setType(String type) {
         this.type = type;
     }
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
     
       
 }

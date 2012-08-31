@@ -78,6 +78,7 @@ public class ABCTranscriber {
     public static float[] midiNotes = new float[87];
     
     public static final int MIDI_OFFSET = 21;
+    public int[] quantisedMidi;
     
     // public static final float D3 = 146.83f; 
     // public static final float D4=  293.66f; // Start transcription of the whistle one octive up
@@ -238,10 +239,12 @@ public class ABCTranscriber {
     
     public String convertToABC()
     {
+    	ArrayList<Integer> qMidi = new ArrayList<Integer>();
         calculatePitchModel();
         makeScale("Major");
         printScale();
         StringBuffer sb = new StringBuffer();
+        convertToMidi();
         
         float standardNote = calculateStandardNoteDuration();
         EnergyCalculator ec = new EnergyCalculator();
@@ -283,6 +286,7 @@ public class ABCTranscriber {
                 }
                  
                 sb.append(getTranscribedNotes()[i].getSpelling());
+                qMidi.add(getTranscribedNotes()[i].getMidiNote());
                 // A breath should never be longer than a single note
                 int nearestMultiple = 0;
                 if (!transcribedNotes[i].getSpelling().equals("z"))
@@ -305,6 +309,7 @@ public class ABCTranscriber {
                 {
                     nearestMultiple = 1;
                 }
+                
 
                 quaverQ += nearestMultiple;
                 getTranscribedNotes()[i].setMultiple(nearestMultiple);
@@ -323,6 +328,13 @@ public class ABCTranscriber {
         {
             sb.setLength(sb.length()-1);
         }
+        
+		quantisedMidi = new int[qMidi.size()];
+	    Iterator<Integer> iterator = qMidi.iterator();
+	    for (int i = 0; i < quantisedMidi.length; i++)
+	    {
+	    	quantisedMidi[i] = iterator.next().intValue();
+	    }        
         return sb.toString();
     }
     

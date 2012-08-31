@@ -368,7 +368,8 @@ public class ODCFTranscriber {
             
             if (MattProperties.getString("searchMethod").equalsIgnoreCase("semex"))
             {
-                notes = abcTranscriber.convertToMidi();
+            	abcTranscriber.convertToABC();
+                notes = MIDITools.instance().arrayToString(abcTranscriber.quantisedMidi);
             }
             
             if (MattProperties.getString("mode").equals("client"))

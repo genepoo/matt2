@@ -103,6 +103,56 @@ public class CorpusIndex {
         }
         DBHelper.safeClose(conn, s, r);
     }
+    
+    public void updateSemexKeys()
+    {
+    	//loadDatabaseIndex();
+    	
+    	MattGuiNB.instance().getProgressBar().setValue(0);
+        MattGuiNB.instance().getProgressBar().setMaximum(index.size());
+    	
+        Connection conn = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        conn = DBHelper.getConnection();
+        int current = 0;
+    	for (CorpusEntry tune:index)
+    	{
+    		current ++;
+    		MattGuiNB.instance().getProgressBar().setValue(current);
+    		String notation = tune.getNotation();
+    		int tuneStart = MattABCTools.skipHeaders(notation);
+            String body = notation.substring(tuneStart);
+            String head = notation.substring(0, tuneStart);
+            
+            // Strip out ornamentation, comments and chords
+            body = MattABCTools.stripComments(body);
+            body = MattABCTools.expandLongNotes(body);
+            
+    		try
+    		{
+    			String midiFile = MIDITools.instance().createMIDI(head, body, "temp.mid", tune.getTitle(), tune.getX(), null);
+	            int[] midiSequence = MIDITools.instance().toMIDISequence(midiFile);
+	            String parsons = MIDITools.instance().toParsons(midiSequence);
+	            
+	            // Update the database...	            
+                s = conn.prepareStatement("update tunekeys set midi_sequence = ?, parsons = ? where tuneid = ?");
+                s.setString(1, MIDITools.instance().arrayToString(midiSequence));
+                s.setString(2, parsons);
+                s.setInt(3, tune.getId());	                
+                s.execute();
+    		}
+    		catch (Exception e)
+    		{
+    			e.printStackTrace();
+    		}
+    	}
+    }
+    
+    //String midiFile = MIDITools.instance().createMIDI(head, body, fileName, title, x, uniqueId);
+    //int[] midiSequence = MIDITools.instance().toMIDISequence(midiFile);
+    //parsons = MIDITools.instance().toParsons(midiSequence);
+
 
     /*
      public void loadIndex()
@@ -419,20 +469,7 @@ public class CorpusIndex {
             {
                 if (tune != null)
                 {
-<<<<<<< .mine
-                        Logger.log("Problem indexing tune " + tune.getX() + " " + tune.getTitle() + " or the one after it.");
-=======
-                    if (tune.getTitles() != null)
-                    {
-                        Logger.log("Problem indexing tune " + tune.getReferenceNumber() + " " + tune.getTitles()[0] + " or the one after it.");
->>>>>>> .r165
-                    }
-                    else
-                    {
-                        Logger.log("Problem indexing tune " + tune.getReferenceNumber());
-                    }
-
-
+                	Logger.log("Problem indexing tune " + tune.getX() + " " + tune.getTitle() + " or the one after it.");
                 }
                 else
                 {
@@ -468,7 +505,8 @@ public class CorpusIndex {
        try
         {
             body = MattABCTools.stripComments(body);
-
+            body = MattABCTools.stripWords(body);
+            body = MattABCTools.stripAdvancedABC(body);
             body = MattABCTools.stripWhiteSpace(body);
             body = MattABCTools.expandLongNotes(body);
             body = MattABCTools.expandParts(body);

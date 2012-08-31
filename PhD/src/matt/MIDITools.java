@@ -29,10 +29,10 @@ public class MIDITools {
         return _instance;
     }
 
-    public String createMIDI(String head, String key, String fileName, String title, int x, String uniqueId) throws IOException, InterruptedException
+    public String createMIDI(String head, String notation, String fileName, String title, int x, String uniqueId) throws IOException, InterruptedException
     {
         head = head.trim() + "\r";
-        key = key.trim();
+        notation = notation.trim();
 
         String folder = System.getProperty("user.dir") + System.getProperty("file.separator") + MattProperties.getString("MIDIIndex");
         String tempFile = folder + System.getProperty("file.separator") + "temp.abc";
@@ -40,34 +40,11 @@ public class MIDITools {
         fw.write(head);
         fw.write("Q:1/4 = 200\n");
         //fw.write("%%%%MIDI program 24\n");
-        fw.write(key);
+        fw.write(notation);
         fw.flush();
         fw.close();
-        String midiFileName;
         String fullName;
-        int variation = 0;
-        boolean unique = false;
-        do
-        {
-            
-            midiFileName = uniqueId;
-            if (variation > 0)
-            {
-                midiFileName += "-Variation " + variation;
-            }
-            midiFileName += ".mid";
-            fullName = folder + System.getProperty("file.separator") + midiFileName;
-
-            if (new File(fullName).exists())
-            {
-                variation ++;
-            }
-            else
-            {
-                unique = true;
-            }
-        }
-        while (! unique);
+        fullName = folder + System.getProperty("file.separator") + fileName;        
         String cmd = MattProperties.getString("ABC2MIDI") + " \"" + tempFile + "\" -o " + "\"" + fullName + "\"";
         Process abc2MIDI  = Runtime.getRuntime().exec(cmd);
         InputStream in = abc2MIDI.getInputStream();
@@ -98,7 +75,7 @@ public class MIDITools {
             Logger.log(fullName + " not created");
         }
         
-        return midiFileName;
+        return fileName;
     }
     
     public int[] toMIDISequence(TranscribedNote[] notes)
