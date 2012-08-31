@@ -28,10 +28,21 @@ public class MattABCTools {
 		notation = notation.replace("Í", "\\\'I");
 		notation = notation.replace("Ó", "\\\'O");
 		notation = notation.replace("Ú", "\\\'U");
-		/*notation = notation.replace("I:linebreak $\n", "");
-		notation = notation.replace("I:linebreak $\r\n", "");
-		notation = notation.replace("I:linebreak $\r", "");
-		*/
+		
+		// Fix up CR's
+		if (notation.indexOf("I:linebreak $") != -1)
+		{
+			int tuneStart = skipHeaders(notation);
+			String justTune = notation.substring(tuneStart);
+			justTune = justTune.replace("\r", "");
+			justTune = justTune.replace("\r\n", "");
+			justTune = justTune.replace("\n", "");			
+			justTune = justTune.replace("$ ", "$");
+			justTune = justTune.replace("$", "\n");
+			justTune = justTune.replaceAll("[^\\n]w:", "\nw:");
+			
+			notation = notation.substring(0, tuneStart) + justTune;
+		}
 		return notation;
 	} 
 
@@ -403,4 +414,32 @@ public class MattABCTools {
 
         System.out.println(test);
     }
+    
+    public static String stripAdvancedABC(String body)
+    {
+    	String ret = body;
+    	ret = ret.replace("!fermata!", "");
+    	ret = ret.replace("!trill)!", "");
+    	ret = ret.replace("!trill(!", "");
+    	ret = ret.replace("!turn!", "");
+    	return ret;
+    }
+
+	public static String stripWords(String body) {
+		String ret = "";
+		String lines[] = body.split("\\r?\\n");
+		for(String line: lines)
+		{
+			if (line.startsWith("W:") || line.startsWith("w:"))
+			{
+				Logger.log("Removing: " + line);
+			}
+			else
+			{
+				ret += line + "\n";
+			}
+		}
+		
+		return ret;
+	}
 }

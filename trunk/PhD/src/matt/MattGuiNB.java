@@ -566,7 +566,7 @@ public class MattGuiNB extends javax.swing.JFrame implements GUI{
         {
             public void run()
             {
-                CorpusIndex.instance().reindex();
+                CorpusIndex.instance().updateSemexKeys();
             }
         }
         .start();
