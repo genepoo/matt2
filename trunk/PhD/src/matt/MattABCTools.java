@@ -117,7 +117,7 @@ public class MattABCTools {
             char c = tune.charAt(i); 
             if (inChars == 1)
             {
-                if ((c == ':') && (tune.charAt(i-1) != '|'))
+                if (((c == ':') && (tune.charAt(i-1) != '|')) || ((c == '%') && (tune.charAt(i-1) == '%')))
                 {
                     inHeader = true;
                 }
