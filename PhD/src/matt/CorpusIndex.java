@@ -131,7 +131,8 @@ public class CorpusIndex {
             
     		try
     		{
-    			String midiFile = MIDITools.instance().createMIDI(head, body, "temp.mid", tune.getTitle(), tune.getX(), null);
+    			String uniqueId = createUniqueTunePalID(tune.getX(), tune.getSource(), tune.getFile(), tune.getTitle());
+    			String midiFile = MIDITools.instance().createMIDI(head, body, tune.getTitle(), tune.getX(), uniqueId);
 	            int[] midiSequence = MIDITools.instance().toMIDISequence(midiFile);
 	            String parsons = MIDITools.instance().toParsons(midiSequence);
 	            
@@ -271,13 +272,16 @@ public class CorpusIndex {
 
             // Delete all the MIDI files
             Logger.log("Deleting MIDI files...");
-             File midiDir = new File(folder);
+            /*
+              File midiDir = new File(folder);
+             
             String[] children = midiDir.list();
             for (int ii = 0; ii < children.length; ii++)
             {
                 new File(midiDir, children[ii]).delete();
             }
             Logger.log("Done");
+            */
             ABCFilter filter = new ABCFilter();
             index.clear();
 

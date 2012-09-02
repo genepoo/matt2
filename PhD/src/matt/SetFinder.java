@@ -90,7 +90,8 @@ public class SetFinder extends Thread{
                 {
                     searchIn.setLength(searchString.length());
                 }
-                float ed = EditDistance.minEdSubString(searchString, "" + searchIn);
+                int[][] d = new int[searchString.length() + 1][searchIn.length() + 1];
+                float ed = EditDistance.minEdSubString(searchString, "" + searchIn, d);
                 if (ed < bestEd)
                 {
                     bestEd = ed;
@@ -118,7 +119,8 @@ public class SetFinder extends Thread{
                 // Now attempt to find the repititions of this tune in the set
                 printExpanded(toFind);
                 printExpanded(firstTune.getKey());
-                int ed[] = EditDistance.edSubString(firstTune.getKey(), toFind);
+                int[][] d = new int[firstTune.getKey().length() + 1][toFind.length() + 1];
+                int ed[] = EditDistance.edSubString(firstTune.getKey(), toFind, d);
                 float fed[] = new float[ed.length];
                 float fedf[] = new float[ed.length];
                 

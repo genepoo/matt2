@@ -109,11 +109,13 @@ public class FinderThread extends Thread{
             float ed;
             if (MattProperties.getString("searchMethod").equalsIgnoreCase("semex"))
             {
-                ed = EditDistance.minEdSemex(MIDITools.instance().toMIDISequence(notes), entry.getMidiSequence());
+            	int[][] d = new int[notes.length + 1][entry.getMidiSequence().length + 1];
+                ed = EditDistance.minEdSemex(MIDITools.instance().toMIDISequence(notes), entry.getMidiSequence(), d);
             }
             else
             {
-                ed = EditDistance.minEdSubString(toFind, "" + nlSearchIn);
+            	int[][] d = new int[toFind.length() + 1][nlSearchIn.length() + 1];
+                ed = EditDistance.minEdSubString(toFind, "" + nlSearchIn, d);
             }
             if (ed < bestEditdistance)
             {

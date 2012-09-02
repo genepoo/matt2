@@ -8,6 +8,7 @@ package matt;
 import java.io.*;
 
 import javax.sound.midi.*;
+
 import java.util.*;
 
 /**
@@ -28,8 +29,82 @@ public class MIDITools {
         }
         return _instance;
     }
+    
+    public String createMIDI(String head, String body, String title, int x, String uniqueId) throws IOException, InterruptedException
+    {
+        head = head.trim() + "\r";
+        body = body.trim();
 
-    public String createMIDI(String head, String notation, String fileName, String title, int x, String uniqueId) throws IOException, InterruptedException
+        String folder = System.getProperty("user.dir") + System.getProperty("file.separator") + MattProperties.getString("MIDIIndex");
+        String tempFile = folder + System.getProperty("file.separator") + "temp.abc";
+        FileWriter fw = new FileWriter(tempFile);
+        fw.write(head);
+        fw.write("Q:1/4 = 200\n");
+        //fw.write("%%%%MIDI program 24\n");
+        fw.write(body);
+        fw.flush();
+        fw.close();
+        String midiFileName = "temp.mid";
+        String fullName = folder + System.getProperty("file.separator") + midiFileName;
+        int variation = 0;
+        boolean unique = false;
+        /*
+        do
+        {
+            
+            midiFileName = uniqueId;
+            if (variation > 0)
+            {
+                midiFileName += "-Variation " + variation;
+            }
+            midiFileName += ".mid";
+            fullName = folder + System.getProperty("file.separator") + midiFileName;
+
+            if (new File(fullName).exists())
+            {
+                variation ++;
+            }
+            else
+            {
+                unique = true;
+            }
+        }
+        while (! unique);
+        */
+        String cmd = MattProperties.getString("ABC2MIDI") + " \"" + tempFile + "\" -o " + "\"" + fullName + "\"";
+        Process abc2MIDI  = Runtime.getRuntime().exec(cmd);
+        InputStream in = abc2MIDI.getInputStream();
+
+        boolean finished = false;  // Set to true when p is finished
+	    while( !finished) {
+		try {
+		    while( in.available() > 0) {
+			// Print the output of our system call.
+			Character c = new Character( (char) in.read());
+			System.out.print( c);
+		    }
+		    // Ask the process for its exitValue.  If the process
+		    // is not finished, an IllegalThreadStateException
+		    // is thrown.  If it is finished, we fall through and
+		    // the variable finished is set to true.
+		    abc2MIDI.exitValue();
+		    finished = true;
+	        } catch (IllegalThreadStateException e) {
+		    // Sleep a little to save on CPU cycles
+		    Thread.currentThread().sleep(10);
+		}
+	    }
+        
+        abc2MIDI.waitFor();
+        if (! new File(fullName).exists())
+        {
+            Logger.log(fullName + " not created");
+        }
+        
+        return midiFileName;
+    }
+
+    /*public String createMIDI(String head, String notation, String fileName, String title, int x, String uniqueId) throws IOException, InterruptedException
     {
         head = head.trim() + "\r";
         notation = notation.trim();
@@ -77,6 +152,7 @@ public class MIDITools {
         
         return fileName;
     }
+    */
     
     public int[] toMIDISequence(TranscribedNote[] notes)
     {
@@ -187,6 +263,42 @@ public class MIDITools {
         return parsons.toString();
     }
     
+    public static void playMidiSequence(int[] sequence)
+    {
+		try {
+			int	nChannel = 0;
+
+			int	nKey = 0;	// MIDI key number
+			int	nVelocity = 96;
+			int	nDuration = 250;
+			
+			MidiDevice	outputDevice = null;
+			Receiver	receiver = null;
+			receiver = MidiSystem.getReceiver();
+			// Check for null; maybe not all 16 channels exist.
+			for(int note:sequence)
+			{
+				ShortMessage	onMessage = null;
+				ShortMessage	offMessage = null;
+				onMessage = new ShortMessage();
+				offMessage = new ShortMessage();
+				onMessage.setMessage(ShortMessage.NOTE_ON, nChannel, note, nVelocity);
+				offMessage.setMessage(ShortMessage.NOTE_OFF, nChannel, note, 0);
+				
+				receiver.send(onMessage, -1);
+				Thread.sleep(nDuration);				
+				receiver.send(offMessage, -1);
+    	    }
+			receiver.close();
+		} 
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	    
+    }
+    
     public void playMidiFile(String file) 
     {
         String curDir = System.getProperty("user.dir");
@@ -255,5 +367,12 @@ public class MIDITools {
     public void setFinished(boolean finished)
     {
         this.finished = finished;
+    }
+    
+    public static void main(String[] args)
+    {
+    	int[] patternCurragh = {77,76,76,72,72,70,67,72,72,72,74,74,76,76,77,77,72,74,76,77,77,67,72,72,72,76,69,72,77,76,76,72,75,72,70,67,70,70,70,74,77,77,79,82,79,77,76,76,77,76,74,74,72,74,72,72,65,84,29,77,77,76,72,75,72,70,67,72,75,72,72,74,74,76,76,77,76,72,74,76,77,77,79,72,72,72,76,69};
+    	playMidiSequence(patternCurragh);
+    	
     }
 }
