@@ -25,6 +25,7 @@ public class CorpusEntry {
     private String type;
     private String keySignature;
     private String file;
+    private String timeSig;
     private int x;
     private String title;
     private String altTitle;
@@ -56,6 +57,10 @@ public class CorpusEntry {
             }
             if (lines[i].toUpperCase().startsWith("R:")) {
                 this.setType(lines[i].substring(2).trim());
+                continue;
+            }
+            if (lines[i].toUpperCase().startsWith("M:")) {
+                this.setTimeSig(lines[i].substring(2).trim());
                 continue;
             }
             if (lines[i].toUpperCase().startsWith("X:"))
@@ -322,6 +327,14 @@ public class CorpusEntry {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getTimeSig() {
+		return timeSig;
+	}
+
+	public void setTimeSig(String timeSig) {
+		this.timeSig = timeSig;
 	}
     
       

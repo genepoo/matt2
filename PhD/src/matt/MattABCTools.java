@@ -442,4 +442,54 @@ public class MattABCTools {
 		
 		return ret;
 	}
+	
+	public static String removeMidiBits(String notation)
+	{
+    	StringBuffer ret = new StringBuffer();
+    	if ((notation.indexOf("Q:") == -1 ) && (notation.indexOf("q:") == -1))
+    	{
+    		return notation;
+    	}
+    	else
+    	{
+    		String lines[] = notation.split("\\r?\\n");
+    		for(String line:lines)
+    		{
+    			if (!line.toLowerCase().startsWith("%%midi program"))
+    			{
+    				ret.append(line + "\n");
+    			}
+    		}
+    		return ret.toString();
+    	}
+	}
+
+	public static String removeBBBits(String notation) {
+		StringBuffer ret = new StringBuffer();
+    	
+		String lines[] = notation.split("\\r?\\n");
+		for(String line:lines)
+		{
+			if (line.toLowerCase().startsWith("t:"))
+			{
+				int i = line.lastIndexOf("%");
+				if (i != -1)
+				{
+					line = line.substring(0, i);
+				}
+			}
+			ret.append(line + "\n");			
+		}
+		return ret.toString();    	
+	}
+
+	public static String removeBBBitsFromTitle(String title) {
+		int i = title.lastIndexOf("%");
+		if (i != -1)
+		{
+			title = title.substring(0, i).trim();
+		}
+		return title;
+	}
+	
 }
