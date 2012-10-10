@@ -271,7 +271,7 @@ public class CorpusIndex {
             String folder = MattProperties.getString("MIDIIndex");
 
             // Delete all the MIDI files
-            Logger.log("Deleting MIDI files...");
+            //Logger.log("Deleting MIDI files...");
             /*
               File midiDir = new File(folder);
              
@@ -535,18 +535,19 @@ public class CorpusIndex {
         {                        
             ce.setFile(fileName);
             ce.setSource(source);            
-            ce.setTitle(title);
+            ce.setTitle(MattABCTools.removeBBBitsFromTitle(title));
             ce.setX(x);
             ce.setKey(body);
             ce.setParsons(parsons);
             //ce.setMidiSequence(midiSequence);
             //ce.setMidiFileName(midiFile);            
-            // Is it a new tune, so insert a tune into the tuneindex table
+            // Is it a new tune, so insert a tune into the tuneindex table            
             if ((!lastUniqueId.equals(uniqueId)))
             {
-
+            	notation = MattABCTools.removeMidiBits(notation);
+            	notation = MattABCTools.removeBBBits(notation);
                 //PreparedStatement ps = conn.prepareStatement("insert into tuneindex(`file_name`, `title`, `alt_title`, `x`, `notation`, `source`, `tune_type`, `tunepalid`, `key_sig`) values(?, ?, ?,?, ?, ?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-                PreparedStatement ps = conn.prepareStatement("insert into tuneindex(`file_name`, `title`, `alt_title`, `x`, `notation`, `source`, `tune_type`, `tunepalid`, `key_sig`) values(?, ?, ?,?, ?, ?,?,?,?)");
+                PreparedStatement ps = conn.prepareStatement("insert into tuneindex(`file_name`, `title`, `alt_title`, `x`, `notation`, `source`, `tune_type`, `tunepalid`, `key_sig`, `time_sig`) values(?, ?, ?,?, ?, ?,?,?,?, ?)");
                 ps.setString(1, ce.getFile());
                 ps.setString(2, ce.getTitle());
                 ps.setString(3, ce.getAltTitle());
@@ -556,6 +557,7 @@ public class CorpusIndex {
                 ps.setString(7, ce.getType());
                 ps.setString(8, uniqueId);
                 ps.setString(9, ce.getKeySignature());
+                ps.setString(10, ce.getTimeSig());
                 ps.executeUpdate();
 
                 tuneid = getLastId("tuneindex", conn);

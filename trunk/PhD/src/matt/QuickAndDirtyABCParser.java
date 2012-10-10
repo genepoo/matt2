@@ -12,7 +12,8 @@ public class QuickAndDirtyABCParser {
 		File file = new File(filename);
 		 try
 		 {
-			 BufferedReader in = new BufferedReader(new FileReader(filename));
+			 Reader reader = new InputStreamReader(new FileInputStream(filename), "utf-8");
+			 BufferedReader in = new BufferedReader(reader);
 			 String strLine;
 			 StringBuffer tuneString = new StringBuffer();
 			 boolean inTune = false;
