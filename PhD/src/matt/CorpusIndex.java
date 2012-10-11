@@ -106,7 +106,7 @@ public class CorpusIndex {
     
     public void updateSemexKeys()
     {
-    	//loadDatabaseIndex();
+    	loadDatabaseIndex();
     	
     	MattGuiNB.instance().getProgressBar().setValue(0);
         MattGuiNB.instance().getProgressBar().setMaximum(index.size());
@@ -333,6 +333,7 @@ public class CorpusIndex {
             safeClose(conn, null, null);
         }
         Logger.log("Done...");
+        CorpusIndex.instance().updateSemexKeys();
     }       
     
     /*public void reindex()
@@ -536,6 +537,7 @@ public class CorpusIndex {
             ce.setFile(fileName);
             ce.setSource(source);            
             ce.setTitle(MattABCTools.removeBBBitsFromTitle(title));
+            ce.setAltTitle(MattABCTools.removeBBBitsFromTitle(ce.getAltTitle()));
             ce.setX(x);
             ce.setKey(body);
             ce.setParsons(parsons);
