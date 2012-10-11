@@ -466,28 +466,37 @@ public class MattABCTools {
 
 	public static String removeBBBits(String notation) {
 		StringBuffer ret = new StringBuffer();
+		
     	
-		String lines[] = notation.split("\\r?\\n");
-		for(String line:lines)
+		if (notation != null)
 		{
-			if (line.toLowerCase().startsWith("t:"))
+			String lines[] = notation.split("\\r?\\n");
+	
+			for(String line:lines)
 			{
-				int i = line.lastIndexOf("%");
-				if (i != -1)
+				if (line.toLowerCase().startsWith("t:"))
 				{
-					line = line.substring(0, i);
+					int i = line.lastIndexOf("%");
+					if (i != -1)
+					{
+						line = line.substring(0, i).trim();
+					}
 				}
+				ret.append(line + "\n");			
 			}
-			ret.append(line + "\n");			
 		}
 		return ret.toString();    	
 	}
 
-	public static String removeBBBitsFromTitle(String title) {
-		int i = title.lastIndexOf("%");
-		if (i != -1)
-		{
-			title = title.substring(0, i).trim();
+	public static String removeBBBitsFromTitle(String title) 
+	{
+		if (title != null)
+		{			
+			int i = title.lastIndexOf("%");
+			if (i != -1)
+			{
+				title = title.substring(0, i).trim();
+			}
 		}
 		return title;
 	}
